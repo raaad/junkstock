@@ -6,7 +6,7 @@ import { controlsLookAt, fitToObject, rotateAround, updateSize } from '../../cor
 // eslint-disable-next-line @typescript-eslint/naming-convention
 import * as THREE from 'three';
 
-const MODEL_URL = '/duck/duck.gltf';
+const MODEL_URL = './duck/duck.gltf';
 
 @Component({
   selector: 'app-3d',
