@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --deploy-url /junkstock/",
+    "build": "ng build --base-href /junkstock/ --deploy-url /junkstock/",
     "watch": "ng build --watch --configuration development",
     "lint": "ng lint",
     "pretty": "npx prettier --write ./src/**/*.{json,js,ts,html,css,scss}"

@@ -1,3 +1,4 @@
+import { LocationStrategy } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit } from '@angular/core';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import { fromGltf } from '../../core/3d/loaders';
@@ -6,7 +7,7 @@ import { controlsLookAt, fitToObject, rotateAround, updateSize } from '../../cor
 // eslint-disable-next-line @typescript-eslint/naming-convention
 import * as THREE from 'three';
 
-const MODEL_URL = './duck/duck.gltf';
+const MODEL_URL = 'duck/duck.gltf';
 
 @Component({
   selector: 'app-3d',
@@ -68,6 +69,7 @@ const MODEL_URL = './duck/duck.gltf';
 })
 export class ThreeDComponent implements OnInit {
   private readonly container = inject(ElementRef<HTMLElement>).nativeElement;
+  private readonly modelUrl = inject(LocationStrategy).getBaseHref() + MODEL_URL;
 
   private readonly renderer = createRenderer(this.container);
   private readonly camera = new THREE.PerspectiveCamera().add(...createLights());
@@ -80,7 +82,7 @@ export class ThreeDComponent implements OnInit {
     this.onWindowResize();
 
     // eslint-disable-next-line no-console
-    this.object = await fromGltf(MODEL_URL, v => console.log(`loading: ${(v * 100).toFixed()}%`)); // createCube()
+    this.object = await fromGltf(this.modelUrl, v => console.log(`loading: ${(v * 100).toFixed()}%`)); // createCube()
 
     this.scene.add(this.object);
 

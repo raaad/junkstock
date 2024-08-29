@@ -36,6 +36,8 @@ jobs:
         run: npm i
       - name: build
         run: npm run build
+      - name: fix 404
+        run: cp ./dist/app/browser/index.html ./dist/app/browser/404.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
