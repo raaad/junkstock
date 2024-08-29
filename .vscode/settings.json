@@ -1,0 +1,48 @@
+//user settings
+/*{
+  "workbench.colorTheme": "Default Light Modern",
+  "workbench.sideBar.location": "right",
+  "debug.toolBarLocation": "docked",
+  "editor.minimap.enabled": false,
+  "editor.linkedEditing": true,
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "files.associations": {
+    "*.xml": "html",
+    "*.svg": "html"
+  },
+}*/
+
+// key bindings: F1 > workbench.action.openGlobalKeybindingsFile
+/*
+[
+  { "key": "ctrl+k s", "command": "workbench.action.files.saveAs" },
+  { "key": "ctrl+shift+s", "command": "workbench.action.files.saveAll" },
+  { "key": "ctrl+shift+s", "command": "-workbench.action.files.saveAs" }
+]
+*/
+
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  // git
+  "gitlens.telemetry.enabled": false,
+  // typescript
+  "typescript.tsdk": "<workspace>\\node_modules\\typescript\\lib",
+  // other
+  // override prettier
+  "[csharp]": {
+    //"editor.defaultFormatter": "ms-dotnettools.csharp"
+  },
+  // for 'PostCSS Language Support' extension
+  "emmet.includeLanguages": {
+    "postcss": "css"
+  }
+}

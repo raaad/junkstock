@@ -1,0 +1,9 @@
+{
+  "experimentalTernaries": true,
+  "printWidth": 160,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "bracketSameLine": true,
+  "arrowParens": "avoid",
+  "endOfLine": "auto"
+}
