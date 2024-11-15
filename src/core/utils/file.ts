@@ -6,32 +6,32 @@ export async function fetchToBlob(url: string) {
   return await response.blob();
 }
 
-/** Draw image file in blob from URL (http[s]: | blob: | data:) using Image element and Canvas */
-export async function drawToBlob(
-  url: string,
-  { size, useOffscreenCanvas, type, quality }: ImageEncodeOptions & { size?: { width: number; height: number }; useOffscreenCanvas?: boolean } = {}
-) {
+export async function fetchToImage(url: string) {
   const image = new Image();
-  image.crossOrigin = ' ';
+  image.crossOrigin = 'anonymous';
   image.src = url;
 
   await new Promise((resolve, reject) => (image.addEventListener('load', resolve, false), image.addEventListener('error', reject, false)));
 
-  const canvas = useOffscreenCanvas ?? true ? new OffscreenCanvas(0, 0) : document.createElement('canvas');
+  return image;
+}
+
+type DrawOptions = ImageEncodeOptions & { size?: { width: number; height: number } };
+
+/** Draw image file to blob from URL (http[s]: | blob: | data:) */
+export function drawToBlob(image: string, options?: DrawOptions): Promise<Blob>;
+/** Draw image to blob */
+export function drawToBlob(image: HTMLImageElement, options?: DrawOptions): Promise<Blob>;
+export async function drawToBlob(data: string | HTMLImageElement, { size, ...options }: DrawOptions = {}) {
+  const image = data instanceof HTMLImageElement ? data : await fetchToImage(data);
 
   const { width, height } = size ?? { width: image.width, height: image.height };
-  canvas.width = width;
-  canvas.height = height;
+  const canvas = new OffscreenCanvas(width, height);
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const ctx = canvas.getContext('2d') as OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D | null;
+  const ctx = canvas.getContext('2d');
   ctx?.drawImage(image, 0, 0, width, height);
 
-  const blob = await (canvas instanceof OffscreenCanvas
-    ? canvas.convertToBlob({ type, quality })
-    : new Promise<Blob>((resolve, reject) => canvas.toBlob(r => (r ? resolve(r) : reject(new Error('Blob is null'))), type, quality)));
-
-  return blob;
+  return await canvas.convertToBlob(options);
 }
 
 /** Convert Blob to DataURL */

@@ -4,10 +4,9 @@
     "johnpapa.angular2",
     "natewallace.angular2-inline",
     "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "rangav.vscode-thunder-client",
-    "ms-dotnettools.csharp",
-    "ms-dotnettools.csdevkit",
-    "codeium.codeium"
+    "dbaeumer.vscode-eslint"
+    //"ms-dotnettools.csharp",
+    //"ms-dotnettools.csdevkit",
+    //"codeium.codeium"
   ]
 }
