@@ -5,10 +5,9 @@ import { Route, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rout
 import { routes } from './app.routes';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, AsyncPipe],
-  template: ` <aside>
+    selector: 'app-root',
+    imports: [RouterOutlet, RouterLink, RouterLinkActive, AsyncPipe],
+    template: ` <aside>
       <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">‹ home</a>
       @for(item of routes; track item){ @if(item.path; as path){
       <a [routerLink]="[path]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ item.title }}</a>
@@ -20,8 +19,8 @@ import { routes } from './app.routes';
       <div class="title">{{ title.getTitle() }}</div>
       <router-outlet />
     </main>`,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: flex;
         height: inherit;
@@ -71,7 +70,7 @@ import { routes } from './app.routes';
         overflow: auto;
       }
     `
-  ]
+    ]
 })
 export class AppComponent {
   readonly title = inject(Title);

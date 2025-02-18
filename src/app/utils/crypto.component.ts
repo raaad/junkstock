@@ -4,10 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { decrypt, encrypt } from '../../core/utils';
 
 @Component({
-  selector: 'app-crypto',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-crypto',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div>
       <input [(ngModel)]="text" [ngModelOptions]="{ standalone: true }" type="text" placeholder="text to encrypt" />
       <input [(ngModel)]="password" [ngModelOptions]="{ standalone: true }" type="text" placeholder="password" />
@@ -21,8 +20,8 @@ import { decrypt, encrypt } from '../../core/utils';
       <span class="output">{{ decrypted() }}</span>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       div {
         display: flex;
         gap: 1rem;
@@ -55,8 +54,8 @@ import { decrypt, encrypt } from '../../core/utils';
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CryptoComponent {
   protected text = '';

@@ -10,10 +10,9 @@ import * as THREE from 'three';
 const MODEL_URL = 'duck/duck.gltf';
 
 @Component({
-  selector: 'app-3d',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-3d',
+    imports: [],
+    template: `
     <div class="actions">
       <div>
         <button (click)="fit(); render()">fitToObject</button>
@@ -28,8 +27,8 @@ const MODEL_URL = 'duck/duck.gltf';
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         position: relative;
         display: inline-block;
@@ -64,8 +63,8 @@ const MODEL_URL = 'duck/duck.gltf';
         cursor: default;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ThreeDComponent implements OnInit {
   private readonly container = inject(ElementRef<HTMLElement>).nativeElement;

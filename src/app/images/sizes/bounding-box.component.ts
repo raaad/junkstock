@@ -4,10 +4,9 @@ import { getBoundingBox } from '../../../core/utils';
 const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
 
 @Component({
-  selector: 'app-bounding-box',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-bounding-box',
+    imports: [],
+    template: `
     <div class="title">getBoundingBox</div>
     <div class="container">
       <div
@@ -30,8 +29,8 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
       CLICK TO PAUSE/RESUME, <b>{{ angle }} °</b>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: inline-flex;
         flex-direction: column;
@@ -65,8 +64,8 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
         outline: 1px dashed blue;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BoundingBoxComponent implements OnInit, OnDestroy {
   protected rect = INITIAL;

@@ -6,10 +6,9 @@ import { fitToSize } from '../../../core/utils';
 const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
 
 @Component({
-  selector: 'app-fit-to-size',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-fit-to-size',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="title">fitToSize</div>
     <div class="container">
       <div class="rect" [style.top.px]="rect.y" [style.left.px]="rect.x" [style.width.px]="rect.width" [style.height.px]="rect.height"></div>
@@ -31,8 +30,8 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: inline-flex;
         flex-direction: column;
@@ -84,8 +83,8 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
         background: #ff000010;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FitToSizeComponent {
   protected mode = signal('contain' as 'contain' | 'scale-down' | 'cover');
