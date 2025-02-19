@@ -1,13 +1,11 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { mocks } from '../presets/mocks';
-import { provideLogger } from '../presets/provide-logger';
-import { provideUploadPipeline } from '../presets/provide-upload-pipeline';
-import { Uploader } from '../uploader/uploader';
-import { LOGGER } from '../uploader/uploader.tokens';
-import { UploadState } from '../uploader/uploader.types';
+import { mocks } from '../../core/upload/presets/mocks';
+import { provideLogger } from '../../core/upload/presets/provide-logger';
+import { provideUploadPipeline } from '../../core/upload/presets/provide-upload-pipeline';
+import { LOGGER, Uploader, UploadState } from '../../core/upload/uploader';
+import { getFiles } from '../../core/upload/utils/get-files';
 import { FilesizePipe } from './filesize.pipe';
-import { getFiles } from './utils/get-files';
 
 @Component({
   selector: 'app-uploads',
@@ -46,7 +44,7 @@ import { getFiles } from './utils/get-files';
           [ngClass]="UploadState[item.state].toLocaleLowerCase()">
           <td class="thumb-col">
             @if(item.thumb?.url; as url){
-            <img [src]="url" class="thumb" />
+            <img [src]="url" [alt]="item.name" class="thumb" />
             } @else{
             <span class="thumb"></span>
             }
@@ -256,7 +254,7 @@ export class UploadsComponent {
 
       this.upload(files);
     } catch (e) {
-      console.warn(e);
+      this.logger.warn('uploader:', e);
     }
   }
 }

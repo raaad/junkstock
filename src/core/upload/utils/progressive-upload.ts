@@ -18,7 +18,7 @@ import {
   takeUntil,
   throwError
 } from 'rxjs';
-import { QueueUpload, UploadId } from '../../uploader/uploader.types';
+import { QueueUpload, UploadId } from '../uploader/uploader.types';
 
 /**
  * Progressive upload helper:

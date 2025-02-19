@@ -1,13 +1,12 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Route, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { routes } from './app.routes';
 
 @Component({
-    selector: 'app-root',
-    imports: [RouterOutlet, RouterLink, RouterLinkActive, AsyncPipe],
-    template: ` <aside>
+  selector: 'app-root',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  template: ` <aside>
       <a [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">‹ home</a>
       @for(item of routes; track item){ @if(item.path; as path){
       <a [routerLink]="[path]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ item.title }}</a>
@@ -19,8 +18,8 @@ import { routes } from './app.routes';
       <div class="title">{{ title.getTitle() }}</div>
       <router-outlet />
     </main>`,
-    styles: [
-        `
+  styles: [
+    `
       :host {
         display: flex;
         height: inherit;
@@ -70,7 +69,7 @@ import { routes } from './app.routes';
         overflow: auto;
       }
     `
-    ]
+  ]
 })
 export class AppComponent {
   readonly title = inject(Title);

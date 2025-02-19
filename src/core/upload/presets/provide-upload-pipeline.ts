@@ -1,8 +1,8 @@
 import { FactoryProvider, inject } from '@angular/core';
-import { progressiveUpload } from '../demo/utils/progressive-upload';
 import { clientThumb, convert, serverThumb, upload, validate } from '../uploader/operators';
 import { toLog } from '../uploader/operators.helpers';
 import { LOGGER, UPLOAD_PIPELINE, UploadPipeline } from '../uploader/uploader.tokens';
+import { progressiveUpload } from '../utils/progressive-upload';
 import { mocks } from './mocks';
 
 export function provideUploadPipeline(): FactoryProvider {

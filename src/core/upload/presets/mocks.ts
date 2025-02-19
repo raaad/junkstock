@@ -1,6 +1,7 @@
 import { HttpEventType, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { heicTo } from 'heic-to';
 import { concatMap, delay, lastValueFrom, map, of, tap, throwError } from 'rxjs';
+import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '../../utils';
 import { UploadId } from '../uploader/uploader.types';
 
 const LOG_PREFIX = 'mock:';
@@ -11,7 +12,7 @@ function newIds() {
 }
 
 function validateFile({ name }: File) {
-  return name.toLowerCase().endsWith('.jpg') || name.toLowerCase().endsWith('.heic') ? [] : ['unsupported'];
+  return ['.jpg', '.jpeg', '.png', '.heic'].some(ext => name.toLocaleLowerCase().endsWith(ext)) ? [] : ['unsupported'];
 }
 
 function isHeic(file: File) {
@@ -72,25 +73,14 @@ function waitServerThumb(id: UploadId) {
 }
 
 async function getClientThumb(file: File, size = 100) {
-  const url = URL.createObjectURL(file);
-  const image = new Image();
-  image.crossOrigin = 'anonymous';
-  image.src = url;
-
-  await new Promise((resolve, reject) => (image.addEventListener('load', resolve, false), image.addEventListener('error', reject, false)));
-
+  const url = blobToObjectUrl(file);
+  const image = await fetchToImage(url);
   URL.revokeObjectURL(url);
 
-  const width = size;
-  const height = Math.round(image.height * (size / image.width));
+  const thumbSize = fitToSize(image, { width: size, height: size }, 'scale-down');
+  const blob = await drawToBlob(image, { size: thumbSize, type: file.type });
 
-  const canvas = new OffscreenCanvas(width, height);
-  const ctx = canvas.getContext('2d');
-  ctx?.drawImage(image, 0, 0, width, height);
-
-  const blob = await canvas.convertToBlob({ type: file.type });
-
-  return { url: URL.createObjectURL(blob), width, height };
+  return { url: await blobToDataUrl(blob), width: thumbSize.width, height: thumbSize.height };
 }
 
 export const mocks = {

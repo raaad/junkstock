@@ -3,6 +3,11 @@ import { SizesComponent } from './images/sizes/sizes.component';
 
 export const routes: Routes = [
   {
+    path: 'uploads',
+    loadComponent: async () => (await import('./upload/uploads.component')).UploadsComponent,
+    title: 'Uploads'
+  },
+  {
     path: 'images',
     children: [
       {

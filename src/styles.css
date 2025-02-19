@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+html {
+  height: 100%;
+}
+
+body {
+  height: inherit;
+}
