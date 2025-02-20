@@ -7,8 +7,8 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
   selector: 'app-bounding-box',
   imports: [],
   template: `
-    <div class="p-5 text-gray-500">getBoundingBox</div>
-    <div class="container">
+    <div class="p-5 text-base-500">getBoundingBox</div>
+    <div class="canvas">
       <div
         class="rect"
         [style.top.px]="rect.y"
@@ -25,7 +25,7 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
         (click)="toggle()"
         role="presentation"></div>
     </div>
-    <div class="p-2 text-gray-300">
+    <div class="p-2 text-base-400">
       Click to Pause/Resume, <b>{{ angle }} °</b>
     </div>
   `,
@@ -38,7 +38,7 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
         min-height: 300px;
       }
 
-      .container {
+      .canvas {
         position: relative;
         flex: 1;
       }

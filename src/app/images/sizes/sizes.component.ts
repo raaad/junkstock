@@ -5,8 +5,16 @@ import { FitToSizeComponent } from './fit-to-size.component';
 @Component({
   selector: 'app-sizes',
   imports: [BoundingBoxComponent, FitToSizeComponent],
-  template: ` <app-bounding-box /> <app-fit-to-size /> `,
-  styles: [],
+  template: ` <app-bounding-box class="flex-1" /> <app-fit-to-size class="flex-1" /> `,
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: start;
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SizesComponent {}

@@ -9,8 +9,8 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
   selector: 'app-fit-to-size',
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-5 text-gray-500">fitToSize</div>
-    <div class="container">
+    <div class="p-5 text-base-500">fitToSize</div>
+    <div class="canvas">
       <div class="rect" [style.top.px]="rect.y" [style.left.px]="rect.x" [style.width.px]="rect.width" [style.height.px]="rect.height"></div>
       <div
         #boxEl
@@ -45,7 +45,7 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
         user-select: none;
       }
 
-      .container {
+      .canvas {
         position: relative;
         flex: 1;
         margin-left: 2rem;
@@ -64,8 +64,8 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
           right: 0;
           bottom: 0;
           transform: translate(50%, 50%);
-          background: var(--color-gray-200);
-          outline: thin solid var(--color-gray-700);
+          background: var(--color-base-200);
+          outline: thin solid var(--color-base-700);
           pointer-events: all;
           cursor: grabbing;
           border-radius: 50%;

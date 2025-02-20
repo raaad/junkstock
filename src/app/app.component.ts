@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LOGGER } from '../core/upload/uploader';
-import { flatRoutes } from './home.component';
+import { flatRoutes } from './common/home.component';
 
 @Component({
   selector: 'app-root',
@@ -9,18 +9,16 @@ import { flatRoutes } from './home.component';
   // eslint-disable-next-line no-console
   providers: [{ provide: LOGGER, useValue: { trace: console.log, debug: console.log, error: console.error, warn: console.warn } }],
   template: `
-    <aside class="h-8 md:h-full overflow-hidden">
-      <ul class="menu bg-base-200 [&_li>*]:rounded-none p-0 size-full flex-nowrap">
-        @for (item of menu; track item) {
-          @if (item.path !== undefined) {
-            <li>
+    <aside class="min-w-3xs">
+      <ul class="menu [&_li>*]:rounded-none p-0 size-full bg-base-200">
+        @for (item of menu; track item; let i = $index) {
+          <li [class.menu-disabled]="item.path === undefined" class="[&:not(:first-child)]:hidden md:[&:not(:first-child)]:flex">
+            @if (item.path !== undefined) {
               <a [routerLink]="[item.path]" routerLinkActive="menu-active" [routerLinkActiveOptions]="{ exact: true }">{{ item.title }}</a>
-            </li>
-          } @else {
-            <li class="menu-disabled">
+            } @else {
               <span>{{ item.title }}</span>
-            </li>
-          }
+            }
+          </li>
         }
       </ul>
     </aside>

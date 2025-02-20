@@ -35,7 +35,7 @@ import { FilesizePipe } from './filesize.pipe';
         <div>{{ uploader.active().length }} / {{ uploader.uploads().length }}</div>
         <div>{{ uploader.progress().uploaded | filesize }} / {{ uploader.progress().total | filesize }}</div>
       </div>
-      <div class="flex gap-5 items-center flex-wrap text-sm text-gray-500">
+      <div class="flex gap-5 items-center flex-wrap text-sm text-base-500">
         <span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span>
       </div>
     </div>
@@ -47,7 +47,7 @@ import { FilesizePipe } from './filesize.pipe';
           [class.active]="item.state === UploadState.Uploading"
           [ngClass]="UploadState[item.state].toLocaleLowerCase()"
           class="with-progress list-row p-0 gap-2 items-center">
-          <div class="size-8 bg-neutral-100">
+          <div class="size-8 bg-base-100">
             @if (item.thumb?.url; as url) {
               <img [src]="url" [alt]="item.name" class="size-full object-cover" />
             }
@@ -108,7 +108,7 @@ import { FilesizePipe } from './filesize.pipe';
 
         &.active:before {
           width: 100%;
-          background: var(--color-gray-200);
+          background: var(--color-base-200);
         }
 
         &.active:after {

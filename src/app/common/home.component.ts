@@ -7,9 +7,12 @@ import { Route, Router, RouterLink } from '@angular/router';
   template: `
     @for (item of menu; track item) {
       @if (item.path) {
-        <div class="card bg-base-200 md:w-48 shadow-sm">
-          <div class="card-body">
-            <a [routerLink]="[item.path]" class="link link-hover">{{ item.title }}</a>
+        <div [routerLink]="[item.path]" class="card bg-base-200 shadow-sm cursor-pointer">
+          <figure>
+            <img src="/icons/gears.svg" alt="Shoes" />
+          </figure>
+          <div class="card-body p-3 bg-base-200">
+            <span class="card-title text-xl font-light">{{ item.title }}</span>
           </div>
         </div>
       }
@@ -18,11 +21,17 @@ import { Route, Router, RouterLink } from '@angular/router';
   styles: [
     `
       :host {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: 10rem;
         gap: 2rem;
+        align-items: stretch;
         padding: 2rem;
-        flex-wrap: wrap;
-        align-items: flex-start;
+      }
+
+      img {
+        object-fit: scale-down;
+        transform: translate(-25%, 0%);
       }
     `
   ]
