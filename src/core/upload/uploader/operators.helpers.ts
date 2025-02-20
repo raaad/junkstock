@@ -16,6 +16,7 @@ export function toFailed(item: Upload, ...errors: string[]): Upload {
   return { ...toUpload(item, UploadState.Failed), errors: [...item.errors, ...errors] };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function toUpload({ file, state: old, ...rest }: FileUpload | (Upload & Partial<Pick<FileUpload, 'file'>>), state?: UploadState): Upload {
   return { ...rest, state: state ?? old };
 }

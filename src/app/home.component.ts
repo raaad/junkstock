@@ -5,13 +5,15 @@ import { Route, Router, RouterLink } from '@angular/router';
   selector: 'app-home',
   imports: [RouterLink],
   template: `
-    @for(item of menu; track item){ @if(item.path){
-    <div class="card bg-base-200 w-48 shadow-sm">
-      <div class="card-body">
-        <a [routerLink]="[item.path]" class="link link-hover">{{ item.title }}</a>
-      </div>
-    </div>
-    } }
+    @for (item of menu; track item) {
+      @if (item.path) {
+        <div class="card bg-base-200 w-48 shadow-sm">
+          <div class="card-body">
+            <a [routerLink]="[item.path]" class="link link-hover">{{ item.title }}</a>
+          </div>
+        </div>
+      }
+    }
   `,
   styles: [
     `

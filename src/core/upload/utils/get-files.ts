@@ -1,6 +1,7 @@
 export async function getFiles(list: DataTransferItemList | undefined) {
-  const items = list
-    ? new Array(list.length)
+  const items =
+    list ?
+      new Array(list.length)
         .fill(0)
         .map((_, i) => list[i])
         .map(i => i.webkitGetAsEntry?.() ?? i.getAsFile())

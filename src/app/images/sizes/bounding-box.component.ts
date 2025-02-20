@@ -26,7 +26,7 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
         role="presentation"></div>
     </div>
     <div class="p-2 text-gray-300">
-      CLICK TO PAUSE/RESUME, <b>{{ angle }} °</b>
+      Click to Pause/Resume, <b>{{ angle }} °</b>
     </div>
   `,
   styles: [

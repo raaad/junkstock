@@ -44,7 +44,7 @@ export function convert(
       of((rest = toUpload(rest, UploadState.Processing))).pipe(log('debug', 'conversion')),
       defer(() => from(convertFile(file))).pipe(
         takeUntilAbort(abort$, rest.id),
-        map(file => <FileUpload>{ ...rest, file, name: file.name, size: file.size }),
+        map(file => ({ ...rest, file, name: file.name, size: file.size }) as FileUpload),
         log('debug', 'converted'),
         catchError(e => of(toFailed(rest, errorText)).pipe(log('error', errorText, e)))
       )
@@ -58,7 +58,7 @@ export function validate(abort$: Observable<UploadId>, log: Log, validateFile: (
     defer(() => from(Promise.resolve(validateFile(file)))).pipe(
       takeUntilAbort(abort$, rest.id),
       catchError(e => of([e?.message ?? 'unknown error']).pipe(log('error', e, rest))),
-      map(errors => (errors.length ? toFailed(rest, ...errors) : <FileUpload>{ ...rest, file })),
+      map(errors => (errors.length ? toFailed(rest, ...errors) : ({ ...rest, file } as FileUpload))),
       log('debug', ({ errors }) => (errors.length ? 'invalid' : 'valid'))
     )
   ]);
@@ -86,9 +86,9 @@ export function upload(
       takeUntilAbort(abort$, rest.id),
       timeout({ first: timeoutIn }),
       map(e =>
-        e.type === HttpEventType.UploadProgress
-          ? toUpload({ ...rest, uploaded: e.loaded ?? 0 }, UploadState.Uploading)
-          : toUpload({ ...rest, uploaded: file.size }, UploadState.Uploaded)
+        e.type === HttpEventType.UploadProgress ?
+          toUpload({ ...rest, uploaded: e.loaded ?? 0 }, UploadState.Uploading)
+        : toUpload({ ...rest, uploaded: file.size }, UploadState.Uploaded)
       ),
       log(
         ({ state }) => (state === UploadState.Uploading ? 'trace' : 'debug'),
@@ -125,20 +125,20 @@ export function serverThumb(log: Log, waitForThumb: (id: UploadId) => Promise<bo
   return (source: Observable<Upload>) =>
     source.pipe(
       mergeMap(upload =>
-        upload.state === UploadState.Uploaded
-          ? merge(
-              of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('debug', 'waiting server thumb')),
-              defer(() => waitForThumb(upload.id)).pipe(
-                timeout({ first: timeoutIn }),
-                catchError(e => of(false).pipe(log('error', e, upload))),
-                mergeMap(success =>
-                  success
-                    ? of(toUpload(upload, UploadState.Uploaded)).pipe(log('debug', 'server thumb done'))
-                    : of(toFailed(upload, errorText)).pipe(log('error', errorText))
-                )
+        upload.state === UploadState.Uploaded ?
+          merge(
+            of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('debug', 'waiting server thumb')),
+            defer(() => waitForThumb(upload.id)).pipe(
+              timeout({ first: timeoutIn }),
+              catchError(e => of(false).pipe(log('error', e, upload))),
+              mergeMap(success =>
+                success ?
+                  of(toUpload(upload, UploadState.Uploaded)).pipe(log('debug', 'server thumb done'))
+                : of(toFailed(upload, errorText)).pipe(log('error', errorText))
               )
             )
-          : of(upload)
+          )
+        : of(upload)
       )
     );
 }

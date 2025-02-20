@@ -37,6 +37,7 @@ function getUploadUrls(ids: UploadId[]) {
 
   return lastValueFrom(
     of(Object.fromEntries(ids.map(id => [id, `http://x.com/upload/${id}`]))).pipe(
+      // eslint-disable-next-line no-console
       tap(ids => console.log(LOG_PREFIX, 'getUploadUrls', ids)),
       delay(1000)
     )
@@ -44,6 +45,7 @@ function getUploadUrls(ids: UploadId[]) {
 }
 
 function uploadFile(url: string, { name, size }: File) {
+  // eslint-disable-next-line no-console
   console.log(LOG_PREFIX, 'upload', name);
 
   const chunksSize = 100 * 1024;
@@ -51,11 +53,12 @@ function uploadFile(url: string, { name, size }: File) {
     .fill(0)
     .reduce((acc: number[]) => [...acc, (acc.slice(-1)[0] ?? 0) + chunksSize], new Array<number>());
 
-  return name.includes('corrupted')
-    ? throwError(() => new Error(`${LOG_PREFIX} Server error`)).pipe(delay(1000))
-    : of(...chunks.map(loaded => <HttpProgressEvent>{ type: HttpEventType.UploadProgress, loaded }), new HttpResponse<void>({ status: 200 })).pipe(
+  return name.includes('corrupted') ?
+      throwError(() => new Error(`${LOG_PREFIX} Server error`)).pipe(delay(1000))
+    : of(...chunks.map(loaded => ({ type: HttpEventType.UploadProgress, loaded }) as HttpProgressEvent), new HttpResponse<void>({ status: 200 })).pipe(
         concatMap(i =>
           of(i).pipe(
+            // eslint-disable-next-line no-console
             tap(i => console.log(LOG_PREFIX, 'uploaded chunk', i, name)),
             delay(1000)
           )

@@ -1,7 +1,6 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { mocks } from '../../core/upload/presets/mocks';
-import { provideLogger } from '../../core/upload/presets/provide-logger';
 import { provideUploadPipeline } from '../../core/upload/presets/provide-upload-pipeline';
 import { LOGGER, Uploader, UploadState } from '../../core/upload/uploader';
 import { getFiles } from '../../core/upload/utils/get-files';
@@ -37,34 +36,35 @@ import { FilesizePipe } from './filesize.pipe';
         <div>{{ uploader.progress().uploaded | filesize }} / {{ uploader.progress().total | filesize }}</div>
       </div>
       <div class="flex gap-5 items-center flex-wrap text-sm text-gray-500">
-        <span>Drop | Paste from clipboard</span><span>files | folders | screenshot here</span>
+        <span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span>
       </div>
     </div>
     <!--list-->
     <ul class="list bg-base-100 rounded-box shadow-md text-xs gap-1">
       @for (item of uploader.uploads(); track item.id) {
-      <li
-        [style.--progress.%]="(item.uploaded / (item.size || 1)) * 100"
-        [class.active]="item.state === UploadState.Uploading"
-        [ngClass]="UploadState[item.state].toLocaleLowerCase()"
-        class="with-progress list-row p-0 gap-2 items-center">
-        <div class="size-8 bg-neutral-100">
-          @if(item.thumb?.url; as url){
-          <img [src]="url" [alt]="item.name" class="size-full object-cover" />
-          }
-        </div>
-        <div class="truncate" [title]="item.path || item.name">{{ item.id }}: {{ item.path || item.name }}</div>
-        <div class="state truncate">{{ UploadState[item.state] }}</div>
-        <div class="flex items-center truncate w-48 justify-end">
-          @if(item.state < UploadState.Failed){
-          <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ ((item.uploaded / item.size) * 100).toFixed(2) }}%</span>
-          @if(item.state < UploadState.Uploaded){
-          <button class="btn btn-xs btn-ghost text-red-400" (click)="uploader.abort(item.id)">🛇</button>
-          } } @else {
-          {{ item.errors.join('; ') }}
-          }
-        </div>
-      </li>
+        <li
+          [style.--progress.%]="(item.uploaded / (item.size || 1)) * 100"
+          [class.active]="item.state === UploadState.Uploading"
+          [ngClass]="UploadState[item.state].toLocaleLowerCase()"
+          class="with-progress list-row p-0 gap-2 items-center">
+          <div class="size-8 bg-neutral-100">
+            @if (item.thumb?.url; as url) {
+              <img [src]="url" [alt]="item.name" class="size-full object-cover" />
+            }
+          </div>
+          <div class="truncate" [title]="item.path || item.name">{{ item.id }}: {{ item.path || item.name }}</div>
+          <div class="state truncate">{{ UploadState[item.state] }}</div>
+          <div class="flex items-center truncate w-48 justify-end">
+            @if (item.state < UploadState.Failed) {
+              <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ ((item.uploaded / item.size) * 100).toFixed(2) }}%</span>
+              @if (item.state < UploadState.Uploaded) {
+                <button class="btn btn-xs btn-ghost text-red-400" (click)="uploader.abort(item.id)">🛇</button>
+              }
+            } @else {
+              {{ item.errors.join('; ') }}
+            }
+          </div>
+        </li>
       }
     </ul>
   `,
@@ -75,7 +75,9 @@ import { FilesizePipe } from './filesize.pipe';
       }
 
       .selector {
-        transition: border-color 0.2s, background 0.2s;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
 
         &.dropover,
         &:focus {
@@ -138,10 +140,11 @@ import { FilesizePipe } from './filesize.pipe';
       }
     `
   ],
-  providers: [provideLogger(), provideUploadPipeline(), Uploader],
+  providers: [provideUploadPipeline(), Uploader],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UploadsComponent {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   protected readonly UploadState = UploadState;
 
   private readonly logger = inject(LOGGER);

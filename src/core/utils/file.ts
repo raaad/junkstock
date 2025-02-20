@@ -90,10 +90,15 @@ export function svgToString(svg: SVGSVGElement) {
 
 /** Download provided Blob as a file */
 export function downloadFile(blob: Blob, name?: string): void;
-/** Download provided Data URI as a file */
+/** Download provided Data URL as a file */
 export function downloadFile(dataUrl: string, name?: string): void;
 export function downloadFile(data: Blob | string, download = '') {
-  const href = typeof data === 'string' ? (data.startsWith('data:') ? data : throwIt<string>('Invalid Data URI provided')) : blobToObjectUrl(data);
+  const href =
+    typeof data === 'string' ?
+      data.startsWith('data:') ?
+        data
+      : throwIt<string>('Invalid Data URL provided')
+    : blobToObjectUrl(data);
 
   const a = Object.assign(document.createElement('a'), {
     href,
