@@ -4,10 +4,10 @@ import { getBoundingBox } from '../../../core/utils';
 const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
 
 @Component({
-    selector: 'app-bounding-box',
-    imports: [],
-    template: `
-    <div class="title">getBoundingBox</div>
+  selector: 'app-bounding-box',
+  imports: [],
+  template: `
+    <div class="p-5 text-gray-500">getBoundingBox</div>
     <div class="container">
       <div
         class="rect"
@@ -25,27 +25,17 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
         (click)="toggle()"
         role="presentation"></div>
     </div>
-    <div class="angle">
+    <div class="p-2 text-gray-300">
       CLICK TO PAUSE/RESUME, <b>{{ angle }} °</b>
     </div>
   `,
-    styles: [
-        `
+  styles: [
+    `
       :host {
         display: inline-flex;
         flex-direction: column;
         min-width: 300px;
         min-height: 300px;
-      }
-
-      .title {
-        padding: 1rem;
-      }
-
-      .angle {
-        padding: 1rem;
-        color: #0003;
-        pointer-events: none;
       }
 
       .container {
@@ -55,17 +45,17 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
 
       .rect {
         position: absolute;
-        outline: 1px solid red;
-        background: #ff000010;
+        outline: 1px solid var(--color-red-300);
+        background: var(--color-red-100);
       }
 
       .box {
         position: absolute;
-        outline: 1px dashed blue;
+        outline: 1px dashed var(--color-blue-400);
       }
     `
-    ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BoundingBoxComponent implements OnInit, OnDestroy {
   protected rect = INITIAL;

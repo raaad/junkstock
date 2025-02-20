@@ -1,7 +1,13 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './home.component';
 import { SizesComponent } from './images/sizes/sizes.component';
 
 export const routes: Routes = [
+  {
+    path: '',
+    component: HomeComponent,
+    title: 'Junkstock'
+  },
   {
     path: 'uploads',
     loadComponent: async () => (await import('./upload/uploads.component')).UploadsComponent,
@@ -27,5 +33,9 @@ export const routes: Routes = [
     path: 'utils',
     loadComponent: async () => (await import('./utils/utils.component')).UtilsComponent,
     title: 'Utils'
+  },
+  {
+    path: '**',
+    redirectTo: '/'
   }
 ];

@@ -6,10 +6,10 @@ import { fitToSize } from '../../../core/utils';
 const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
 
 @Component({
-    selector: 'app-fit-to-size',
-    imports: [CommonModule, FormsModule],
-    template: `
-    <div class="title">fitToSize</div>
+  selector: 'app-fit-to-size',
+  imports: [CommonModule, FormsModule],
+  template: `
+    <div class="p-5 text-gray-500">fitToSize</div>
     <div class="container">
       <div class="rect" [style.top.px]="rect.y" [style.left.px]="rect.x" [style.width.px]="rect.width" [style.height.px]="rect.height"></div>
       <div
@@ -21,33 +21,28 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
         [style.height.px]="box.height"
         (mousedown)="resizing = true"></div>
     </div>
-    <div class="actions">
-      <button (click)="reset()">reset</button>
-      <div>
-        <label><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" /> contain</label>
-        <label><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" /> scale-down</label>
-        <label><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" /> cover</label>
-      </div>
+    <div class="flex gap-2 p-2 items-center">
+      <button (click)="reset()" class="btn btn-xs btn-outline">reset</button>
+      <label class="fieldset-label"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" class="radio radio-xs radio-neutral" /> contain</label
+      >
+      <label class="fieldset-label"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" class="radio radio-xs radio-neutral" />
+        scale-down</label
+      >
+      <label class="fieldset-label"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" class="radio radio-xs radio-neutral" /> cover</label
+      >
     </div>
   `,
-    styles: [
-        `
+  styles: [
+    `
       :host {
         display: inline-flex;
         flex-direction: column;
         min-width: 300px;
         min-height: 300px;
         user-select: none;
-      }
-
-      .title {
-        padding: 1rem;
-      }
-
-      .actions {
-        padding: 1rem;
-        display: flex;
-        gap: 1rem;
       }
 
       .container {
@@ -58,7 +53,7 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
 
       .box {
         position: absolute;
-        outline: 1px dashed blue;
+        outline: 1px dashed var(--color-blue-400);
         pointer-events: none;
 
         &:before {
@@ -69,8 +64,8 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
           right: 0;
           bottom: 0;
           transform: translate(50%, 50%);
-          background: #0003;
-          outline: thin solid #000a;
+          background: var(--color-gray-200);
+          outline: thin solid var(--color-gray-700);
           pointer-events: all;
           cursor: grabbing;
           border-radius: 50%;
@@ -79,12 +74,12 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
 
       .rect {
         position: absolute;
-        outline: 1px solid red;
-        background: #ff000010;
+        outline: 1px solid var(--color-red-300);
+        background: var(--color-red-100);
       }
     `
-    ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FitToSizeComponent {
   protected mode = signal('contain' as 'contain' | 'scale-down' | 'cover');

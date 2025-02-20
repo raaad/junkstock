@@ -44,5 +44,8 @@
   // for 'PostCSS Language Support' extension
   "emmet.includeLanguages": {
     "postcss": "css"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
   }
 }

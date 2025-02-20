@@ -1,7 +1,7 @@
 import { HttpEventType, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { heicTo } from 'heic-to';
 import { concatMap, delay, lastValueFrom, map, of, tap, throwError } from 'rxjs';
-import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '../../utils';
+import { blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '../../utils';
 import { UploadId } from '../uploader/uploader.types';
 
 const LOG_PREFIX = 'mock:';
@@ -73,6 +73,8 @@ function waitServerThumb(id: UploadId) {
 }
 
 async function getClientThumb(file: File, size = 100) {
+  // TODO: filter by supported types
+
   const url = blobToObjectUrl(file);
   const image = await fetchToImage(url);
   URL.revokeObjectURL(url);
@@ -80,7 +82,7 @@ async function getClientThumb(file: File, size = 100) {
   const thumbSize = fitToSize(image, { width: size, height: size }, 'scale-down');
   const blob = await drawToBlob(image, { size: thumbSize, type: file.type });
 
-  return { url: await blobToDataUrl(blob), width: thumbSize.width, height: thumbSize.height };
+  return { url: blobToObjectUrl(blob), width: thumbSize.width, height: thumbSize.height };
 }
 
 export const mocks = {

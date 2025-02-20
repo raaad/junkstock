@@ -4,58 +4,24 @@ import { FormsModule } from '@angular/forms';
 import { decrypt, encrypt } from '../../core/utils';
 
 @Component({
-    selector: 'app-crypto',
-    imports: [CommonModule, FormsModule],
-    template: `
-    <div>
-      <input [(ngModel)]="text" [ngModelOptions]="{ standalone: true }" type="text" placeholder="text to encrypt" />
-      <input [(ngModel)]="password" [ngModelOptions]="{ standalone: true }" type="text" placeholder="password" />
+  selector: 'app-crypto',
+  imports: [CommonModule, FormsModule],
+  template: `
+    <div class="flex gap-4 m-4">
+      <input [(ngModel)]="text" [ngModelOptions]="{ standalone: true }" type="text" placeholder="text to encrypt" class="input flex-1" />
+      <input [(ngModel)]="password" [ngModelOptions]="{ standalone: true }" type="text" placeholder="password" class="input" />
     </div>
-    <div>
-      <button (click)="encrypt(text, password)" [disabled]="!text || !password">encrypt</button>
-      <span class="output">{{ encrypted() }}</span>
+    <div class="flex gap-4 m-4">
+      <button (click)="encrypt(text, password)" [disabled]="!text || !password" class="btn btn-outline">encrypt</button>
+      <span class="flex-1 border-1 border-dashed rounded-sm border-neutral-200 p-2 text-sm truncate">{{ encrypted() }}</span>
     </div>
-    <div>
-      <button (click)="decrypt(encrypted(), password)" [disabled]="!encrypted() || !password">decrypt</button>
-      <span class="output">{{ decrypted() }}</span>
+    <div class="flex gap-4 m-4">
+      <button (click)="decrypt(encrypted(), password)" [disabled]="!encrypted() || !password" class="btn btn-outline">decrypt</button>
+      <span class="flex-1 border-1 border-dashed rounded-sm border-neutral-200 p-2 text-sm truncate">{{ decrypted() }}</span>
     </div>
   `,
-    styles: [
-        `
-      div {
-        display: flex;
-        gap: 1rem;
-        margin: 1rem;
-      }
-
-      input {
-        padding: 0.5rem;
-        min-width: 0;
-
-        &:first-child {
-          flex: 1;
-        }
-      }
-
-      .output {
-        flex: 1;
-
-        padding: 1rem;
-        border: thin dashed #0003;
-        border-radius: 4px;
-
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-
-        &:empty:before {
-          content: '';
-          display: inline-block;
-        }
-      }
-    `
-    ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: [``],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CryptoComponent {
   protected text = '';

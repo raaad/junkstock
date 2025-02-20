@@ -10,25 +10,24 @@ import * as THREE from 'three';
 const MODEL_URL = 'duck/duck.gltf';
 
 @Component({
-    selector: 'app-3d',
-    imports: [],
-    template: `
+  selector: 'app-3d',
+  imports: [],
+  template: `
     <div class="actions">
       <div>
-        <button (click)="fit(); render()">fitToObject</button>
-        GLTF format + DRACO compression
+        <button (click)="fit(); render()" class="btn btn-sm btn-outline">fitToObject</button>
+        <span class="text-sm">GLTF format + DRACO compression</span>
       </div>
       <div class="arrows">
-        rotate arrows:
-        <span title="rotate left">⇐</span>
-        <span title="rotate right">⇒</span>
-        <span title="rotate up">⇑</span>
-        <span title="rotate down">⇓</span>
+        <button (click)="triggerKey('ArrowLeft')" title="rotate left" class="btn btn-sm btn-outline">⇐</button>
+        <button (click)="triggerKey('ArrowRight')" title="rotate right" class="btn btn-sm btn-outline">⇒</button>
+        <button (click)="triggerKey('ArrowUp')" title="rotate up" class="btn btn-sm btn-outline">⇑</button>
+        <button (click)="triggerKey('ArrowDown')" title="rotate down" class="btn btn-sm btn-outline">⇓</button>
       </div>
     </div>
   `,
-    styles: [
-        `
+  styles: [
+    `
       :host {
         position: relative;
         display: inline-block;
@@ -42,6 +41,7 @@ const MODEL_URL = 'duck/duck.gltf';
         top: 0;
         padding: 1rem;
         display: flex;
+        gap: 1rem;
         flex-wrap: wrap;
         justify-content: space-between;
         box-sizing: border-box;
@@ -53,18 +53,9 @@ const MODEL_URL = 'duck/duck.gltf';
         gap: 1rem;
         align-items: center;
       }
-
-      .arrows > span {
-        padding: 0.25rem 0;
-        width: 2rem;
-        text-align: center;
-        border: thin solid;
-        border-radius: 5px;
-        cursor: default;
-      }
     `
-    ],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ThreeDComponent implements OnInit {
   private readonly container = inject(ElementRef<HTMLElement>).nativeElement;
@@ -148,6 +139,10 @@ export class ThreeDComponent implements OnInit {
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   private frameHandle = 0;
+
+  protected triggerKey(key: 'ArrowLeft' | 'ArrowRight' | 'ArrowDown' | 'ArrowUp') {
+    this.onKeydown(new KeyboardEvent('keydown', { key }));
+  }
 
   @HostListener('dblclick')
   onDblClick() {
