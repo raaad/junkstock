@@ -9,8 +9,8 @@ import { flatRoutes } from './home.component';
   // eslint-disable-next-line no-console
   providers: [{ provide: LOGGER, useValue: { trace: console.log, debug: console.log, error: console.error, warn: console.warn } }],
   template: `
-    <aside>
-      <ul class="menu bg-base-200 [&_li>*]:rounded-none p-0 h-full">
+    <aside class="h-8 md:h-full overflow-hidden">
+      <ul class="menu bg-base-200 [&_li>*]:rounded-none p-0 size-full flex-nowrap">
         @for (item of menu; track item) {
           @if (item.path !== undefined) {
             <li>
@@ -26,6 +26,9 @@ import { flatRoutes } from './home.component';
     </aside>
     <router-outlet />
   `,
+  host: {
+    class: 'flex-col md:flex-row'
+  },
   styles: [
     `
       :host {

@@ -7,7 +7,7 @@ import { Route, Router, RouterLink } from '@angular/router';
   template: `
     @for (item of menu; track item) {
       @if (item.path) {
-        <div class="card bg-base-200 w-48 shadow-sm">
+        <div class="card bg-base-200 md:w-48 shadow-sm">
           <div class="card-body">
             <a [routerLink]="[item.path]" class="link link-hover">{{ item.title }}</a>
           </div>
