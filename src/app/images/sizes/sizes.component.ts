@@ -12,6 +12,7 @@ import { FitToSizeComponent } from './fit-to-size.component';
         display: flex;
         flex-wrap: wrap;
         align-items: start;
+        gap: 2rem;
       }
     `
   ],

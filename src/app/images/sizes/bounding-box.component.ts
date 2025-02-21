@@ -25,7 +25,7 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
         (click)="toggle()"
         role="presentation"></div>
     </div>
-    <div class="p-2 font-light text-neutral-400 text-center">
+    <div class="p-4 font-light text-neutral-400">
       Click to Pause/Resume, <b>{{ angle }} °</b>
     </div>
   `,
@@ -34,13 +34,14 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
       :host {
         display: inline-flex;
         flex-direction: column;
-        min-width: 300px;
-        min-height: 300px;
       }
 
       .canvas {
         position: relative;
         flex: 1;
+        width: 250px;
+        min-height: 200px;
+        margin: 2rem;
       }
 
       .rect {

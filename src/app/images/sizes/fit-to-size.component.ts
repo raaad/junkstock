@@ -21,13 +21,17 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
         [style.height.px]="box.height"
         (mousedown)="resizing = true"></div>
     </div>
-    <div class="flex gap-2 p-2 items-center justify-center">
+    <div class="flex gap-2 p-4 items-center">
       <button (click)="reset()" class="btn btn-sm">reset</button>
-      <label class="flex items-center gap-2"><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" /> contain</label>
-      <label class="flex items-center gap-2"
-        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" /> scale-down</label
+      <label class="flex items-center gap-1"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" class="radio" /> contain</label
       >
-      <label class="flex items-center gap-2"><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" /> cover</label>
+      <label class="flex items-center gap-1"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" class="radio" /> scale-down</label
+      >
+      <label class="flex items-center gap-1"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" class="radio" /> cover</label
+      >
     </div>
   `,
   styles: [
@@ -35,15 +39,15 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
       :host {
         display: inline-flex;
         flex-direction: column;
-        min-width: 300px;
-        min-height: 300px;
         user-select: none;
       }
 
       .canvas {
         position: relative;
         flex: 1;
-        margin-left: 2rem;
+        width: 250px;
+        min-height: 200px;
+        margin: 2rem;
       }
 
       .box {
@@ -63,7 +67,7 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
           outline: thin solid var(--color-neutral-700);
           pointer-events: all;
           cursor: grabbing;
-          border-radius: 2px;
+          border-radius: 50%;
         }
       }
 

@@ -43,11 +43,31 @@ body {
 .btn {
   @apply py-2 px-4 rounded-xs border-1 text-neutral-600 transition-colors cursor-pointer;
 
-  &:disabled {
-    @apply text-neutral-300 cursor-default;
+  &:hover {
+    @apply text-sky-700;
+  }
+
+  &:disabled,
+  &.disabled {
+    @apply text-neutral-300 pointer-events-none cursor-default;
   }
 }
 
 .btn-sm {
   @apply py-1 px-2 text-xs;
+}
+
+.radio {
+  appearance: none;
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+  margin-top: calc(var(--spacing) / 2);
+  border-radius: 50%;
+  border: 2px solid var(--color-neutral-600);
+  padding: var(--spacing);
+  @apply transition-colors;
+
+  &:checked {
+    background-color: var(--color-sky-600);
+  }
 }

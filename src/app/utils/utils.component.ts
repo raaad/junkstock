@@ -4,7 +4,7 @@ import { CryptoComponent } from './crypto.component';
 @Component({
   selector: 'app-utils',
   imports: [CryptoComponent],
-  template: ` <div><span class="p-5 block text-xl font-light">Crypto</span><app-crypto /></div> `,
+  template: ` <div><span class="m-5 block text-xl font-light">Crypto</span><app-crypto /></div> `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
