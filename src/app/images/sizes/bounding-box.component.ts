@@ -7,7 +7,7 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
   selector: 'app-bounding-box',
   imports: [],
   template: `
-    <div class="p-5 text-base-500">getBoundingBox</div>
+    <div class="p-5 text-xl font-light">getBoundingBox</div>
     <div class="canvas">
       <div
         class="rect"
@@ -25,7 +25,7 @@ const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
         (click)="toggle()"
         role="presentation"></div>
     </div>
-    <div class="p-2 text-base-400">
+    <div class="p-2 font-light text-neutral-400 text-center">
       Click to Pause/Resume, <b>{{ angle }} °</b>
     </div>
   `,

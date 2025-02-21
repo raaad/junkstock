@@ -12,12 +12,12 @@ import { decrypt, encrypt } from '../../core/utils';
       <input [(ngModel)]="password" [ngModelOptions]="{ standalone: true }" type="text" placeholder="password" class="input" />
     </div>
     <div class="flex gap-4 m-4">
-      <button (click)="encrypt(text, password)" [disabled]="!text || !password" class="btn btn-outline">encrypt</button>
-      <span class="flex-1 border-1 border-dashed rounded-sm border-neutral-200 p-2 text-sm truncate">{{ encrypted() }}</span>
+      <button (click)="encrypt(text, password)" [disabled]="!text || !password" class="btn">encrypt</button>
+      <span class="flex-1 border-1 border-dashed rounded-xs border-neutral-200 p-2 text-xs truncate">{{ encrypted() }}</span>
     </div>
     <div class="flex gap-4 m-4">
-      <button (click)="decrypt(encrypted(), password)" [disabled]="!encrypted() || !password" class="btn btn-outline">decrypt</button>
-      <span class="flex-1 border-1 border-dashed rounded-sm border-neutral-200 p-2 text-sm truncate">{{ decrypted() }}</span>
+      <button (click)="decrypt(encrypted(), password)" [disabled]="!encrypted() || !password" class="btn">decrypt</button>
+      <span class="flex-1 border-1 border-dashed rounded-xs border-neutral-200 p-2 text-xs truncate">{{ decrypted() }}</span>
     </div>
   `,
   styles: [``],

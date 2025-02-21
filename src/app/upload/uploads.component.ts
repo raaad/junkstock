@@ -13,7 +13,7 @@ import { FilesizePipe } from './filesize.pipe';
   template: `
     <!--selector-->
     <div
-      class="selector with-progress flex flex-col gap-5 p-5 border-1 border-dashed rounded-sm border-base-400 mb-5"
+      class="selector progress flex flex-col gap-5 p-5 border-1 border-dashed rounded-xs border-neutral-400 mb-5"
       [style.--progress.%]="(uploader.progress().uploaded / (uploader.progress().total || 1)) * 100"
       [class.active]="uploader.hasActive()"
       [class.dropover]="dropover()"
@@ -23,42 +23,42 @@ import { FilesizePipe } from './filesize.pipe';
       (paste)="dropOrPaste($event)"
       tabindex="0">
       <div class="flex gap-5 items-center flex-wrap">
-        <label class="picker btn btn-outline w-56">
+        <label class="picker btn w-56">
           <input type="file" (change)="selected($event)" multiple />
           <span>Select files</span>
         </label>
-        <label class="picker btn btn-outline w-56">
+        <label class="picker btn w-56">
           <input type="file" (change)="selected($event)" webkitdirectory />
           <span>Select folder</span>
         </label>
-        <div [hidden]="!uploader.hasActive()"><button (click)="uploader.abortAll()" class="btn btn-outline">Abort All</button></div>
-        <div>{{ uploader.active().length }} / {{ uploader.uploads().length }}</div>
-        <div>{{ uploader.progress().uploaded | filesize }} / {{ uploader.progress().total | filesize }}</div>
+        <div [hidden]="!uploader.hasActive()"><button (click)="uploader.abortAll()" class="btn">Abort All</button></div>
+        <div class="text-xs">{{ uploader.active().length }} / {{ uploader.uploads().length }}</div>
+        <div class="text-xs">{{ uploader.progress().uploaded | filesize }} / {{ uploader.progress().total | filesize }}</div>
       </div>
-      <div class="flex gap-5 items-center flex-wrap text-sm text-base-500">
+      <div class="flex gap-5 items-center flex-wrap text-xs text-neutral-400">
         <span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span>
       </div>
     </div>
     <!--list-->
-    <ul class="list bg-base-100 rounded-box shadow-md text-xs gap-1">
+    <ul class="text-xs flex flex-col gap-1">
       @for (item of uploader.uploads(); track item.id) {
         <li
           [style.--progress.%]="(item.uploaded / (item.size || 1)) * 100"
           [class.active]="item.state === UploadState.Uploading"
           [ngClass]="UploadState[item.state].toLocaleLowerCase()"
-          class="with-progress list-row p-0 gap-2 items-center">
-          <div class="size-8 bg-base-100">
+          class="progress flex gap-2 items-center">
+          <div class="size-8 bg-neutral-100">
             @if (item.thumb?.url; as url) {
               <img [src]="url" [alt]="item.name" class="size-full object-cover" />
             }
           </div>
-          <div class="truncate" [title]="item.path || item.name">{{ item.id }}: {{ item.path || item.name }}</div>
-          <div class="state truncate">{{ UploadState[item.state] }}</div>
+          <div class="flex-1 truncate" [title]="item.path || item.name">{{ item.id }}: {{ item.path || item.name }}</div>
+          <div class="state truncate text-right">{{ UploadState[item.state] }}</div>
           <div class="flex items-center truncate w-48 justify-end">
             @if (item.state < UploadState.Failed) {
               <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ ((item.uploaded / item.size) * 100).toFixed(2) }}%</span>
               @if (item.state < UploadState.Uploaded) {
-                <button class="btn btn-xs btn-ghost text-red-400" (click)="uploader.abort(item.id)">🛇</button>
+                <button class="text-xs cursor-pointer pl-1 text-red-400" (click)="uploader.abort(item.id)">🛇</button>
               }
             } @else {
               {{ item.errors.join('; ') }}
@@ -81,8 +81,8 @@ import { FilesizePipe } from './filesize.pipe';
 
         &.dropover,
         &:focus {
-          border-color: var(--color-blue-400);
-          background: var(--color-blue-100);
+          border-color: var(--color-sky-400);
+          background: var(--color-sky-100);
         }
       }
 
@@ -92,7 +92,7 @@ import { FilesizePipe } from './filesize.pipe';
         }
       }
 
-      .with-progress {
+      .progress {
         position: relative;
 
         &:before,
@@ -132,11 +132,11 @@ import { FilesizePipe } from './filesize.pipe';
       }
 
       .uploading .state {
-        color: var(--color-blue-400);
+        color: var(--color-sky-600);
       }
 
       .uploaded .state {
-        color: var(--color-green-500);
+        color: var(--color-green-600);
       }
     `
   ],

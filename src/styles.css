@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin "daisyui";
 
 html {
   height: 100%;
@@ -7,4 +6,48 @@ html {
 
 body {
   height: inherit;
+  font-size: 14px;
+}
+
+/* #region menu */
+
+.menu {
+  @apply bg-neutral-50;
+
+  li {
+    @apply py-2 px-4;
+
+    &:not(.disabled):hover,
+    &.active {
+      @apply bg-neutral-700 text-neutral-50 transition-colors cursor-pointer;
+    }
+
+    &.disabled {
+      @apply text-neutral-400 text-xs pointer-events-none;
+      border-bottom: thin solid var(--color-neutral-200);
+    }
+  }
+}
+
+/* #endregion */
+
+.input {
+  @apply py-2 px-4 rounded-xs border-1 border-neutral-300 transition-colors;
+
+  &:focus {
+    @apply border-sky-700;
+    outline: none;
+  }
+}
+
+.btn {
+  @apply py-2 px-4 rounded-xs border-1 text-neutral-600 transition-colors cursor-pointer;
+
+  &:disabled {
+    @apply text-neutral-300 cursor-default;
+  }
+}
+
+.btn-sm {
+  @apply py-1 px-2 text-xs;
 }

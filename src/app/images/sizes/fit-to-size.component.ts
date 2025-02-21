@@ -9,7 +9,7 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
   selector: 'app-fit-to-size',
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-5 text-base-500">fitToSize</div>
+    <div class="p-5 text-xl font-light">fitToSize</div>
     <div class="canvas">
       <div class="rect" [style.top.px]="rect.y" [style.left.px]="rect.x" [style.width.px]="rect.width" [style.height.px]="rect.height"></div>
       <div
@@ -21,18 +21,13 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
         [style.height.px]="box.height"
         (mousedown)="resizing = true"></div>
     </div>
-    <div class="flex gap-2 p-2 items-center">
-      <button (click)="reset()" class="btn btn-xs btn-outline">reset</button>
-      <label class="fieldset-label"
-        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" class="radio radio-xs radio-neutral" /> contain</label
+    <div class="flex gap-2 p-2 items-center justify-center">
+      <button (click)="reset()" class="btn btn-sm">reset</button>
+      <label class="flex items-center gap-2"><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" /> contain</label>
+      <label class="flex items-center gap-2"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" /> scale-down</label
       >
-      <label class="fieldset-label"
-        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" class="radio radio-xs radio-neutral" />
-        scale-down</label
-      >
-      <label class="fieldset-label"
-        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" class="radio radio-xs radio-neutral" /> cover</label
-      >
+      <label class="flex items-center gap-2"><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" /> cover</label>
     </div>
   `,
   styles: [
@@ -64,11 +59,11 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
           right: 0;
           bottom: 0;
           transform: translate(50%, 50%);
-          background: var(--color-base-200);
-          outline: thin solid var(--color-base-700);
+          background: var(--color-neutral-200);
+          outline: thin solid var(--color-neutral-700);
           pointer-events: all;
           cursor: grabbing;
-          border-radius: 50%;
+          border-radius: 2px;
         }
       }
 

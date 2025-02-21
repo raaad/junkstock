@@ -20,7 +20,6 @@
     "@angular/platform-browser-dynamic": "^19.1.6",
     "@angular/router": "^19.1.6",
     "@tailwindcss/postcss": "^4.0.7",
-    "daisyui": "^5.0.0-beta.7",
     "filesize": "^10.1.6",
     "heic-to": "^1.1.5",
     "postcss": "^8.5.3",

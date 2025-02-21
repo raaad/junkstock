@@ -1,27 +1,32 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ValueProvider } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { LOGGER } from '../core/upload/uploader';
-import { flatRoutes } from './common/home.component';
+import { getMenu } from './common/home.component';
+
+function provideLogger(): ValueProvider {
+  // eslint-disable-next-line no-console
+  return { provide: LOGGER, useValue: { trace: console.log, debug: console.log, error: console.error, warn: console.warn } };
+}
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  // eslint-disable-next-line no-console
-  providers: [{ provide: LOGGER, useValue: { trace: console.log, debug: console.log, error: console.error, warn: console.warn } }],
+  providers: [provideLogger()],
   template: `
-    <aside class="min-w-3xs">
-      <ul class="menu [&_li>*]:rounded-none p-0 size-full bg-base-200">
-        @for (item of menu; track item; let i = $index) {
-          <li [class.menu-disabled]="item.path === undefined" class="[&:not(:first-child)]:hidden md:[&:not(:first-child)]:flex">
-            @if (item.path !== undefined) {
-              <a [routerLink]="[item.path]" routerLinkActive="menu-active" [routerLinkActiveOptions]="{ exact: true }">{{ item.title }}</a>
-            } @else {
-              <span>{{ item.title }}</span>
-            }
+    <nav class="min-w-3xs">
+      <ul class="menu md:hidden">
+        <li [routerLink]="['']">
+          <span>Home</span>
+        </li>
+      </ul>
+      <ul class="menu size-full hidden md:block">
+        @for (item of menu; track item) {
+          <li [routerLink]="[item.path]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" [class.disabled]="item.path === undefined">
+            <span>{{ item.title }}</span>
           </li>
         }
       </ul>
-    </aside>
+    </nav>
     <router-outlet />
   `,
   host: {
@@ -38,9 +43,13 @@ import { flatRoutes } from './common/home.component';
         flex: 1;
         overflow: auto;
       }
+
+      nav {
+        border-right: thin solid var(--color-neutral-200);
+      }
     `
   ]
 })
 export class AppComponent {
-  protected menu = flatRoutes(inject(Router).config);
+  protected menu = getMenu(inject(Router).config);
 }

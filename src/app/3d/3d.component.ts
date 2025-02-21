@@ -13,16 +13,16 @@ const MODEL_URL = 'duck/duck.gltf';
   selector: 'app-3d',
   imports: [],
   template: `
-    <div class="actions">
-      <div>
-        <button (click)="fit(); render()" class="btn btn-sm btn-outline">fitToObject</button>
-        <span class="text-sm">GLTF format + DRACO compression</span>
+    <div class="absolute w-full top-0 flex flex-wrap gap-5 p-5 justify-between">
+      <div class="flex gap-2 items-center">
+        <button (click)="fit(); render()" class="btn btn-sm">fitToObject</button>
+        <span class="text-xs text-neutral-400">GLTF format + DRACO compression</span>
       </div>
-      <div class="arrows">
-        <button (click)="triggerKey('ArrowLeft')" title="rotate left" class="btn btn-sm btn-outline">⇐</button>
-        <button (click)="triggerKey('ArrowRight')" title="rotate right" class="btn btn-sm btn-outline">⇒</button>
-        <button (click)="triggerKey('ArrowUp')" title="rotate up" class="btn btn-sm btn-outline">⇑</button>
-        <button (click)="triggerKey('ArrowDown')" title="rotate down" class="btn btn-sm btn-outline">⇓</button>
+      <div class="flex gap-2">
+        <button (click)="triggerKey('ArrowLeft')" title="rotate left" class="btn btn-sm">⇐</button>
+        <button (click)="triggerKey('ArrowRight')" title="rotate right" class="btn btn-sm">⇒</button>
+        <button (click)="triggerKey('ArrowUp')" title="rotate up" class="btn btn-sm">⇑</button>
+        <button (click)="triggerKey('ArrowDown')" title="rotate down" class="btn btn-sm">⇓</button>
       </div>
     </div>
   `,
