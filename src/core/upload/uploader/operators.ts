@@ -103,17 +103,19 @@ export function clientThumb(
   getThumb: (file: File) => Promise<Exclude<Upload['thumb'], undefined>>,
   errorText = 'client thumb failed'
 ) {
-  return ifFileUpload(Boolean, upload => [
-    of(upload).pipe(log('debug', 'client thumb')),
-    defer(() => getThumb(upload.file)).pipe(
-      takeUntilAbort(abort$, upload.id),
+  return ifFileUpload(Boolean, ({ id, file, state, ...upload }) => [
+    of({ id, file, state, ...upload } as FileUpload).pipe(log('debug', 'client thumb')),
+    defer(() => getThumb(file)).pipe(
+      takeUntilAbort(abort$, id),
       catchError(e =>
         of(e).pipe(
-          log('warn', errorText, upload),
-          filter((i): i is Exclude<Upload['thumb'], undefined> => false)
+          log('warn', errorText, { id, file, ...upload }),
+          filter((i): i is Exclude<Upload['thumb'], undefined> => false) // just to log error and suppress
         )
       ),
-      map(thumb => toUpload({ ...upload, thumb }))
+      map(thumb =>
+        toUpload({ id, ...upload, thumb, state: undefined as unknown as UploadState /* To not overwrite the latest state, will be filled on canalize phaze */ })
+      )
     )
   ]);
 }
@@ -154,9 +156,14 @@ export function canalize(flush$: Observable<void>, log: Log) {
   return (source: Observable<Upload>) =>
     source.pipe(
       withLatestFrom(store$),
-      map(([i, m]) => {
-        const { state = UploadState.Enqueued, errors = [], ...prev } = m.get(i.id) ?? {};
-        return m.set(i.id, { ...prev, ...i, errors: [...errors, ...i.errors], state: state > UploadState.Uploaded ? state : i.state });
+      map(([{ id, state, errors, ...rest }, m]) => {
+        const { state: prevState = UploadState.Enqueued, errors: prevErrors = [], ...prev } = m.get(id) ?? { id };
+        return m.set(id, {
+          ...prev,
+          ...rest,
+          errors: Array.from(new Set([...prevErrors, ...errors])),
+          state: prevState > UploadState.Uploaded ? prevState : (state ?? prevState)
+        });
       }),
       map(m => Array.from(m.values())),
       shareReplay(1)

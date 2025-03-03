@@ -50,7 +50,10 @@ import { FilesizePipe } from './filesize.pipe';
               <img [src]="url" [alt]="item.name" class="size-full object-cover" />
             }
           </div>
-          <div class="flex-1 truncate" [title]="item.path || item.name">{{ item.id }}: {{ item.path || item.name }}</div>
+          <div class="flex-1 truncate" [title]="item.path || item.name">
+            {{ item.id }}: <span class="text-neutral-400">{{ item.path.substring(0, item.path.lastIndexOf('/') + 1) }}</span
+            >{{ item.name }}
+          </div>
           <div class="state truncate text-right">{{ UploadState[item.state] }}</div>
           <div class="flex items-center truncate w-48 justify-end">
             @if (item.state < UploadState.Failed) {
@@ -106,7 +109,7 @@ import { FilesizePipe } from './filesize.pipe';
 
         &.active:before {
           width: 100%;
-          background: var(--color-base-200);
+          background: var(--color-neutral-200);
         }
 
         &.active:after {

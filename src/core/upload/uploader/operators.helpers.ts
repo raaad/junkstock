@@ -17,8 +17,8 @@ export function toFailed(item: Upload, ...errors: string[]): Upload {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function toUpload({ file, state: old, ...rest }: FileUpload | (Upload & Partial<Pick<FileUpload, 'file'>>), state?: UploadState): Upload {
-  return { ...rest, state: state ?? old };
+export function toUpload({ file, state: currentState, ...rest }: FileUpload | (Upload & Partial<Pick<FileUpload, 'file'>>), state?: UploadState): Upload {
+  return { ...rest, state: state ?? currentState };
 }
 
 export function takeUntilAbort<T>(abort$: Observable<UploadId>, id: UploadId) {

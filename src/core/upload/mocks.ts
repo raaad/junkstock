@@ -75,17 +75,16 @@ function waitServerThumb(id: UploadId) {
   );
 }
 
-async function getClientThumb(file: File, size = 100) {
+async function getClientThumb(file: File, dimension = 100) {
   // TODO: filter by supported types
 
   const url = blobToObjectUrl(file);
-  const image = await fetchToImage(url);
-  URL.revokeObjectURL(url);
+  const image = await fetchToImage(url).finally(() => URL.revokeObjectURL(url));
 
-  const thumbSize = fitToSize(image, { width: size, height: size }, 'scale-down');
-  const blob = await drawToBlob(image, { size: thumbSize, type: file.type });
+  const size = fitToSize(image, { width: dimension, height: dimension }, 'scale-down');
+  const blob = await drawToBlob(image, { size, type: file.type });
 
-  return { url: blobToObjectUrl(blob), width: thumbSize.width, height: thumbSize.height };
+  return { url: blobToObjectUrl(blob), ...size };
 }
 
 export const mocks = {
