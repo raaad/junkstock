@@ -1,4 +1,3 @@
-import { HttpEventType, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { catchError, defer, filter, from, map, merge, mergeMap, Observable, of, shareReplay, startWith, take, takeWhile, timeout, withLatestFrom } from 'rxjs';
 import { ifFileUpload, Log, takeUntilAbort, toFailed, toUpload } from './operators.helpers';
 import { FileUpload, QueueUpload, Upload, UploadId, UploadState } from './uploader.types';
@@ -67,7 +66,7 @@ export function validate(abort$: Observable<UploadId>, log: Log, validateFile: (
 export function upload(
   abort$: Observable<UploadId>,
   log: Log,
-  uploadFile: (id: UploadId, file: File, abort$: Observable<unknown>) => Observable<HttpProgressEvent | HttpResponse<unknown>>,
+  uploadFile: (id: UploadId, file: File, abort$: Observable<unknown>) => Observable<{ uploaded: number | true }>,
   timeoutIn = 1000 * 60 * 60,
   errorText = 'upload failed'
 ) {
@@ -85,10 +84,8 @@ export function upload(
     ).pipe(
       takeUntilAbort(abort$, rest.id),
       timeout({ first: timeoutIn }),
-      map(e =>
-        e.type === HttpEventType.UploadProgress ?
-          toUpload({ ...rest, uploaded: e.loaded ?? 0 }, UploadState.Uploading)
-        : toUpload({ ...rest, uploaded: file.size }, UploadState.Uploaded)
+      map(({ uploaded }) =>
+        typeof uploaded === 'number' ? toUpload({ ...rest, uploaded }, UploadState.Uploading) : toUpload({ ...rest, uploaded: file.size }, UploadState.Uploaded)
       ),
       log(
         ({ state }) => (state === UploadState.Uploading ? 'trace' : 'debug'),

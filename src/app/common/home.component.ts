@@ -11,8 +11,8 @@ import { Route, Router, RouterLink } from '@angular/router';
           <figure class="row-start-1 row-end-3 col-start-1 overflow-hidden">
             <img src="/icons/gears.svg" alt class="object-scale-down size-full" />
           </figure>
-          <div class="row-start-2 col-start-1 backdrop-blur-md p-2 border-t border-neutral-200">
-            <span class="text-xl font-light">{{ item.title }}</span>
+          <div class="row-start-2 col-start-1 backdrop-blur-md border-t border-neutral-200">
+            <span class="block title">{{ item.title }}</span>
           </div>
         </div>
       }

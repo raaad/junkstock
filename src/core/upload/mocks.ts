@@ -1,8 +1,7 @@
-import { HttpEventType, HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import { heicTo } from 'heic-to';
 import { concatMap, delay, lastValueFrom, map, of, tap, throwError } from 'rxjs';
-import { blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '../../utils';
-import { UploadId } from '../uploader/uploader.types';
+import { blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '../utils';
+import { UploadId } from './uploader/uploader.types';
 
 const LOG_PREFIX = 'mock:';
 
@@ -31,7 +30,8 @@ async function fromHeic(file: File) {
 }
 
 function getUploadUrls(ids: UploadId[]) {
-  /* if (ids.some(id => id === '013')) {
+  /* TODO: random failure
+   if (ids.some(id => id === '013')) {
     throw new Error(`${LOG_PREFIX} bad luck: 013`);
   } */
 
@@ -55,7 +55,7 @@ function uploadFile(url: string, { name, size }: File) {
 
   return name.includes('corrupted') ?
       throwError(() => new Error(`${LOG_PREFIX} Server error`)).pipe(delay(1000))
-    : of(...chunks.map(loaded => ({ type: HttpEventType.UploadProgress, loaded }) as HttpProgressEvent), new HttpResponse<void>({ status: 200 })).pipe(
+    : of(...chunks.map(uploaded => ({ uploaded })), { uploaded: true } as { uploaded: true }).pipe(
         concatMap(i =>
           of(i).pipe(
             // eslint-disable-next-line no-console
@@ -69,7 +69,7 @@ function uploadFile(url: string, { name, size }: File) {
 function waitServerThumb(id: UploadId) {
   return lastValueFrom(
     of({ id, success: true }).pipe(
-      delay(5000),
+      delay(0 /* TODO: 5000 */),
       map(({ success }) => success)
     )
   );

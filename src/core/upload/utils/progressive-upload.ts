@@ -1,4 +1,3 @@
-import { HttpProgressEvent, HttpResponse } from '@angular/common/http';
 import {
   Observable,
   Subject,
@@ -29,7 +28,7 @@ import { QueueUpload, UploadId } from '../uploader/uploader.types';
  */
 export function progressiveUpload(
   getUploadUrls: (ids: UploadId[]) => Promise<Record<UploadId, string>>,
-  uploadFile: (url: string, file: File) => Observable<HttpProgressEvent | HttpResponse<void>>,
+  uploadFile: (url: string, file: File) => Observable<{ uploaded: number | true }>,
   { rateLimit, batchDebounce, batchLimit } = { rateLimit: 5, batchDebounce: 300, batchLimit: 100 }
 ) {
   const requests$ = new Subject<QueueUpload & { abort$: Observable<unknown> }>();
@@ -64,12 +63,11 @@ export function progressiveUpload(
   );
 
   // returns per-upload stream
-  return (id: UploadId, file: File, abort$: Observable<unknown>) => {
-    queueMicrotask(() => requests$.next({ id, file, abort$ }));
-
-    return uploads$.pipe(
+  return (id: UploadId, file: File, abort$: Observable<unknown>) => (
+    queueMicrotask(() => requests$.next({ id, file, abort$ })),
+    uploads$.pipe(
       filter(({ id: i }) => i === id),
       mergeMap(({ event }) => (event instanceof Error ? throwError(() => event) : of(event)))
-    );
-  };
+    )
+  );
 }

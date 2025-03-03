@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { mocks } from '../../core/upload/presets/mocks';
-import { provideUploadPipeline } from '../../core/upload/presets/provide-upload-pipeline';
+import { mocks } from '../../core/upload/mocks';
+import { provideUploadPipeline } from '../../core/upload/provide-upload-pipeline';
 import { LOGGER, Uploader, UploadState } from '../../core/upload/uploader';
 import { getFiles } from '../../core/upload/utils/get-files';
 import { FilesizePipe } from './filesize.pipe';
@@ -13,7 +13,7 @@ import { FilesizePipe } from './filesize.pipe';
   template: `
     <!--selector-->
     <div
-      class="selector progress flex flex-col gap-5 p-5 border-1 border-dashed rounded-xs border-neutral-400 mb-5"
+      class="selector progress flex flex-col gap-5 p-5 border-1 border-dashed rounded-xs border-neutral-200 mb-5"
       [style.--progress.%]="(uploader.progress().uploaded / (uploader.progress().total || 1)) * 100"
       [class.active]="uploader.hasActive()"
       [class.dropover]="dropover()"
@@ -35,9 +35,7 @@ import { FilesizePipe } from './filesize.pipe';
         <div class="text-xs">{{ uploader.active().length }} / {{ uploader.uploads().length }}</div>
         <div class="text-xs">{{ uploader.progress().uploaded | filesize }} / {{ uploader.progress().total | filesize }}</div>
       </div>
-      <div class="flex gap-5 items-center flex-wrap text-xs text-neutral-400">
-        <span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span>
-      </div>
+      <div class="flex gap-5 items-center flex-wrap note"><span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span></div>
     </div>
     <!--list-->
     <ul class="text-xs flex flex-col gap-1">

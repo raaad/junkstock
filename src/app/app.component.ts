@@ -45,7 +45,7 @@ function provideLogger(): ValueProvider {
       }
 
       nav {
-        border-right: thin solid var(--color-neutral-200);
+        border-right: thin dashed var(--color-neutral-200);
       }
     `
   ]

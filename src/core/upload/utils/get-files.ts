@@ -1,3 +1,4 @@
+/** Get files from DataTransfer object on drop or paste including files in subfolders */
 export async function getFiles(list: DataTransferItemList | undefined) {
   const items =
     list ?

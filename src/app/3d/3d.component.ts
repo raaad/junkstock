@@ -16,7 +16,7 @@ const MODEL_URL = 'duck/duck.gltf';
     <div class="absolute w-full top-0 flex flex-wrap gap-5 p-5 justify-between">
       <div class="flex gap-2 items-center">
         <button (click)="fit(); render()" class="btn btn-sm">fitToObject</button>
-        <span class="text-xs text-neutral-400">GLTF format + DRACO compression</span>
+        <span class="note">GLTF format + DRACO compression</span>
       </div>
       <div class="flex gap-2">
         <button (click)="triggerKey('ArrowLeft')" title="rotate left" class="btn btn-sm">⇐</button>

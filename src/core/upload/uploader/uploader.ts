@@ -1,5 +1,5 @@
 import { computed, inject, Injectable } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { buffer, debounceTime, filter, map, pairwise, shareReplay, startWith, Subject } from 'rxjs';
 import { canalize, enqueue } from './operators';
 import { toLog } from './operators.helpers';
@@ -11,13 +11,15 @@ export class Uploader {
   private readonly flush$ = new Subject<void>();
 
   private readonly abort$ = new Subject<UploadId>();
+  private readonly _abort$ = this.abort$.pipe(takeUntilDestroyed());
 
   private readonly queue$ = new Subject<QueueUpload>();
 
   private readonly pipeline$ = this.queue$.pipe(
-    enqueue(this.abort$, toLog(inject(LOGGER))),
-    inject(UPLOAD_PIPELINE)(this.abort$),
-    canalize(this.flush$, toLog(inject(LOGGER)))
+    enqueue(this._abort$, toLog(inject(LOGGER))),
+    inject(UPLOAD_PIPELINE)(this._abort$),
+    canalize(this.flush$, toLog(inject(LOGGER))),
+    takeUntilDestroyed()
   );
 
   // #region streams

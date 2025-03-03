@@ -9,7 +9,7 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
   selector: 'app-fit-to-size',
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-5 text-xl font-light">fitToSize</div>
+    <div class="title">fitToSize</div>
     <div class="canvas">
       <div class="rect" [style.top.px]="rect.y" [style.left.px]="rect.x" [style.width.px]="rect.width" [style.height.px]="rect.height"></div>
       <div
@@ -21,17 +21,17 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
         [style.height.px]="box.height"
         (mousedown)="resizing = true"></div>
     </div>
-    <div class="flex gap-2 p-4 items-center">
+    <div class="flex gap-2 p-2 items-center">
+      <label class="flex items-center gap-1"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" class="radio" />contain</label
+      >
+      <label class="flex items-center gap-1"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" class="radio" />scale-down</label
+      >
+      <label class="flex items-center gap-1"
+        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" class="radio" />cover</label
+      >
       <button (click)="reset()" class="btn btn-sm">reset</button>
-      <label class="flex items-center gap-1"
-        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" class="radio" /> contain</label
-      >
-      <label class="flex items-center gap-1"
-        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" class="radio" /> scale-down</label
-      >
-      <label class="flex items-center gap-1"
-        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" class="radio" /> cover</label
-      >
     </div>
   `,
   styles: [

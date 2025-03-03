@@ -7,17 +7,18 @@ import { decrypt, encrypt } from '../../core/utils';
   selector: 'app-crypto',
   imports: [CommonModule, FormsModule],
   template: `
+    <div class="title">Crypto</div>
     <div class="flex gap-4 m-4">
       <input [(ngModel)]="text" [ngModelOptions]="{ standalone: true }" type="text" placeholder="text to encrypt" class="input flex-1" />
       <input [(ngModel)]="password" [ngModelOptions]="{ standalone: true }" type="text" placeholder="password" class="input" />
     </div>
     <div class="flex gap-4 m-4">
       <button (click)="encrypt(text, password)" [disabled]="!text || !password" class="btn">encrypt</button>
-      <span class="flex-1 border-1 border-dashed rounded-xs border-neutral-200 p-2 text-xs truncate">{{ encrypted() }}</span>
+      <span class="flex-1 note border-1">{{ encrypted() }}</span>
     </div>
     <div class="flex gap-4 m-4">
       <button (click)="decrypt(encrypted(), password)" [disabled]="!encrypted() || !password" class="btn">decrypt</button>
-      <span class="flex-1 border-1 border-dashed rounded-xs border-neutral-200 p-2 text-xs truncate">{{ decrypted() }}</span>
+      <span class="flex-1 note border-1">{{ decrypted() }}</span>
     </div>
   `,
   styles: [``],
