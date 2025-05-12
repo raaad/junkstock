@@ -1,6 +1,6 @@
 import { heicTo } from 'heic-to';
-import { concatMap, delay, lastValueFrom, map, of, tap, throwError } from 'rxjs';
-import { blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '../utils';
+import { concatMap, delay, lastValueFrom, of, tap, throwError } from 'rxjs';
+import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize, throwIt } from '../utils';
 import { UploadId } from './uploader/uploader.types';
 
 const LOG_PREFIX = 'mock:';
@@ -10,51 +10,50 @@ function newIds() {
   return () => (++ids).toString().padStart(3, '0');
 }
 
+/** trigger keyword in the filename: **validate-async** */
 function validateFile({ name }: File) {
-  return ['.jpg', '.jpeg', '.png', '.heic'].some(ext => name.toLocaleLowerCase().endsWith(ext)) ? [] : ['unsupported'];
+  return (
+    name.includes('validate-async') ? lastValueFrom(of(['server reject']).pipe(delay(5000)))
+    : ['.jpg', '.jpeg', '.png', '.heic'].some(ext => name.toLocaleLowerCase().endsWith(ext)) ? []
+    : ['unsupported']
+  );
 }
 
 function isHeic(file: File) {
   return file.name.toLowerCase().endsWith('.heic');
 }
 
+/** trigger keyword in the filename: **no-convert** */
 async function fromHeic(file: File) {
   const blob = await heicTo({ blob: file, type: 'image/jpeg' });
-  return new File([blob], `${file.name}.jpg`);
-
-  /* if (file.name.includes('corrupted')) {
-    throw new Error(`${LOG_PREFIX} corrupted HEIC`);
-  } else {
-    return await new Promise<File>(r => setTimeout(() => r(new File([file], `${file.name}.jpg`)), 5000));
-  } */
+  return file.name.includes('no-convert') ? throwIt<File>(`${LOG_PREFIX} Conversion error: ${file.name}`) : new File([blob], `${file.name}.jpg`);
 }
 
+/** trigger keyword in the id: **no-upload-url** */
 function getUploadUrls(ids: UploadId[]) {
-  /* TODO: random failure
-   if (ids.some(id => id === '013')) {
-    throw new Error(`${LOG_PREFIX} bad luck: 013`);
-  } */
-
-  return lastValueFrom(
-    of(Object.fromEntries(ids.map(id => [id, `http://x.com/upload/${id}`]))).pipe(
-      // eslint-disable-next-line no-console
-      tap(ids => console.log(LOG_PREFIX, 'getUploadUrls', ids)),
-      delay(1000)
-    )
-  );
+  return ids.some(id => id.includes('no-upload-url')) ?
+      Promise.reject(new Error(`${LOG_PREFIX} getUploadUrls error: ${ids.join(', ')}`))
+    : lastValueFrom(
+        of(Object.fromEntries(ids.map(id => [id, `http://x.com/upload/${id}`]))).pipe(
+          // eslint-disable-next-line no-console
+          tap(ids => console.log(LOG_PREFIX, 'getUploadUrls', ids)),
+          delay(1000)
+        )
+      );
 }
 
+/** trigger keyword in the filename: **no-upload** */
 function uploadFile(url: string, { name, size }: File) {
   // eslint-disable-next-line no-console
-  console.log(LOG_PREFIX, 'upload', name);
+  console.log(LOG_PREFIX, 'uploading', name);
 
   const chunksSize = 100 * 1024;
   const chunks = new Array(Math.floor(size / chunksSize))
     .fill(0)
     .reduce((acc: number[]) => [...acc, (acc.slice(-1)[0] ?? 0) + chunksSize], new Array<number>());
 
-  return name.includes('corrupted') ?
-      throwError(() => new Error(`${LOG_PREFIX} Server error`)).pipe(delay(1000))
+  return name.includes('no-upload') ?
+      throwError(() => new Error(`${LOG_PREFIX} uploadFile error: ${name}`)).pipe(delay(1000))
     : of(...chunks.map(uploaded => ({ uploaded })), { uploaded: true } as { uploaded: true }).pipe(
         concatMap(i =>
           of(i).pipe(
@@ -66,16 +65,22 @@ function uploadFile(url: string, { name, size }: File) {
       );
 }
 
-function waitServerThumb(id: UploadId) {
+/** trigger keyword in the id: **need-confirmation**, **need-confirmation-toolong** */
+function waitForServerConfirmation(id: UploadId) {
   return lastValueFrom(
-    of({ id, success: true }).pipe(
-      delay(0 /* TODO: 5000 */),
-      map(({ success }) => success)
+    of({ success: true }).pipe(
+      delay(
+        id.includes('need-confirmation') ?
+          id.includes('need-confirmation-toolong') ?
+            1e6
+          : 5000
+        : 0
+      )
     )
   );
 }
 
-async function getClientThumb(file: File, dimension = 100) {
+async function getClientThumb(file: File, dimension = 100, useDataUri = false) {
   // TODO: filter by supported types
 
   const url = blobToObjectUrl(file);
@@ -84,7 +89,7 @@ async function getClientThumb(file: File, dimension = 100) {
   const size = fitToSize(image, { width: dimension, height: dimension }, 'scale-down');
   const blob = await drawToBlob(image, { size, type: file.type });
 
-  return { url: blobToObjectUrl(blob), ...size };
+  return { url: useDataUri ? await blobToDataUrl(blob) : blobToObjectUrl(blob), ...size };
 }
 
 export const mocks = {
@@ -95,5 +100,5 @@ export const mocks = {
   getUploadUrls,
   uploadFile,
   getClientThumb,
-  waitServerThumb
+  waitForServerConfirmation
 };

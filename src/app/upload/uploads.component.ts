@@ -57,7 +57,9 @@ import { FilesizePipe } from './filesize.pipe';
           <div class="state truncate text-right">{{ UploadState[item.state] }}</div>
           <div class="flex items-center truncate w-48 justify-end">
             @if (item.state < UploadState.Failed) {
-              <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ ((item.uploaded / item.size) * 100).toFixed(2) }}%</span>
+              <span class="min-w-0"
+                >{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ ((item.uploaded / (item.size || 1)) * 100).toFixed(2) }}%</span
+              >
               @if (item.state < UploadState.Uploaded) {
                 <button class="text-xs cursor-pointer pl-1 text-red-400" (click)="uploader.abort(item.id)">🛇</button>
               }

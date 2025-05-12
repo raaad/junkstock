@@ -1,4 +1,21 @@
-import { catchError, defer, filter, from, map, merge, mergeMap, Observable, of, shareReplay, startWith, take, takeWhile, timeout, withLatestFrom } from 'rxjs';
+import {
+  catchError,
+  defer,
+  filter,
+  from,
+  map,
+  merge,
+  mergeMap,
+  mergeWith,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  take,
+  takeWhile,
+  timeout,
+  withLatestFrom
+} from 'rxjs';
 import { ifFileUpload, Log, takeUntilAbort, toFailed, toUpload } from './operators.helpers';
 import { FileUpload, QueueUpload, Upload, UploadId, UploadState } from './uploader.types';
 
@@ -30,21 +47,21 @@ export function enqueue(abort$: Observable<UploadId>, log: Log) {
     );
 }
 
-export function convert(
+export function preprocessing(
   abort$: Observable<UploadId>,
   log: Log,
-  isConvertable: (file: File) => boolean,
-  convertFile: (file: File) => Promise<File>,
-  errorText = 'conversion failed'
+  needPreprocessing: (file: File) => boolean,
+  processFile: (file: File) => Promise<File>,
+  errorText = 'preprocessing failed'
 ) {
   return ifFileUpload(
-    ({ file }) => isConvertable(file),
+    ({ file }) => needPreprocessing(file),
     ({ file, ...rest }) => [
-      of((rest = toUpload(rest, UploadState.Processing))).pipe(log('debug', 'conversion')),
-      defer(() => from(convertFile(file))).pipe(
+      of((rest = toUpload(rest, UploadState.Processing))).pipe(log('debug', 'preprocessing')),
+      defer(() => from(processFile(file))).pipe(
         takeUntilAbort(abort$, rest.id),
         map(file => ({ ...rest, file, name: file.name, size: file.size }) as FileUpload),
-        log('debug', 'converted'),
+        log('debug', 'preprocessed'),
         catchError(e => of(toFailed(rest, errorText)).pipe(log('error', errorText, e)))
       )
     ]
@@ -120,19 +137,24 @@ export function clientThumb(
   ]);
 }
 
-export function serverThumb(log: Log, waitForThumb: (id: UploadId) => Promise<boolean>, timeoutIn = 1000 * 30, errorText = 'server thumb failed') {
+export function serverConfirmation(
+  log: Log,
+  waitForConfirmation: (id: UploadId) => Promise<{ success: boolean } & Pick<Upload, 'thumb'>>,
+  timeoutIn = 1000 * 30,
+  errorText = 'server confirmation failed'
+) {
   return (source: Observable<Upload>) =>
     source.pipe(
       mergeMap(upload =>
         upload.state === UploadState.Uploaded ?
           merge(
-            of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('debug', 'waiting server thumb')),
-            defer(() => waitForThumb(upload.id)).pipe(
+            of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('debug', 'waiting server confirmation')),
+            defer(() => waitForConfirmation(upload.id)).pipe(
               timeout({ first: timeoutIn }),
-              catchError(e => of(false).pipe(log('error', e, upload))),
-              mergeMap(success =>
+              catchError(e => of({ success: false }).pipe(log('error', e, upload))),
+              mergeMap(({ success, ...rest }) =>
                 success ?
-                  of(toUpload(upload, UploadState.Uploaded)).pipe(log('debug', 'server thumb done'))
+                  of(toUpload({ ...upload, ...rest }, UploadState.Uploaded)).pipe(log('debug', 'server confirmation done'))
                 : of(toFailed(upload, errorText)).pipe(log('error', errorText))
               )
             )
@@ -142,12 +164,24 @@ export function serverThumb(log: Log, waitForThumb: (id: UploadId) => Promise<bo
     );
 }
 
+export function mergeExternal(log: Log, external$: Observable<Exclude<Upload, 'state'> & { state: UploadState.Failed | UploadState.Uploaded; file?: never }>) {
+  return (source: Observable<Upload>) =>
+    source.pipe(
+      mergeWith(
+        external$.pipe(
+          map(i => toUpload(i)),
+          log('debug', 'externally injected')
+        )
+      )
+    );
+}
+
 /** Should be on a final step to collect all the emits */
 export function canalize(flush$: Observable<void>, log: Log) {
   const store$ = flush$.pipe(
-    startWith(),
-    map(() => new Map<UploadId, Upload>()),
-    log('debug', 'uploads flushed')
+    log('debug', 'uploads flushed'),
+    startWith(void 0),
+    map(() => new Map<UploadId, Upload>())
   );
 
   // Accumulates all previously emitted values (like scan operator), starting from the last flush,
