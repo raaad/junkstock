@@ -1,7 +1,7 @@
 import { heicTo } from 'heic-to';
 import { concatMap, delay, lastValueFrom, of, tap, throwError } from 'rxjs';
-import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize, throwIt } from '../utils';
-import { UploadId } from './uploader/uploader.types';
+import { UploadId } from '../../core/upload/uploader/uploader.types';
+import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize, throwIt } from '../../core/utils';
 
 const LOG_PREFIX = 'mock:';
 
@@ -67,17 +67,7 @@ function uploadFile(url: string, { name, size }: File) {
 
 /** trigger keyword in the id: **need-confirmation**, **need-confirmation-toolong** */
 function waitForServerConfirmation(id: UploadId) {
-  return lastValueFrom(
-    of({ success: true }).pipe(
-      delay(
-        id.includes('need-confirmation') ?
-          id.includes('need-confirmation-toolong') ?
-            1e6
-          : 5000
-        : 0
-      )
-    )
-  );
+  return lastValueFrom(of({ success: true }).pipe(delay(id.includes('confirmation-toolong') ? 1000 * 60 : 2000)));
 }
 
 async function getClientThumb(file: File, dimension = 100, useDataUri = false) {

@@ -47,18 +47,18 @@ export function enqueue(abort$: Observable<UploadId>, log: Log) {
     );
 }
 
-export function preprocessing(
+export function preProcessing(
   abort$: Observable<UploadId>,
   log: Log,
-  needPreprocessing: (file: File) => boolean,
-  processFile: (file: File) => Promise<File>,
+  required: (file: File) => boolean,
+  process: (file: File) => Promise<File>,
   errorText = 'preprocessing failed'
 ) {
   return ifFileUpload(
-    ({ file }) => needPreprocessing(file),
+    ({ file }) => required(file),
     ({ file, ...rest }) => [
       of((rest = toUpload(rest, UploadState.Processing))).pipe(log('debug', 'preprocessing')),
-      defer(() => from(processFile(file))).pipe(
+      defer(() => from(process(file))).pipe(
         takeUntilAbort(abort$, rest.id),
         map(file => ({ ...rest, file, name: file.name, size: file.size }) as FileUpload),
         log('debug', 'preprocessed'),
@@ -137,24 +137,24 @@ export function clientThumb(
   ]);
 }
 
-export function serverConfirmation(
+export function postProcessing(
   log: Log,
-  waitForConfirmation: (id: UploadId) => Promise<{ success: boolean } & Pick<Upload, 'thumb'>>,
+  process: (id: UploadId) => Promise<{ success: boolean } & Pick<Upload, 'thumb'>>,
   timeoutIn = 1000 * 30,
-  errorText = 'server confirmation failed'
+  errorText = 'postprocessing failed'
 ) {
   return (source: Observable<Upload>) =>
     source.pipe(
       mergeMap(upload =>
         upload.state === UploadState.Uploaded ?
           merge(
-            of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('debug', 'waiting server confirmation')),
-            defer(() => waitForConfirmation(upload.id)).pipe(
+            of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('debug', 'postprocessing')),
+            defer(() => process(upload.id)).pipe(
               timeout({ first: timeoutIn }),
               catchError(e => of({ success: false }).pipe(log('error', e, upload))),
               mergeMap(({ success, ...rest }) =>
                 success ?
-                  of(toUpload({ ...upload, ...rest }, UploadState.Uploaded)).pipe(log('debug', 'server confirmation done'))
+                  of(toUpload({ ...upload, ...rest }, UploadState.Uploaded)).pipe(log('debug', 'postprocessed'))
                 : of(toFailed(upload, errorText)).pipe(log('error', errorText))
               )
             )

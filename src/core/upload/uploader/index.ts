@@ -1,4 +1,4 @@
-export { clientThumb, preprocessing, serverConfirmation, upload, validate } from './operators';
+export { clientThumb, postProcessing, preProcessing, upload, validate } from './operators';
 export { Uploader } from './uploader';
 export { LOGGER, UPLOAD_PIPELINE } from './uploader.tokens';
 export type { UploadPipeline } from './uploader.tokens';

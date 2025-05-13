@@ -1,6 +1,8 @@
 import { blobToDataUrl, fetchToBlob } from './file';
 import { throwIt } from './throw-it';
 
+// #region ecrypt/decrypt
+
 /** Encrypt (AES-GCM) string with the provided string key */
 export async function encrypt(message: string, password: string) {
   const iv = crypto().getRandomValues(new Uint8Array(12));
@@ -44,6 +46,8 @@ export async function decrypt(message: string, password: string) {
 
   return new TextDecoder().decode(decrypted);
 }
+
+// #region support
 
 /** Generate a CryptoKey (AES-GCM) from the provided text key */
 async function getKey(key: string, salt: Uint8Array) {
@@ -91,4 +95,15 @@ async function unwrap(dataUrl: string) {
 
 function crypto() {
   return window.crypto ?? throwIt('Crypto is not available');
+}
+
+// #endregion
+
+// #endregion
+
+export async function sha256(string: string) {
+  const uint8 = new TextEncoder().encode(string);
+  const hashBuffer = await crypto().subtle.digest('SHA-256', uint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }

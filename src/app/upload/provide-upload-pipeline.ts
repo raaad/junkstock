@@ -1,11 +1,11 @@
 import { FactoryProvider, inject } from '@angular/core';
 import { of } from 'rxjs';
+import { UploadState } from '../../core/upload/uploader';
+import { clientThumb, mergeExternal, postProcessing, preProcessing, upload, validate } from '../../core/upload/uploader/operators';
+import { toLog } from '../../core/upload/uploader/operators.helpers';
+import { LOGGER, UPLOAD_PIPELINE, UploadPipeline } from '../../core/upload/uploader/uploader.tokens';
+import { batchUploadUrls, progressiveUpload } from '../../core/upload/utils/progressive-upload';
 import { mocks } from './mocks';
-import { UploadState } from './uploader';
-import { clientThumb, mergeExternal, preprocessing, serverConfirmation, upload, validate } from './uploader/operators';
-import { toLog } from './uploader/operators.helpers';
-import { LOGGER, UPLOAD_PIPELINE, UploadPipeline } from './uploader/uploader.tokens';
-import { batchUploadUrls, progressiveUpload } from './utils/progressive-upload';
 
 const initial$ = of({
   id: 'ext-id',
@@ -25,11 +25,11 @@ export function provideUploadPipeline(): FactoryProvider {
 
       return abort$ => source =>
         source.pipe(
-          preprocessing(abort$, log, mocks.isHeic, mocks.fromHeic),
+          preProcessing(abort$, log, mocks.isHeic, mocks.fromHeic),
           validate(abort$, log, mocks.validateFile),
           clientThumb(abort$, log, mocks.getClientThumb),
           upload(abort$, log, progressiveUpload(batchUploadUrls(mocks.getUploadUrls), mocks.uploadFile)),
-          serverConfirmation(log, mocks.waitForServerConfirmation),
+          postProcessing(log, mocks.waitForServerConfirmation),
           mergeExternal(log, initial$)
         );
     }
