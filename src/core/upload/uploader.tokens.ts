@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FileUpload, Logger, Upload, UploadId } from './uploader.types';
+import { FileUpload, Logger, Upload, UploadId } from './upload.types';
 
 export type UploadPipeline = (abort$: Observable<UploadId>) => (source: Observable<FileUpload | Upload>) => Observable<Upload>;
 

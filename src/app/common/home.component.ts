@@ -8,9 +8,7 @@ import { Route, Router, RouterLink } from '@angular/router';
     @for (item of menu; track item) {
       @if (item.path) {
         <div [routerLink]="[item.path]" class="grid border border-dashed bg-neutral-50 border-neutral-300 rounded-xs cursor-pointer">
-          <figure class="row-start-1 row-end-3 col-start-1 overflow-hidden">
-            <img src="/icons/gears.svg" alt class="object-scale-down size-full" />
-          </figure>
+          <figure class="row-start-1 row-end-3 col-start-1 overflow-hidden"></figure>
           <div class="row-start-2 col-start-1 backdrop-blur-md border-t border-neutral-200">
             <span class="block title">{{ item.title }}</span>
           </div>

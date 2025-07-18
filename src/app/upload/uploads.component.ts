@@ -1,10 +1,11 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { mocks } from '../../core/upload/mocks';
-import { provideUploadPipeline } from '../../core/upload/provide-upload-pipeline';
-import { LOGGER, Uploader, UploadState } from '../../core/upload/uploader';
+import { LOGGER, Upload, Uploader, UploadState } from '../../core/upload';
 import { getFiles } from '../../core/upload/utils/get-files';
+import { withNewly } from '../../core/upload/utils/with-newly';
 import { FilesizePipe } from './filesize.pipe';
+import { mocks } from './mocks';
+import { provideUploadPipeline } from './provide-upload-pipeline';
 
 @Component({
   selector: 'app-uploads',
@@ -41,8 +42,10 @@ import { FilesizePipe } from './filesize.pipe';
     <ul class="text-xs flex flex-col gap-1">
       @for (item of uploader.uploads(); track item.id) {
         <li
-          [style.--progress.%]="(item.uploaded / (item.size || 1)) * 100"
-          [class.active]="item.state === UploadState.Uploading"
+          [style.--progress.%]="getProgress(item)"
+          [class.active]="item.state < UploadState.Uploaded"
+          [class.pre-upload]="item.state < UploadState.Uploading"
+          [class.post-upload]="item.state === UploadState.Uploading && item.uploaded === item.size"
           [ngClass]="UploadState[item.state].toLocaleLowerCase()"
           class="progress flex gap-2 items-center">
           <div class="size-8 bg-neutral-100">
@@ -50,16 +53,19 @@ import { FilesizePipe } from './filesize.pipe';
               <img [src]="url" [alt]="item.name" class="size-full object-cover" />
             }
           </div>
-          <div class="flex-1 truncate" [title]="item.path || item.name">{{ item.id }}: {{ item.path || item.name }}</div>
+          <div class="flex-1 truncate" [title]="item.path || item.name">
+            {{ item.id }}: <span class="text-neutral-400">{{ item.path.substring(0, item.path.lastIndexOf('/') + 1) }}</span
+            >{{ item.name }}
+          </div>
           <div class="state truncate text-right">{{ UploadState[item.state] }}</div>
           <div class="flex items-center truncate w-48 justify-end">
             @if (item.state < UploadState.Failed) {
-              <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ ((item.uploaded / item.size) * 100).toFixed(2) }}%</span>
+              <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ getProgress(item).toFixed(2) }}%</span>
               @if (item.state < UploadState.Uploaded) {
                 <button class="text-xs cursor-pointer pl-1 text-red-400" (click)="uploader.abort(item.id)">🛇</button>
               }
             } @else {
-              {{ item.errors.join('; ') }}
+              {{ item.error ?? '' }}
             }
           </div>
         </li>
@@ -106,15 +112,56 @@ import { FilesizePipe } from './filesize.pipe';
 
         &.active:before {
           width: 100%;
-          background: var(--color-base-200);
+          background: var(--color-neutral-200);
         }
 
         &.active:after {
           width: var(--progress);
-          transition: width 0.2s;
+          transition: width 0.5s;
           background: var(--color-blue-500);
         }
       }
+
+      /* #region progress with pre & post */
+
+      @keyframes unknown-progress {
+        from {
+          width: var(--progress-from);
+        }
+
+        to {
+          width: var(--progress-to);
+        }
+      }
+
+      li.progress {
+        --pre-weight: 0.1;
+        --post-weight: 0.1;
+
+        &.active:after {
+          --progress-up: calc(var(--pre-weight) * 100% + var(--progress) * (1 - var(--pre-weight) - var(--post-weight)));
+          width: var(--progress-up);
+        }
+
+        &.pre-upload:after,
+        &.post-upload:after {
+          animation: unknown-progress var(--duration) ease-out forwards;
+        }
+
+        &.pre-upload:after {
+          --duration: 20s;
+          --progress-from: 0%;
+          --progress-to: calc(var(--pre-weight) * 100%);
+        }
+
+        &.post-upload:after {
+          --duration: 5s;
+          --progress-from: var(--progress-up);
+          --progress-to: 100%;
+        }
+      }
+
+      /* #endregion */
 
       /* state col */
       .failed .state {
@@ -152,7 +199,7 @@ export class UploadsComponent {
   protected dropover = signal(false);
 
   constructor() {
-    this.uploader.newlyUnloaded$.subscribe(items =>
+    this.uploader.uploads$.pipe(withNewly(({ state }) => state === UploadState.Uploaded)).subscribe(items =>
       this.logger.trace(
         'uploader:',
         'newly uploaded',
@@ -164,7 +211,7 @@ export class UploadsComponent {
   private upload(files: File[]) {
     !this.uploader.hasActive() && files.length && this.uploader.flush();
 
-    this.uploader.upload(...files.map(file => ({ id: mocks.newIds(), file })));
+    this.uploader.upload(Object.fromEntries(files.map(file => [mocks.newIds(), file])));
   }
 
   protected selected({ target }: Event) {
@@ -185,4 +232,12 @@ export class UploadsComponent {
       this.logger.warn('uploader:', e);
     }
   }
+
+  // #region support
+
+  protected getProgress({ uploaded, size }: Upload) {
+    return (uploaded / (size || 1)) * 100;
+  }
+
+  // #endregion
 }

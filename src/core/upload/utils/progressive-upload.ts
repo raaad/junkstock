@@ -8,66 +8,112 @@ import {
   defer,
   filter,
   from,
+  groupBy,
   map,
   merge,
   mergeAll,
   mergeMap,
   of,
+  pairwise,
   share,
+  take,
   takeUntil,
+  takeWhile,
   throwError
 } from 'rxjs';
-import { QueueUpload, UploadId } from '../uploader/uploader.types';
+import { QueueUpload, UploadId } from '../upload.types';
+
+/** Get a batch of upload URLs in one request, reject the whole batch if there is an error */
+export function batchUploadUrls(getUploadUrls: (ids: UploadId[]) => Promise<Record<UploadId, string>>, debounce = 300, limit = 100) {
+  return (id$: Observable<UploadId>) => {
+    const shared$ = id$.pipe(share());
+
+    return shared$.pipe(
+      buffer(merge(shared$.pipe(debounceTime(debounce)), shared$.pipe(bufferCount(limit)))),
+      filter(batch => !!batch.length),
+      mergeMap(batch =>
+        defer(() => from(getUploadUrls(batch))).pipe(
+          mergeMap(urls => merge(...batch.map(id => of({ id, url: urls[id] })))),
+          catchError((error: Error) => merge(...batch.map(id => of({ id, error }))))
+        )
+      )
+    );
+  };
+}
+
+type Upload = QueueUpload & { abort$: Observable<unknown> };
 
 /**
  * Progressive upload helper:
- * - bulk request for uploaded URLs (debounced with limit)
  * - upload progress notification
  * - upload cancellation
  * - limited number of parallel uploads
+ *
+ * Case 0 (primal): no upload URLs needed, no rate limit
+ * @example
+ * ```
+ * progressiveUpload(s => s.pipe(map(id => ({ id, url: '' }))), uploadFile, 0);
+ * ```
+ *
+ *
+ * Case 1: no upload URLs batching
+ * @example
+ * ```
+ * progressiveUpload(s => s.pipe(concatMap(id => forkJoin({ id: of(id), url: from(getUploadUrl) }))), uploadFile, 0);
+ * ```
+ *
+ * Case 2: full package
+ * @example
+ * ```
+ * progressiveUpload(batchUploadUrls(getUploadUrls), uploadFile);
+ * ```
  */
 export function progressiveUpload(
-  getUploadUrls: (ids: UploadId[]) => Promise<Record<UploadId, string>>,
-  uploadFile: (url: string, file: File) => Observable<{ uploaded: number | true }>,
-  { rateLimit, batchDebounce, batchLimit } = { rateLimit: 5, batchDebounce: 300, batchLimit: 100 }
+  getUploadUrl: ReturnType<typeof batchUploadUrls>,
+  uploadFile: (url: string, file: File, abort$: Observable<unknown>) => Observable<{ uploaded: number | true }>,
+  rateLimit = 10
 ) {
-  const requests$ = new Subject<QueueUpload & { abort$: Observable<unknown> }>();
+  const inputs$ = new Subject<Upload>();
 
-  // Get a batch of upload URLs in one request, reject the whole batch if there is an error
-  const urls$ = requests$.pipe(
-    buffer(merge(requests$.pipe(debounceTime(batchDebounce)), requests$.pipe(bufferCount(batchLimit)))),
-    filter(batch => !!batch.length),
-    map(batch => Object.fromEntries(batch.map(({ id, ...rest }) => [id, rest]))),
-    mergeMap(batch =>
-      defer(() => from(getUploadUrls(Object.keys(batch)))).pipe(
-        catchError((e: Error) => of(Object.fromEntries(Object.keys(batch).map(id => [id, e])))), // just pass over an error
-        mergeMap(urls => merge(...Object.entries(batch).map(([id, { file, abort$ }]) => of({ id, file, abort$, url: urls[id] }))))
-      )
-    ),
-    share()
+  const urls$ = inputs$.pipe(
+    map(({ id }) => id),
+    getUploadUrl
   );
 
-  // An upload queue with a concurrent upload rate limit,
+  const requests$ = merge(inputs$, urls$).pipe(
+    groupBy(({ id }) => id),
+    mergeMap(g =>
+      g.pipe(
+        pairwise(),
+        map(([upload, url]) => ({ ...upload, ...url }) as Upload & { url?: string; error?: Error }),
+        take(1)
+      )
+    )
+  );
+
+  // an upload queue with a concurrent upload rate limit,
   // where no more than the amount specified by the limit can be uploaded at the same time
-  const uploads$ = urls$.pipe(
-    map(({ id, file, url, abort$ }) =>
+  const uploads$ = requests$.pipe(
+    map(({ id, file, url, error, abort$ }) =>
       defer(() =>
-        (typeof url === 'string' ? uploadFile(url, file).pipe(mergeMap(event => of({ id, event }))) : throwError(() => url)).pipe(
+        (typeof url === 'string' ? uploadFile(url, file, abort$).pipe(map(event => ({ id, ...event }))) : throwError(() => error)).pipe(
           takeUntil(abort$),
-          catchError((event: Error) => of({ id, event })) // just pass over an error
+          catchError((error: Error) => of({ id, error }))
         )
       )
     ),
-    mergeAll(rateLimit),
+    mergeAll(rateLimit || Number.MAX_SAFE_INTEGER),
     share()
   );
 
   // returns per-upload stream
   return (id: UploadId, file: File, abort$: Observable<unknown>) => (
-    queueMicrotask(() => requests$.next({ id, file, abort$ })),
+    queueMicrotask(() => inputs$.next({ id, file, abort$ })),
     uploads$.pipe(
-      filter(({ id: i }) => i === id),
-      mergeMap(({ event }) => (event instanceof Error ? throwError(() => event) : of(event)))
+      filter(i => i.id === id),
+      takeWhile(i => !('error' in i || i.uploaded === true), true),
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      mergeMap(({ id, ...i }) => ('error' in i ? throwError(() => i.error) : of(i)))
     )
   );
 }

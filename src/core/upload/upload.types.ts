@@ -16,7 +16,7 @@ export interface Upload {
   size: number;
   uploaded: number;
   state: UploadState;
-  errors: string[];
+  error?: string;
   thumb?: { url: string; width: number; height: number };
 }
 

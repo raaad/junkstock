@@ -1,11 +1,14 @@
 import { Component, inject, ValueProvider } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { LOGGER } from '../core/upload/uploader';
+import { LOGGER } from '../core/upload';
 import { getMenu } from './common/home.component';
 
 function provideLogger(): ValueProvider {
-  // eslint-disable-next-line no-console
-  return { provide: LOGGER, useValue: { trace: console.log, debug: console.log, error: console.error, warn: console.warn } };
+  return {
+    provide: LOGGER,
+    // eslint-disable-next-line no-console
+    useValue: Object.create(console, { trace: { value: console.log } })
+  };
 }
 
 @Component({

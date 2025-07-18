@@ -1,24 +1,22 @@
 import { MonoTypeOperatorFunction, Observable, filter, merge, mergeMap, of, take, takeUntil, tap } from 'rxjs';
-import { FileUpload, Logger, Upload, UploadId, UploadState } from './uploader.types';
+import { FileUpload, Logger, Upload, UploadId, UploadState } from '../upload.types';
 
-export function ifFileUpload(andPredicate: (item: FileUpload) => boolean, operators: (u: FileUpload) => Observable<FileUpload | Upload>[]) {
+export function ifFileUpload(operators: (u: FileUpload) => Observable<FileUpload | Upload>[]) {
   return (source: Observable<FileUpload | Upload>) =>
-    source.pipe(
-      mergeMap(upload => (isFileUpload(upload) && andPredicate(upload) ? of(upload).pipe(mergeMap(upload => merge(...operators(upload)))) : of(upload)))
-    );
+    source.pipe(mergeMap(upload => (isFileUpload(upload) ? of(upload).pipe(mergeMap(upload => merge(...operators(upload)))) : of(upload))));
 }
 
 function isFileUpload(item: Upload | FileUpload): item is FileUpload {
   return 'file' in item;
 }
 
-export function toFailed(item: Upload, ...errors: string[]): Upload {
-  return { ...toUpload(item, UploadState.Failed), errors: [...item.errors, ...errors] };
+export function toFailed(item: Upload, error?: string): Upload {
+  return { ...toUpload(item, UploadState.Failed), error: item.error ?? error };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function toUpload({ file, state: old, ...rest }: FileUpload | (Upload & Partial<Pick<FileUpload, 'file'>>), state?: UploadState): Upload {
-  return { ...rest, state: state ?? old };
+export function toUpload({ file, state: currentState, ...rest }: FileUpload | (Upload & Partial<Pick<FileUpload, 'file'>>), state?: UploadState): Upload {
+  return { ...rest, state: state ?? currentState };
 }
 
 export function takeUntilAbort<T>(abort$: Observable<UploadId>, id: UploadId) {
