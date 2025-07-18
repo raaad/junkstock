@@ -1,9 +1,10 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { map, Subject } from 'rxjs';
+import { LOGGER } from './logger.token';
 import { canalize, enqueue } from './operators/operators';
+import { UPLOAD_PIPELINE } from './upload-pipeline.token';
 import { QueueUpload, UploadId, UploadState } from './upload.types';
-import { LOGGER, UPLOAD_PIPELINE } from './uploader.tokens';
 
 @Injectable()
 export class Uploader {

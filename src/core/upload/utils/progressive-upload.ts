@@ -1,50 +1,10 @@
-import {
-  Observable,
-  Subject,
-  buffer,
-  bufferCount,
-  catchError,
-  debounceTime,
-  defer,
-  filter,
-  from,
-  groupBy,
-  map,
-  merge,
-  mergeAll,
-  mergeMap,
-  of,
-  pairwise,
-  share,
-  take,
-  takeUntil,
-  takeWhile,
-  throwError
-} from 'rxjs';
+import { Observable, Subject, catchError, concatMap, defer, filter, from, map, mergeAll, mergeMap, of, share, takeUntil, takeWhile, throwError } from 'rxjs';
 import { QueueUpload, UploadId } from '../upload.types';
-
-/** Get a batch of upload URLs in one request, reject the whole batch if there is an error */
-export function batchUploadUrls(getUploadUrls: (ids: UploadId[]) => Promise<Record<UploadId, string>>, debounce = 300, limit = 100) {
-  return (id$: Observable<UploadId>) => {
-    const shared$ = id$.pipe(share());
-
-    return shared$.pipe(
-      buffer(merge(shared$.pipe(debounceTime(debounce)), shared$.pipe(bufferCount(limit)))),
-      filter(batch => !!batch.length),
-      mergeMap(batch =>
-        defer(() => from(getUploadUrls(batch))).pipe(
-          mergeMap(urls => merge(...batch.map(id => of({ id, url: urls[id] })))),
-          catchError((error: Error) => merge(...batch.map(id => of({ id, error }))))
-        )
-      )
-    );
-  };
-}
 
 type Upload = QueueUpload & { abort$: Observable<unknown> };
 
 /**
- * Progressive upload helper:
+ * Progressive upload utility fuction:
  * - upload progress notification
  * - upload cancellation
  * - limited number of parallel uploads
@@ -52,14 +12,14 @@ type Upload = QueueUpload & { abort$: Observable<unknown> };
  * Case 0 (primal): no upload URLs needed, no rate limit
  * @example
  * ```
- * progressiveUpload(s => s.pipe(map(id => ({ id, url: '' }))), uploadFile, 0);
+ * progressiveUpload(Promise.resolve, uploadFile, 0);
  * ```
  *
  *
  * Case 1: no upload URLs batching
  * @example
  * ```
- * progressiveUpload(s => s.pipe(concatMap(id => forkJoin({ id: of(id), url: from(getUploadUrl) }))), uploadFile, 0);
+ * progressiveUpload((id) => http.get(`/api/${id}`), uploadFile, 0);
  * ```
  *
  * Case 2: full package
@@ -69,40 +29,25 @@ type Upload = QueueUpload & { abort$: Observable<unknown> };
  * ```
  */
 export function progressiveUpload(
-  getUploadUrl: ReturnType<typeof batchUploadUrls>,
+  getUploadUrl: (id: UploadId) => Promise<string>,
   uploadFile: (url: string, file: File, abort$: Observable<unknown>) => Observable<{ uploaded: number | true }>,
   rateLimit = 10
 ) {
   const inputs$ = new Subject<Upload>();
 
-  const urls$ = inputs$.pipe(
-    map(({ id }) => id),
-    getUploadUrl
-  );
-
-  const requests$ = merge(inputs$, urls$).pipe(
-    groupBy(({ id }) => id),
-    mergeMap(g =>
-      g.pipe(
-        pairwise(),
-        map(([upload, url]) => ({ ...upload, ...url }) as Upload & { url?: string; error?: Error }),
-        take(1)
-      )
-    )
-  );
-
   // an upload queue with a concurrent upload rate limit,
   // where no more than the amount specified by the limit can be uploaded at the same time
-  const uploads$ = requests$.pipe(
-    map(({ id, file, url, error, abort$ }) =>
+  const uploads$ = inputs$.pipe(
+    map(({ id, file, abort$ }) =>
       defer(() =>
-        (typeof url === 'string' ? uploadFile(url, file, abort$).pipe(map(event => ({ id, ...event }))) : throwError(() => error)).pipe(
-          takeUntil(abort$),
-          catchError((error: Error) => of({ id, error }))
+        from(getUploadUrl(id)).pipe(
+          concatMap(url => uploadFile(url, file, abort$).pipe(map(i => ({ id, ...i })))),
+          catchError((error: Error) => of({ id, error })),
+          takeUntil(abort$)
         )
       )
     ),
-    mergeAll(rateLimit || Number.MAX_SAFE_INTEGER),
+    mergeAll(Math.max(rateLimit, 0) || Number.MAX_SAFE_INTEGER),
     share()
   );
 
@@ -111,9 +56,9 @@ export function progressiveUpload(
     queueMicrotask(() => inputs$.next({ id, file, abort$ })),
     uploads$.pipe(
       filter(i => i.id === id),
-      takeWhile(i => !('error' in i || i.uploaded === true), true),
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      mergeMap(({ id, ...i }) => ('error' in i ? throwError(() => i.error) : of(i)))
+      mergeMap(({ id, ...i }) => ('error' in i ? throwError(() => i.error) : of(i))),
+      takeWhile(i => !('error' in i || i.uploaded === true), true)
     )
   );
 }

@@ -25,5 +25,3 @@ export interface FileUpload extends Upload {
 }
 
 export type QueueUpload = Pick<FileUpload, 'id' | 'file'>;
-
-export type Logger = Pick<typeof console, 'trace' | 'debug' | 'error' | 'warn'>;

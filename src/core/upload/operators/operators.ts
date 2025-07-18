@@ -1,5 +1,6 @@
 import { catchError, defer, filter, from, map, merge, mergeMap, Observable, of, shareReplay, startWith, take, takeWhile, timeout, withLatestFrom } from 'rxjs';
-import { FileUpload, Logger, QueueUpload, Upload, UploadId, UploadState } from '../upload.types';
+import { Logger } from '../logger.token';
+import { FileUpload, QueueUpload, Upload, UploadId, UploadState } from '../upload.types';
 import { ifFileUpload, takeUntilAbort, toFailed, toLog, toUpload } from './operators.utils';
 
 export function enqueue(logger: Logger, abort$: Observable<UploadId>) {
@@ -19,7 +20,7 @@ export function enqueue(logger: Logger, abort$: Observable<UploadId>) {
         };
 
         return merge(
-          of(upload).pipe(log('debug', 'enqueued')),
+          of(upload).pipe(log('trace', 'enqueued')),
           abort$.pipe(
             filter(i => i === id),
             take(1),
@@ -35,7 +36,7 @@ export function preProcessing(process: (file: File) => Promise<File>, logger: Lo
   const log = toLog(logger);
 
   return ifFileUpload(({ file, ...rest }) => [
-    of((rest = toUpload(rest, UploadState.Processing))).pipe(log('debug', 'preprocessing')),
+    of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'preprocessing')),
     defer(() => from(process(file))).pipe(
       takeUntilAbort(abort$, rest.id),
       map(file => ({ ...rest, file, name: file.name, size: file.size }) as FileUpload),
@@ -54,7 +55,7 @@ export function validate(
   const log = toLog(logger);
 
   return ifFileUpload(({ file, ...rest }) => [
-    of((rest = toUpload(rest, UploadState.Processing))).pipe(log('debug', 'validation')),
+    of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'validation')),
     defer(() =>
       from(
         Object.entries(rules).reduce(
@@ -75,13 +76,13 @@ export function upload(
   uploadFile: (id: UploadId, file: File, abort$: Observable<unknown>) => Observable<{ uploaded: number | true }>,
   logger: Logger,
   abort$: Observable<UploadId>,
-  timeoutIn = 1000 * 60 * 60,
+  timeoutIn = 1000 * 60 * 60, // 1h
   errorText = 'upload failed'
 ) {
   const log = toLog(logger);
 
   return ifFileUpload(({ file, ...rest }) => [
-    of((rest = toUpload(rest, UploadState.Uploading))).pipe(log('debug', 'uploading')),
+    of((rest = toUpload(rest, UploadState.Uploading))).pipe(log('trace', 'uploading')),
     defer(() =>
       uploadFile(
         rest.id,
@@ -116,7 +117,7 @@ export function clientThumb(
   const log = toLog(logger);
 
   return ifFileUpload(({ id, file, state, ...upload }) => [
-    of({ id, file, state, ...upload } as FileUpload).pipe(log('debug', 'client thumb')),
+    of({ id, file, state, ...upload } as FileUpload).pipe(log('trace', 'client thumb')),
     defer(() => getThumb(file)).pipe(
       takeUntilAbort(abort$, id),
       catchError(e =>
@@ -133,9 +134,9 @@ export function clientThumb(
 }
 
 export function postProcessing(
-  process: (id: UploadId) => Promise<{ success: boolean; error?: string } & Pick<Upload, 'thumb'>>,
+  process: (id: UploadId) => Promise<{ success: boolean; error?: string }>,
   logger: Logger,
-  timeoutIn = 1000 * 30,
+  timeoutIn = 1000 * 60, // 1min
   errorText = 'postprocessing failed'
 ) {
   const log = toLog(logger);
@@ -145,7 +146,7 @@ export function postProcessing(
       mergeMap(upload =>
         upload.state === UploadState.Uploaded ?
           merge(
-            of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('debug', 'postprocessing')),
+            of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('trace', 'postprocessing')),
             defer(() => process(upload.id)).pipe(
               timeout({ first: timeoutIn }),
               catchError(e => of({ success: false, error: errorText }).pipe(log('error', e, upload))),
@@ -166,7 +167,7 @@ export function canalize(logger: Logger, flush$: Observable<void>) {
   const log = toLog(logger);
 
   const store$ = flush$.pipe(
-    log('debug', 'uploads flushed'),
+    log('trace', 'uploads flushed'),
     startWith(void 0),
     map(() => new Map<UploadId, Upload>())
   );

@@ -1,7 +1,7 @@
 import { Observable, buffer, debounceTime, filter, map, pairwise, shareReplay, startWith } from 'rxjs';
 import { Upload } from '../upload.types';
 
-export function withNewly(predicate: (u: Upload) => boolean, debounce = 300) {
+export function withNewly(predicate: (u: Upload) => boolean, debounce = 100) {
   return (uploads$: Observable<Upload[]>) =>
     uploads$.pipe(
       map(items => items.filter(predicate)),
