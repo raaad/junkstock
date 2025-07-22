@@ -1,6 +1,7 @@
 import { FactoryProvider, inject } from '@angular/core';
+import { concatMap, of } from 'rxjs';
 import {
-  batchUploadUrls,
+  batched,
   clientThumb,
   LOGGER,
   postProcessing,
@@ -19,13 +20,19 @@ export function provideUploadPipeline(): FactoryProvider {
     useFactory: (): UploadPipeline => {
       const logger = inject(LOGGER);
 
+      const batchUrls = batched(mocks.getUploadUrls);
+
       return abort$ => source =>
         source.pipe(
-          preProcessing(file => (mocks.isHeic(file) ? mocks.fromHeic(file) : Promise.resolve(file)), logger, abort$),
+          preProcessing(file => (mocks.isHeic(file) ? mocks.fromHeic(file) : of(file)), logger, abort$),
           validate(mocks.validationRules, logger, abort$),
           clientThumb(mocks.getClientThumb, logger, abort$),
-          upload(progressiveUpload(batchUploadUrls(mocks.getUploadUrls), mocks.uploadFile), logger, abort$),
-          postProcessing(mocks.waitForServerConfirmation, logger)
+          upload(
+            progressiveUpload((id, file) => batchUrls(id).pipe(concatMap(url => mocks.uploadFile(url, file)))),
+            logger,
+            abort$
+          ),
+          postProcessing(mocks.waitForServerConfirmation, logger, abort$)
         );
     }
   };

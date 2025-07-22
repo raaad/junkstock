@@ -1,13 +1,13 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, OnDestroy } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { map, Subject } from 'rxjs';
+import { map, Subject, tap } from 'rxjs';
 import { LOGGER } from './logger.token';
 import { canalize, enqueue } from './operators/operators';
 import { UPLOAD_PIPELINE } from './upload-pipeline.token';
 import { QueueUpload, UploadId, UploadState } from './upload.types';
 
 @Injectable()
-export class Uploader {
+export class Uploader implements OnDestroy {
   private readonly flush$ = new Subject<void>();
 
   private readonly aborting$ = new Subject<UploadId>();
@@ -49,14 +49,6 @@ export class Uploader {
     return this.uploads$.pipe(map(items => items.filter(({ id }) => !!uploads[id])));
   }
 
-  flush() {
-    this.abortAll();
-
-    this.revokeThumbs();
-
-    this.flush$.next(void 0);
-  }
-
   abort(...ids: UploadId[]) {
     ids.forEach(id => this.aborting$.next(id));
   }
@@ -65,12 +57,27 @@ export class Uploader {
     this.abort(...this.active().map(({ id }) => id));
   }
 
-  private revokeThumbs() {
-    this.uploads()
-      .map(({ thumb }) => thumb?.url)
-      .filter((i): i is string => !!i)
-      .forEach(url => URL.revokeObjectURL(url));
+  flush() {
+    this.abortAll();
+
+    this.flush$.next(void 0);
   }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly ngOnDestroy = this.abortAll.bind(this);
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private thumbsRevocation = this.flush$
+    .pipe(
+      tap(() =>
+        this.uploads()
+          .map(({ thumb }) => thumb?.url)
+          .filter((url): url is string => !!url)
+          .forEach(url => url.startsWith('blob:') && URL.revokeObjectURL(url))
+      ),
+      takeUntilDestroyed()
+    )
+    .subscribe();
 
   // #endregion
 }

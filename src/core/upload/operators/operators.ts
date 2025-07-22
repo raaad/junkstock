@@ -1,4 +1,23 @@
-import { catchError, defer, filter, from, map, merge, mergeMap, Observable, of, shareReplay, startWith, take, takeWhile, timeout, withLatestFrom } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  defer,
+  filter,
+  from,
+  isObservable,
+  map,
+  merge,
+  mergeMap,
+  Observable,
+  ObservableInput,
+  of,
+  shareReplay,
+  startWith,
+  take,
+  takeWhile,
+  timeout,
+  withLatestFrom
+} from 'rxjs';
 import { Logger } from '../logger.token';
 import { FileUpload, QueueUpload, Upload, UploadId, UploadState } from '../upload.types';
 import { ifFileUpload, takeUntilAbort, toFailed, toLog, toUpload } from './operators.utils';
@@ -32,12 +51,17 @@ export function enqueue(logger: Logger, abort$: Observable<UploadId>) {
     );
 }
 
-export function preProcessing(process: (file: File) => Promise<File>, logger: Logger, abort$: Observable<UploadId>, errorText = 'preprocessing failed') {
+export function preProcessing(
+  process: (file: File) => ObservableInput<File>,
+  logger: Logger,
+  abort$: Observable<UploadId>,
+  errorText = 'preprocessing failed'
+) {
   const log = toLog(logger);
 
   return ifFileUpload(({ file, ...rest }) => [
     of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'preprocessing')),
-    defer(() => from(process(file))).pipe(
+    defer(() => process(file)).pipe(
       takeUntilAbort(abort$, rest.id),
       map(file => ({ ...rest, file, name: file.name, size: file.size }) as FileUpload),
       log('debug', 'preprocessed'),
@@ -47,37 +71,45 @@ export function preProcessing(process: (file: File) => Promise<File>, logger: Lo
 }
 
 export function validate(
-  rules: Record<string, (file: File) => boolean | Promise<boolean>>,
+  rules: Record<string, (file: File) => boolean | Promise<boolean> | Observable<boolean>>,
   logger: Logger,
   abort$: Observable<UploadId>,
-  errorText = 'invalid file'
+  errorText = 'invalid file',
+  timeoutIn = 6e4 // 1min
 ) {
   const log = toLog(logger);
 
   return ifFileUpload(({ file, ...rest }) => [
     of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'validation')),
     defer(() =>
-      from(
-        Object.entries(rules).reduce(
-          async (prev, [error, rule]) => (await prev) ?? ((await rule(file)) ? undefined : error),
-          Promise.resolve(undefined as string | undefined)
-        )
+      Object.entries(rules).reduce(
+        (prev, [error, rule]) => prev.pipe(concatMap(e => (e ? of(e) : validate(rule, file, error)))),
+        of(undefined as string | undefined)
       )
     ).pipe(
       takeUntilAbort(abort$, rest.id),
+      timeout({ first: timeoutIn }),
       catchError(e => of(errorText).pipe(log('error', e, rest))),
       map(error => (error ? toFailed(rest, error) : ({ ...rest, file } as FileUpload))),
       log('debug', ({ error }) => (error ? 'invalid' : 'valid'))
     )
   ]);
+
+  function validate(rule: (typeof rules)[keyof typeof rules], file: File, error: string) {
+    const result = rule(file);
+    return (
+      isObservable(result) ? result
+      : typeof result === 'boolean' ? of(result)
+      : from(result)).pipe(map(valid => (valid ? undefined : error)));
+  }
 }
 
 export function upload(
-  uploadFile: (id: UploadId, file: File, abort$: Observable<unknown>) => Observable<{ uploaded: number | true }>,
+  uploadFile: (id: UploadId, file: File, abort$: Observable<unknown>) => ObservableInput<{ uploaded: number | true }>,
   logger: Logger,
   abort$: Observable<UploadId>,
-  timeoutIn = 1000 * 60 * 60, // 1h
-  errorText = 'upload failed'
+  errorText = 'upload failed',
+  timeoutIn = 36e5 // 1h
 ) {
   const log = toLog(logger);
 
@@ -109,7 +141,7 @@ export function upload(
 }
 
 export function clientThumb(
-  getThumb: (file: File) => Promise<Exclude<Upload['thumb'], undefined>>,
+  getThumb: (file: File) => ObservableInput<Exclude<Upload['thumb'], undefined>>,
   logger: Logger,
   abort$: Observable<UploadId>,
   errorText = 'client thumb failed'
@@ -134,10 +166,11 @@ export function clientThumb(
 }
 
 export function postProcessing(
-  process: (id: UploadId) => Promise<{ success: boolean; error?: string }>,
+  process: (id: UploadId) => ObservableInput<void>,
   logger: Logger,
-  timeoutIn = 1000 * 60, // 1min
-  errorText = 'postprocessing failed'
+  abort$: Observable<UploadId>,
+  errorText = 'postprocessing failed',
+  timeoutIn = 6e4 // 1min
 ) {
   const log = toLog(logger);
 
@@ -148,13 +181,10 @@ export function postProcessing(
           merge(
             of((upload = toUpload(upload, UploadState.Uploading))).pipe(log('trace', 'postprocessing')),
             defer(() => process(upload.id)).pipe(
+              takeUntilAbort(abort$, upload.id),
               timeout({ first: timeoutIn }),
-              catchError(e => of({ success: false, error: errorText }).pipe(log('error', e, upload))),
-              mergeMap(({ success, error, ...rest }) =>
-                success ?
-                  of(toUpload({ ...upload, ...rest }, UploadState.Uploaded)).pipe(log('debug', 'postprocessed'))
-                : of(toFailed(upload, error ?? errorText)).pipe(log('error', errorText))
-              )
+              catchError(e => of(toFailed(upload, typeof e === 'string' ? e : errorText)).pipe(log('error', e, upload))),
+              mergeMap(() => of(toUpload(upload, UploadState.Uploaded)).pipe(log('debug', 'postprocessed')))
             )
           )
         : of(upload)

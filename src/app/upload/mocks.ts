@@ -1,5 +1,5 @@
 import { heicTo } from 'heic-to';
-import { concatMap, delay, lastValueFrom, of, tap, throwError } from 'rxjs';
+import { concatMap, delay, of, tap, throwError } from 'rxjs';
 import { UploadId } from '../../core/upload/upload.types';
 import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize, throwIt } from '../../core/utils';
 
@@ -13,7 +13,7 @@ function newIds() {
 /** trigger keyword in the filename: **validate-async** */
 const validationRules = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  'server reject': ({ name }: File) => (name.includes('validate-async') ? lastValueFrom(of(false).pipe(delay(5000))) : Promise.resolve(true)),
+  'server reject': ({ name }: File) => (name.includes('validate-async') ? of(false).pipe(delay(5000)) : of(true)),
   unsupported: ({ name }: File) => ['.jpg', '.jpeg', '.png', '.heic'].some(ext => name.toLocaleLowerCase().endsWith(ext))
 };
 
@@ -30,13 +30,11 @@ async function fromHeic(file: File) {
 /** trigger keyword in the id: **no-upload-url** */
 function getUploadUrls(ids: UploadId[]) {
   return ids.some(id => id.includes('no-upload-url')) ?
-      Promise.reject(new Error(`${LOG_PREFIX} getUploadUrls error: ${ids.join(', ')}`))
-    : lastValueFrom(
-        of(Object.fromEntries(ids.map(id => [id, `http://x.com/upload/${id}`]))).pipe(
-          // eslint-disable-next-line no-console
-          tap(ids => console.log(LOG_PREFIX, 'getUploadUrls', ids)),
-          delay(1000)
-        )
+      throwError(() => new Error(`${LOG_PREFIX} getUploadUrls error: ${ids.join(', ')}`))
+    : of(Object.fromEntries(ids.map(id => [id, `http://x.com/upload/${id}`]))).pipe(
+        // eslint-disable-next-line no-console
+        tap(ids => console.log(LOG_PREFIX, 'getUploadUrls', ids)),
+        delay(1000)
       );
 }
 
@@ -65,7 +63,7 @@ function uploadFile(url: string, { name, size }: File) {
 
 /** trigger keyword in the id: **need-confirmation**, **need-confirmation-toolong** */
 function waitForServerConfirmation(id: UploadId) {
-  return lastValueFrom(of({ success: true }).pipe(delay(id.includes('confirmation-toolong') ? 1000 * 60 : 2000)));
+  return of(void 0).pipe(delay(id.includes('confirmation-toolong') ? 1000 * 60 : 2000));
 }
 
 async function getClientThumb(file: File, dimension = 100, useDataUri = false) {
