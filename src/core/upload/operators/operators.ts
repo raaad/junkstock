@@ -51,25 +51,6 @@ export function enqueue(logger: Logger, abort$: Observable<UploadId>) {
     );
 }
 
-export function preProcessing(
-  process: (file: File) => ObservableInput<File>,
-  logger: Logger,
-  abort$: Observable<UploadId>,
-  errorText = 'preprocessing failed'
-) {
-  const log = toLog(logger);
-
-  return ifFileUpload(({ file, ...rest }) => [
-    of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'preprocessing')),
-    defer(() => process(file)).pipe(
-      takeUntilAbort(abort$, rest.id),
-      map(file => ({ ...rest, file, name: file.name, size: file.size }) as FileUpload),
-      log('debug', 'preprocessed'),
-      catchError(e => of(toFailed(rest, errorText)).pipe(log('error', errorText, e)))
-    )
-  ]);
-}
-
 export function validate(
   rules: Record<string, (file: File) => boolean | Promise<boolean> | Observable<boolean>>,
   logger: Logger,
@@ -102,6 +83,55 @@ export function validate(
       : typeof result === 'boolean' ? of(result)
       : from(result)).pipe(map(valid => (valid ? undefined : error)));
   }
+}
+
+export function preProcessing(
+  process: (file: File) => ObservableInput<File>,
+  logger: Logger,
+  abort$: Observable<UploadId>,
+  errorText = 'preprocessing failed'
+) {
+  const log = toLog(logger);
+
+  return ifFileUpload(({ file, ...rest }) => [
+    of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'preprocessing')),
+    defer(() => process(file)).pipe(
+      takeUntilAbort(abort$, rest.id),
+      map(file => ({ ...rest, file, name: file.name, size: file.size }) as FileUpload),
+      log('debug', 'preprocessed'),
+      catchError(e => of(toFailed(rest, errorText)).pipe(log('error', errorText, e)))
+    )
+  ]);
+}
+
+export function clientThumb(
+  getThumb: (file: File) => ObservableInput<Exclude<Upload['thumb'], undefined>>,
+  logger: Logger,
+  abort$: Observable<UploadId>,
+  errorText = 'client thumb failed'
+) {
+  const log = toLog(logger);
+
+  return ifFileUpload(({ id, file, state, ...upload }) => [
+    of({ id, file, state, ...upload } as FileUpload).pipe(log('trace', 'client thumb')),
+    defer(() => getThumb(file)).pipe(
+      takeUntilAbort(abort$, id),
+      catchError(e =>
+        of(e).pipe(
+          log('warn', errorText, { id, file, ...upload }),
+          filter((i): i is Exclude<Upload['thumb'], undefined> => false) // just to log error and suppress
+        )
+      ),
+      map(thumb =>
+        toUpload({
+          id,
+          ...upload,
+          thumb,
+          state: undefined as unknown as UploadState /* To not overwrite the latest state, will be filled on canalize phaze */
+        })
+      )
+    )
+  ]);
 }
 
 export function upload(
@@ -140,31 +170,6 @@ export function upload(
   ]);
 }
 
-export function clientThumb(
-  getThumb: (file: File) => ObservableInput<Exclude<Upload['thumb'], undefined>>,
-  logger: Logger,
-  abort$: Observable<UploadId>,
-  errorText = 'client thumb failed'
-) {
-  const log = toLog(logger);
-
-  return ifFileUpload(({ id, file, state, ...upload }) => [
-    of({ id, file, state, ...upload } as FileUpload).pipe(log('trace', 'client thumb')),
-    defer(() => getThumb(file)).pipe(
-      takeUntilAbort(abort$, id),
-      catchError(e =>
-        of(e).pipe(
-          log('warn', errorText, { id, file, ...upload }),
-          filter((i): i is Exclude<Upload['thumb'], undefined> => false) // just to log error and suppress
-        )
-      ),
-      map(thumb =>
-        toUpload({ id, ...upload, thumb, state: undefined as unknown as UploadState /* To not overwrite the latest state, will be filled on canalize phaze */ })
-      )
-    )
-  ]);
-}
-
 export function postProcessing(
   process: (id: UploadId) => ObservableInput<void>,
   logger: Logger,
@@ -183,8 +188,8 @@ export function postProcessing(
             defer(() => process(upload.id)).pipe(
               takeUntilAbort(abort$, upload.id),
               timeout({ first: timeoutIn }),
-              catchError(e => of(toFailed(upload, typeof e === 'string' ? e : errorText)).pipe(log('error', e, upload))),
-              mergeMap(() => of(toUpload(upload, UploadState.Uploaded)).pipe(log('debug', 'postprocessed')))
+              mergeMap(() => of(toUpload(upload, UploadState.Uploaded)).pipe(log('debug', 'postprocessed'))),
+              catchError(e => of(toFailed(upload, typeof e === 'string' ? e : errorText)).pipe(log('error', e, upload)))
             )
           )
         : of(upload)

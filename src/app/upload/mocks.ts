@@ -14,7 +14,7 @@ function newIds() {
 const validationRules = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   'server reject': ({ name }: File) => (name.includes('validate-async') ? of(false).pipe(delay(5000)) : of(true)),
-  unsupported: ({ name }: File) => ['.jpg', '.jpeg', '.png', '.heic'].some(ext => name.toLocaleLowerCase().endsWith(ext))
+  unsupported: ({ name }: File) => ['.jpg', '.jpeg', '.png'].some(ext => name.toLocaleLowerCase().endsWith(ext))
 };
 
 function isHeic(file: File) {
