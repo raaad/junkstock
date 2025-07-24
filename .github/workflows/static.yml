@@ -32,11 +32,16 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
-      - name: install
-        run: npm i
-      - name: build
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12
+          cache: 'npm'
+      - name: Install
+        run: npm ci
+      - name: Build
         run: npm run build
-      - name: fix 404
+      - name: Fix 404
         run: cp ./dist/app/browser/index.html ./dist/app/browser/404.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
