@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { LOGGER } from '../../core/upload';
 import { decrypt, encrypt } from '../../core/utils';
 
 @Component({
   selector: 'app-crypto',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   template: `
     <div class="title">Crypto</div>
     <div class="flex gap-4 m-4">
@@ -25,6 +25,8 @@ import { decrypt, encrypt } from '../../core/utils';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CryptoComponent {
+  private readonly logger = inject(LOGGER);
+
   protected text = '';
   protected password = '';
 
@@ -36,8 +38,7 @@ export class CryptoComponent {
       this.encrypted.set(await encrypt(text, password));
     } catch (e) {
       this.encrypted.set('ERROR');
-      // eslint-disable-next-line no-console
-      console.error(e);
+      this.logger.error(e);
     }
   }
 
@@ -46,8 +47,7 @@ export class CryptoComponent {
       this.decrypted.set(await decrypt(dataUrl, password));
     } catch (e) {
       this.decrypted.set('ERROR');
-      // eslint-disable-next-line no-console
-      console.error(e);
+      this.logger.error(e);
     }
   }
 }

@@ -6,8 +6,8 @@
       "type": "chrome",
       "request": "launch",
       "preLaunchTask": "${defaultBuildTask}",
-      "webRoot": "${workspaceFolder}",
       "url": "http://localhost:5000/",
+      "webRoot": "${workspaceFolder}",
       "skipFiles": ["${workspaceFolder}/node_modules/**/*.*"]
     }
   ]

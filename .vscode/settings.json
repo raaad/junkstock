@@ -35,7 +35,7 @@
   // git
   "gitlens.telemetry.enabled": false,
   // typescript
-  "typescript.tsdk": "<workspace>\\node_modules\\typescript\\lib",
+  "typescript.tsdk": "<workspace>/node_modules/typescript/lib",
   // other
   // override prettier
   "[csharp]": {

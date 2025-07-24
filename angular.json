@@ -9,7 +9,6 @@
         "@schematics/angular:component": {
           "inlineTemplate": true,
           "inlineStyle": true,
-          "style": "css",
           "skipTests": true
         },
         "@schematics/angular:class": {
@@ -41,12 +40,8 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/app",
-            "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [],
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "css",
             "assets": [
               {
                 "glob": "**/*",
@@ -57,8 +52,7 @@
                 "input": "node_modules/three/examples/jsm/libs/draco"
               }
             ],
-            "styles": ["src/styles.css"],
-            "scripts": []
+            "styles": ["src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -109,7 +103,7 @@
     }
   },
   "cli": {
-    "schematicCollections": ["@angular-eslint/schematics"],
+    "schematicCollections": ["angular-eslint"],
     "analytics": false
   }
 }

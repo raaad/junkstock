@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, ElementRef, HostListener, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { fitToSize } from '../../../core/utils';
@@ -7,7 +6,7 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
 
 @Component({
   selector: 'app-fit-to-size',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   template: `
     <div class="title">fitToSize</div>
     <div class="canvas">

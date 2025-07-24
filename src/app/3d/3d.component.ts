@@ -1,11 +1,10 @@
 import { LocationStrategy } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit } from '@angular/core';
+import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMaterial, Object3D, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import { fromGltf } from '../../core/3d/loaders';
 import { controlsLookAt, fitToObject, rotateAround, updateSize } from '../../core/3d/utils';
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-import * as THREE from 'three';
+import { LOGGER } from '../../core/upload';
 
 const MODEL_URL = 'duck/duck.gltf';
 
@@ -58,21 +57,21 @@ const MODEL_URL = 'duck/duck.gltf';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ThreeDComponent implements OnInit {
+  private readonly logger = inject(LOGGER);
   private readonly container = inject(ElementRef<HTMLElement>).nativeElement;
   private readonly modelUrl = inject(LocationStrategy).getBaseHref() + MODEL_URL;
 
   private readonly renderer = createRenderer(this.container);
-  private readonly camera = new THREE.PerspectiveCamera().add(...createLights());
+  private readonly camera = new PerspectiveCamera().add(...createLights());
   private readonly controls = createControls(this.camera, this.renderer.domElement, () => this.render());
-  private readonly scene = new THREE.Scene().add(this.camera, createAxes());
+  private readonly scene = new Scene().add(this.camera, createAxes());
 
-  private object?: THREE.Object3D;
+  private object?: Object3D;
 
   async ngOnInit() {
     this.onWindowResize();
 
-    // eslint-disable-next-line no-console
-    this.object = await fromGltf(this.modelUrl, v => console.log(`loading: ${(v * 100).toFixed()}%`)); // createCube()
+    this.object = await fromGltf(this.modelUrl, v => this.logger.debug(`loading: ${(v * 100).toFixed()}%`)); // createCube()
 
     this.scene.add(this.object);
 
@@ -172,7 +171,7 @@ export class ThreeDComponent implements OnInit {
 // #region utils
 
 function createRenderer(container: HTMLElement) {
-  const renderer = new THREE.WebGLRenderer({
+  const renderer = new WebGLRenderer({
     antialias: true,
     powerPreference: 'high-performance',
     alpha: true
@@ -182,15 +181,15 @@ function createRenderer(container: HTMLElement) {
 }
 
 function createAxes() {
-  const axes = new THREE.AxesHelper(2);
+  const axes = new AxesHelper(2);
   return axes;
 }
 
 function createLights() {
-  return [new THREE.AmbientLight(0xffffff, 1), new THREE.PointLight(0xffffff, 0.5, 0, -1)];
+  return [new AmbientLight(0xffffff, 1), new PointLight(0xffffff, 0.5, 0, -1)];
 }
 
-function createControls(camera: THREE.Camera, container: HTMLElement, callback: () => void) {
+function createControls(camera: Camera, container: HTMLElement, callback: () => void) {
   const controls = new OrbitControls(camera, container);
   controls.keyPanSpeed = 10;
   controls.zoomSpeed = 10;
@@ -202,10 +201,10 @@ export function createCube() {
   const boxWidth = 1;
   const boxHeight = 1;
   const boxDepth = 1;
-  const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+  const geometry = new BoxGeometry(boxWidth, boxHeight, boxDepth);
 
-  const material = new THREE.MeshLambertMaterial({ color: 0x7ffa96, opacity: 0.8, transparent: true });
-  return new THREE.Mesh(geometry, material);
+  const material = new MeshLambertMaterial({ color: 0x7ffa96, opacity: 0.8, transparent: true });
+  return new Mesh(geometry, material);
 }
 
 // #endregion
