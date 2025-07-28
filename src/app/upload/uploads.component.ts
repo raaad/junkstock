@@ -1,6 +1,7 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { LOGGER, Upload, Uploader, UploadState } from '../../core/upload';
+import { Upload, Uploader, UploadState } from '../../core/upload';
+import { LOGGER } from '../../core/upload/logger.token';
 import { getFiles } from '../../core/upload/utils/get-files';
 import { withNewly } from '../../core/upload/utils/with-newly';
 import { FilesizePipe } from './filesize.pipe';
@@ -9,7 +10,6 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
 
 @Component({
   selector: 'app-uploads',
-  standalone: true,
   imports: [FilesizePipe, NgClass],
   template: `
     <!--selector-->
@@ -44,7 +44,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
         <li
           [style.--progress.%]="getProgress(item)"
           [class.active]="item.state < UploadState.Uploaded"
-          [class.pre-upload]="item.state < UploadState.Uploading"
+          [class.pre-upload]="item.state < UploadState.Uploading || (item.state === UploadState.Uploading && !item.uploaded)"
           [class.post-upload]="item.state === UploadState.Uploading && item.uploaded === item.size"
           [ngClass]="UploadState[item.state].toLocaleLowerCase()"
           class="progress flex gap-2 items-center">
@@ -145,11 +145,11 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
 
         &.pre-upload:after,
         &.post-upload:after {
-          animation: unknown-progress var(--duration) ease-out forwards;
+          animation: var(--duration) cubic-bezier(0, 1, 0, 1) forwards unknown-progress;
         }
 
         &.pre-upload:after {
-          --duration: 20s;
+          --duration: 30s;
           --progress-from: 0%;
           --progress-to: calc(var(--pre-weight) * 100%);
         }

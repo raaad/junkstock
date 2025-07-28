@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LOGGER } from '../../core/upload';
+import { LOGGER } from '../../core/upload/logger.token';
 import { decrypt, encrypt } from '../../core/utils';
 
 @Component({

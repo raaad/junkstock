@@ -1,12 +1,12 @@
 import { LocationStrategy } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit } from '@angular/core';
 import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMaterial, Object3D, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import { fromGltf } from '../../core/3d/loaders';
 import { controlsLookAt, fitToObject, rotateAround, updateSize } from '../../core/3d/utils';
-import { LOGGER } from '../../core/upload';
+import { LOGGER } from '../../core/upload/logger.token';
 
-const MODEL_URL = 'duck/duck.gltf';
+const MODEL_URL = 'duck.glb';
 
 @Component({
   selector: 'app-3d',
@@ -54,12 +54,17 @@ const MODEL_URL = 'duck/duck.gltf';
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(dblclick)': 'onDblClick()',
+    '(window:resize)': 'onWindowResize()',
+    '(document:keydown)': 'onKeydown($event)'
+  }
 })
-export class ThreeDComponent implements OnInit {
+export class ThreeComponent implements OnInit {
   private readonly logger = inject(LOGGER);
   private readonly container = inject(ElementRef<HTMLElement>).nativeElement;
-  private readonly modelUrl = inject(LocationStrategy).getBaseHref() + MODEL_URL;
+  private readonly modelUrl = `${inject(LocationStrategy).getBaseHref()}${MODEL_URL}`;
 
   private readonly renderer = createRenderer(this.container);
   private readonly camera = new PerspectiveCamera().add(...createLights());
@@ -80,15 +85,13 @@ export class ThreeDComponent implements OnInit {
     this.render();
   }
 
-  @HostListener('window:resize')
-  onWindowResize() {
+  protected onWindowResize() {
     updateSize(this.container, this.camera, this.renderer);
 
     this.render();
   }
 
-  @HostListener('document:keydown', ['$event'])
-  onKeydown({ key }: KeyboardEvent) {
+  protected onKeydown({ key }: KeyboardEvent) {
     const step = 10;
     let hAngle = 0;
     let vAngle = 0;
@@ -117,7 +120,7 @@ export class ThreeDComponent implements OnInit {
       this.render();
     });
 
-    function animate(this: ThreeDComponent, { hAngle, vAngle }: { hAngle: number; vAngle: number }, callback: (v: { hAngle: number; vAngle: number }) => void) {
+    function animate(this: ThreeComponent, { hAngle, vAngle }: { hAngle: number; vAngle: number }, callback: (v: { hAngle: number; vAngle: number }) => void) {
       this.frameHandle && cancelAnimationFrame(this.frameHandle);
 
       const h = increment(hAngle);
@@ -143,8 +146,7 @@ export class ThreeDComponent implements OnInit {
     this.onKeydown(new KeyboardEvent('keydown', { key }));
   }
 
-  @HostListener('dblclick')
-  onDblClick() {
+  protected onDblClick() {
     this.fit();
 
     this.render();

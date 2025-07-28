@@ -1,7 +1,6 @@
-import { heicTo } from 'heic-to';
 import { concatMap, delay, of, tap, throwError } from 'rxjs';
 import { UploadId } from '../../core/upload/upload.types';
-import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize, throwIt } from '../../core/utils';
+import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '../../core/utils';
 
 const LOG_PREFIX = 'mock:';
 
@@ -12,20 +11,9 @@ function newIds() {
 
 /** trigger keyword in the filename: **validate-async** */
 const validationRules = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  'server reject': ({ name }: File) => (name.includes('validate-async') ? of(false).pipe(delay(5000)) : of(true)),
+  'server-reject': ({ name }: File) => (name.includes('validate-async') ? of(false).pipe(delay(5000)) : of(true)),
   unsupported: ({ name }: File) => ['.jpg', '.jpeg', '.png'].some(ext => name.toLocaleLowerCase().endsWith(ext))
 };
-
-function isHeic(file: File) {
-  return file.name.toLowerCase().endsWith('.heic');
-}
-
-/** trigger keyword in the filename: **no-convert** */
-async function fromHeic(file: File) {
-  const blob = await heicTo({ blob: file, type: 'image/jpeg' });
-  return file.name.includes('no-convert') ? throwIt<File>(`${LOG_PREFIX} Conversion error: ${file.name}`) : new File([blob], `${file.name}.jpg`);
-}
 
 /** trigger keyword in the id: **no-upload-url** */
 function getUploadUrls(ids: UploadId[]) {
@@ -40,9 +28,6 @@ function getUploadUrls(ids: UploadId[]) {
 
 /** trigger keyword in the filename: **no-upload** */
 function uploadFile(url: string, { name, size }: File) {
-  // eslint-disable-next-line no-console
-  console.log(LOG_PREFIX, 'uploading', name);
-
   const chunksSize = 100 * 1024;
   const chunks = new Array(Math.floor(size / chunksSize))
     .fill(0)
@@ -81,8 +66,6 @@ async function getClientThumb(file: File, dimension = 100, useDataUri = false) {
 export const mocks = {
   newIds: newIds(),
   validationRules,
-  isHeic,
-  fromHeic,
   getUploadUrls,
   uploadFile,
   getClientThumb,

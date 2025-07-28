@@ -38,7 +38,6 @@ export function progressiveUpload(
     queueMicrotask(() => inputs$.next({ id, file, abort$ })),
     uploads$.pipe(
       filter(i => i.id === id),
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       mergeMap(({ id, ...i }) => ('error' in i ? throwError(() => i.error) : of(i))),
       takeWhile(i => !('error' in i || i.uploaded === true), true)
     )

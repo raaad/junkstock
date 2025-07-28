@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, ElementRef, HostListener, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, ElementRef, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { fitToSize } from '../../../core/utils';
 
@@ -77,7 +77,11 @@ const INITIAL = { x: 0, y: 0, width: 200, height: 100 };
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:mousemove)': 'resize($event)',
+    '(document:mouseup)': 'stop()'
+  }
 })
 export class FitToSizeComponent {
   protected mode = signal('contain' as 'contain' | 'scale-down' | 'cover');
@@ -97,7 +101,6 @@ export class FitToSizeComponent {
     this.box = this.rect = INITIAL;
   }
 
-  @HostListener('document:mousemove', ['$event'])
   protected resize({ x, y }: MouseEvent) {
     if (!this.resizing) return;
 
@@ -117,7 +120,7 @@ export class FitToSizeComponent {
     }
   }
 
-  @HostListener('document:mouseup') protected stop() {
+  protected stop() {
     this.resizing = false;
   }
 }

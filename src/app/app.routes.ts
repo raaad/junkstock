@@ -26,13 +26,18 @@ export const routes: Routes = [
   },
   {
     path: '3d',
-    loadComponent: async () => (await import('./3d/3d.component')).ThreeDComponent,
+    loadComponent: async () => (await import('./3d/3d.component')).ThreeComponent,
     title: '3D'
   },
   {
     path: 'utils',
     loadComponent: async () => (await import('./utils/utils.component')).UtilsComponent,
     title: 'Utils'
+  },
+  {
+    path: 'misc',
+    loadComponent: async () => (await import('./misc/misc.component')).MiscComponent,
+    title: 'Misc'
   },
   {
     path: '**',

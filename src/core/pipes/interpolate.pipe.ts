@@ -36,7 +36,6 @@ export function interpolate(template: string, context: unknown) {
  */
 @Pipe({
   name: 'interpolate',
-  standalone: true,
   pure: true
 })
 export class InterpolatePipe implements PipeTransform {
