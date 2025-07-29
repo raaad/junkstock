@@ -1,0 +1,5 @@
+{
+  "name": "piexif-ts",
+  "module": "../node_modules/piexif-ts/dist/piexif.js",
+  "types": "../node_modules/piexif-ts/dist/index.d.ts"
+}

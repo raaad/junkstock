@@ -1,0 +1,59 @@
+/* #region progress utility */
+
+@utility progress-bar {
+  position: relative;
+
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    height: var(--progress-height, 2px);
+    left: 0;
+    pointer-events: none;
+  }
+
+  &:before {
+    width: 100%;
+    background-color: var(--progress-bg, var(--color-neutral-200));
+  }
+
+  &:after {
+    background-color: var(--progress-color, var(--color-neutral-600));
+    transition: width 500ms;
+    will-change: width;
+  }
+}
+
+@utility progress-unknown {
+  &:after {
+    animation: var(--progress-duration, 30s) cubic-bezier(0, 1, 0, 1) 200ms forwards progress-unknown;
+  }
+}
+
+@utility progress-top {
+  &:before,
+  &:after {
+    top: 0;
+  }
+}
+
+@utility progress-bottom {
+  &:before,
+  &:after {
+    bottom: 0;
+  }
+}
+
+@utility progress-keyframes {
+  @keyframes progress-unknown {
+    from {
+      width: var(--progress-from, 0);
+    }
+
+    to {
+      width: var(--progress-to, 100%);
+    }
+  }
+}
+
+/* #endregion */

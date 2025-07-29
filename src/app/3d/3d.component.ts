@@ -1,5 +1,5 @@
 import { LocationStrategy } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal } from '@angular/core';
 import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMaterial, Object3D, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import { fromGltf } from '../../core/3d/loaders';
@@ -27,11 +27,17 @@ const MODEL_URL = 'duck.glb';
   `,
   styles: [
     `
+      @reference "../../styles/utils.css";
+
       :host {
         position: relative;
         display: inline-block;
         overflow: hidden !important;
         user-select: none;
+
+        &.loading {
+          @apply progress-bar progress-unknown progress-bottom;
+        }
       }
 
       .actions {
@@ -58,7 +64,8 @@ const MODEL_URL = 'duck.glb';
   host: {
     '(dblclick)': 'onDblClick()',
     '(window:resize)': 'onWindowResize()',
-    '(document:keydown)': 'onKeydown($event)'
+    '(document:keydown)': 'onKeydown($event)',
+    '[class.loading]': 'loading()'
   }
 })
 export class ThreeComponent implements OnInit {
@@ -73,16 +80,20 @@ export class ThreeComponent implements OnInit {
 
   private object?: Object3D;
 
+  protected readonly loading = signal(true);
+
   async ngOnInit() {
     this.onWindowResize();
 
-    this.object = await fromGltf(this.modelUrl, v => this.logger.debug(`loading: ${(v * 100).toFixed()}%`)); // createCube()
+    this.object = await fromGltf(this.modelUrl, v => this.logger.debug(`loading: ${(v * 100).toFixed()}%`));
 
     this.scene.add(this.object);
 
     this.fit();
 
     this.render();
+
+    this.loading.set(false);
   }
 
   protected onWindowResize() {

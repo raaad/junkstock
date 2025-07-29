@@ -74,6 +74,8 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
   `,
   styles: [
     `
+      @reference "../../styles.css";
+
       :host {
         margin: 1em;
       }
@@ -97,65 +99,40 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
       }
 
       .progress {
-        position: relative;
+        &.active {
+          @apply progress-bar progress-bottom;
+          --progress-color: var(--color-blue-500);
 
-        &:before,
-        &:after {
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          content: '';
-          display: block;
-          height: 2px;
-          pointer-events: none;
-        }
-
-        &.active:before {
-          width: 100%;
-          background: var(--color-neutral-200);
-        }
-
-        &.active:after {
-          width: var(--progress);
-          transition: width 0.5s;
-          background: var(--color-blue-500);
+          &:after {
+            width: var(--progress);
+          }
         }
       }
 
       /* #region progress with pre & post */
 
-      @keyframes unknown-progress {
-        from {
-          width: var(--progress-from);
-        }
-
-        to {
-          width: var(--progress-to);
-        }
-      }
-
       li.progress {
         --pre-weight: 0.1;
         --post-weight: 0.1;
 
-        &.active:after {
+        &.active:not(.pre-upload):after {
           --progress-up: calc(var(--pre-weight) * 100% + var(--progress) * (1 - var(--pre-weight) - var(--post-weight)));
           width: var(--progress-up);
         }
 
-        &.pre-upload:after,
-        &.post-upload:after {
-          animation: var(--duration) cubic-bezier(0, 1, 0, 1) forwards unknown-progress;
+        &.pre-upload,
+        &.post-upload {
+          @apply progress-unknown;
         }
 
         &.pre-upload:after {
-          --duration: 30s;
+          --progress-duration: 300s;
           --progress-from: 0%;
           --progress-to: calc(var(--pre-weight) * 100%);
         }
 
         &.post-upload:after {
-          --duration: 5s;
+          --progress-duration: 30s;
           --progress-from: var(--progress-up);
           --progress-to: 100%;
         }

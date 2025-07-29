@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@reference './styles/utils.css';
 
 html {
   height: 100%;
@@ -121,14 +122,6 @@ body {
 
 /* #endregion */
 
-.title {
-  @apply m-5 text-xl;
-}
-
-.note {
-  @apply border-dashed rounded-xs text-neutral-400 border-neutral-200 p-2 text-xs truncate;
-}
-
 /* #region route transitions */
 
 ::view-transition-old(page),
@@ -158,4 +151,14 @@ body {
   }
 }
 
-/* #region */
+/* #endregion */
+
+@apply progress-keyframes;
+
+.title {
+  @apply m-5 text-xl;
+}
+
+.note {
+  @apply border-dashed rounded-xs text-neutral-400 border-neutral-200 p-2 text-xs truncate;
+}

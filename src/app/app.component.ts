@@ -38,6 +38,8 @@ function provideLogger(): ValueProvider {
   },
   styles: [
     `
+      @reference "../styles/utils.css";
+
       :host {
         display: flex;
         height: inherit;
@@ -63,27 +65,9 @@ function provideLogger(): ValueProvider {
       /* view-loading */
 
       :host.view-loading > router-outlet {
-        position: relative;
+        @apply progress-bar progress-unknown;
         width: 100%;
         height: 0;
-
-        &:before {
-          content: '';
-          position: absolute;
-          height: 2px;
-          background-color: var(--color-neutral-600);
-          animation: 30s cubic-bezier(0, 1, 0, 1) 300ms width-fill;
-          will-change: width;
-        }
-      }
-
-      @keyframes width-fill {
-        from {
-          width: 0;
-        }
-        to {
-          width: 100%;
-        }
       }
     `
   ],
