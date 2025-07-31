@@ -78,7 +78,7 @@ export function svgToDataUrl(svg: string) {
 }
 
 /** Convert SVG element to string */
-export function svgToString(svg: SVGSVGElement) {
+export function svgToString(svg: SVGElement) {
   return new XMLSerializer().serializeToString(svg);
 }
 

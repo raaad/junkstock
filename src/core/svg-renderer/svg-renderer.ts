@@ -18,9 +18,6 @@ import { IMAGE_URL_RESOLVERS, ImageUrlResolver, ImageUrlResolverKind } from './u
 import { ApplyFilterOnImageComponent } from './utils/apply-filter-in-image.component';
 import { extractImageData, extractSvgFilters } from './utils/apply-filter-in-image.utils';
 import { fromCustomDataUrl, isCustomDataUrl, toCustomDataUrl } from './utils/custom-data-url.utils';
-import { supportsSvgFilter } from './utils/supports-svg-filter';
-
-const SUPPORTS_SVG_FILTER = supportsSvgFilter();
 
 /**
  * IMPORTANT:
@@ -36,6 +33,8 @@ export class SvgRenderer<T> {
   private readonly selector = inject(RENDERER_COMPONENT_SELECTOR);
   private readonly imageUrlResolvers = inject(IMAGE_URL_RESOLVERS);
   private readonly injector = this.overrideInjector(inject(ApplicationRef).injector);
+
+  private readonly supportsSvgFilter = import('./utils/supports-svg-filter').then(({ supportsSvgFilter: supports }) => supports());
 
   // #region render
 
@@ -98,7 +97,7 @@ export class SvgRenderer<T> {
         return await drawToBlob(svgToDataUrl(str), {
           type: `image/${type}`,
           // Safari fix: https://github.com/bubkoo/html-to-image/issues/361#issuecomment-1413526381
-          multiDraw: !(await SUPPORTS_SVG_FILTER) && {
+          multiDraw: !(await this.supportsSvgFilter) && {
             count: Math.max(Math.min(embeddedTotal, 100), 2),
             delay: 50
           }
@@ -166,7 +165,7 @@ export class SvgRenderer<T> {
   // #region preapply filters
 
   private async preprocessImages(images: Map<HTMLImageElement, string>) {
-    if (!(await SUPPORTS_SVG_FILTER)) {
+    if (!(await this.supportsSvgFilter)) {
       await Promise.all(Array.from(images.entries()).map(async ([img, url]) => images.set(img, await this.preapplyFilters(img, url))));
     }
   }

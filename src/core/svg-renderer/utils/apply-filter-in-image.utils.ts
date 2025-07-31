@@ -40,7 +40,7 @@ export function extractSvgFilters(el: HTMLElement) {
 
   const markup = filters
     .map(id => parent?.getElementById(id) as unknown)
-    .filter((v): v is SVGSVGElement => v instanceof SVGSVGElement)
+    .filter((v): v is SVGElement => v instanceof SVGElement)
     .map(el => svgToString(el))
     .join('');
 
