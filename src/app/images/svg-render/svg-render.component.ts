@@ -8,7 +8,12 @@ import { provideRenderer } from './renderer.component';
 @Component({
   selector: 'app-svg-render',
   template: `
-    <button (click)="render()" class="btn btn-sm">Render NG component as JPG</button>
+    <div>
+      <button (click)="render()" class="btn btn-sm">Render NG component as JPG</button>
+      @if (result()) {
+        <a (click)="copy()" (keydown.enter)="copy()" class="hover:text-sky-700 cursor-pointer ml-4" tabindex="0">copy</a>
+      }
+    </div>
 
     @if (result()) {
       <img [src]="result()" alt="" />
@@ -33,9 +38,13 @@ export class SvgRenderComponent {
 
   protected readonly result = signal(undefined as string | undefined);
 
-  async render() {
+  protected async render() {
     const blob = await this.renderer.render('jpeg', RENDER_DATA, { size: { width: 400, height: 600 }, logLevel: 'trace' });
 
     this.result.set(blobToObjectUrl(blob));
+  }
+
+  protected copy() {
+    navigator.clipboard.writeText(this.result() ?? '');
   }
 }
