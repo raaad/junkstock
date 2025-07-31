@@ -4,7 +4,7 @@ import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMateria
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import { fromGltf } from '../../core/3d/loaders';
 import { controlsLookAt, fitToObject, rotateAround, updateSize } from '../../core/3d/utils';
-import { LOGGER } from '../../core/upload/logger.token';
+import { LOGGER } from '../../core/shared/logger';
 
 const MODEL_URL = 'duck.glb';
 

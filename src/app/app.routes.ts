@@ -5,8 +5,7 @@ import { SizesComponent } from './images/sizes/sizes.component';
 export const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
-    title: 'Junkstock'
+    component: HomeComponent
   },
   {
     path: 'uploads',

@@ -1,18 +1,8 @@
 import { FactoryProvider, inject } from '@angular/core';
 import { concatMap, of } from 'rxjs';
-import {
-  batched,
-  clientThumb,
-  heic,
-  postProcessing,
-  preProcessing,
-  progressiveUpload,
-  upload,
-  UPLOAD_PIPELINE,
-  UploadPipeline,
-  validate
-} from '../../core/upload';
-import { LOGGER } from '../../core/upload/logger.token';
+import { LOGGER } from '../../core/shared/logger';
+import { clientThumb, heic, postProcessing, preProcessing, progressiveUpload, upload, UPLOAD_PIPELINE, UploadPipeline, validate } from '../../core/upload';
+import { batched } from '../../core/utils/rxjs';
 import { mocks } from './mocks';
 
 export function provideUploadPipeline(): FactoryProvider {

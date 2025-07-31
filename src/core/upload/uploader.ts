@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, OnDestroy } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { map, Subject, tap } from 'rxjs';
-import { LOGGER } from './logger.token';
+import { LOGGER } from '../shared/logger';
 import { canalize, enqueue } from './operators/operators';
 import { UPLOAD_PIPELINE } from './upload-pipeline.token';
 import { QueueUpload, UploadId, UploadState } from './upload.types';

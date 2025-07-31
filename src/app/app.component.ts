@@ -1,21 +1,11 @@
-import { Component, inject, ValueProvider } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { LOGGER } from '../core/upload/logger.token';
 import { getMenu } from './common/home.component';
 import { ViewPageLoadingDirective } from './common/view-page-loading.direcitve';
-
-function provideLogger(): ValueProvider {
-  return {
-    provide: LOGGER,
-    // eslint-disable-next-line no-console
-    useValue: Object.create(console, { trace: { value: console.log } })
-  };
-}
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  providers: [provideLogger()],
   template: `
     <nav class="min-w-3xs">
       <ul class="menu md:hidden">

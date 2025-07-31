@@ -1,21 +1,4 @@
-import {
-  ObservableInput,
-  Subject,
-  buffer,
-  bufferCount,
-  catchError,
-  debounceTime,
-  defer,
-  filter,
-  from,
-  merge,
-  mergeMap,
-  of,
-  share,
-  take,
-  tap,
-  throwError
-} from 'rxjs';
+import { ObservableInput, Subject, buffer, bufferCount, catchError, debounceTime, defer, filter, merge, mergeMap, of, share, take, throwError } from 'rxjs';
 
 /** Accumulate several item requests to get them all at once, reject the whole batch if there is an error */
 export function batched<K extends string, R>(action: (keys: K[]) => ObservableInput<Record<K, R>>, debounce = 300, limit = 100) {
@@ -43,12 +26,4 @@ export function batched<K extends string, R>(action: (keys: K[]) => ObservableIn
       take(1)
     )
   );
-}
-
-export function cached<K, R>(
-  action: (key: K) => ObservableInput<R>,
-  expired: (i: R) => boolean,
-  cache = new Map<K, R>() // can be used for the initialization
-) {
-  return (key: K) => (cache.has(key) && !expired(cache.get(key)!) ? of(cache.get(key)) : from(action(key)).pipe(tap(item => cache.set(key, item))));
 }
