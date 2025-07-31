@@ -9,7 +9,7 @@ import {
   inputBinding,
   Type
 } from '@angular/core';
-import { LOGGER } from '../shared/logger';
+import { LOGGER } from '../common/logger';
 import { blobToDataUrl, drawToBlob, fetchToBlob, fitToSize, isDataUrl, svgToDataUrl, svgToString } from '../utils';
 import { RendererContainerComponent } from './container.component';
 import { RENDERER_COMPONENT_SELECTOR } from './svg-component-selector.token';
@@ -34,8 +34,6 @@ export class SvgRenderer<T> {
   private readonly imageUrlResolvers = inject(IMAGE_URL_RESOLVERS);
   private readonly injector = this.overrideInjector(inject(ApplicationRef).injector);
 
-  private readonly supportsSvgFilter = import('./utils/supports-svg-filter').then(({ supportsSvgFilter: supports }) => supports());
-
   // #region render
 
   /** Render preview as SVG */
@@ -58,7 +56,7 @@ export class SvgRenderer<T> {
         await this.export(type, svg, { embedImages, context })
       : await this.export(type, svg, { context });
 
-    this.log(svg, result, options);
+    options.trace && this.traceResult(svg, result, options);
 
     return result;
   }
@@ -76,6 +74,8 @@ export class SvgRenderer<T> {
     const element = (ref.location as ElementRef<SVGSVGElement>).nativeElement;
     const svg = element.cloneNode(true) as SVGSVGElement;
 
+    this.logger.trace('SVG: rendered', svg);
+
     ref.destroy();
     return svg;
   }
@@ -89,6 +89,8 @@ export class SvgRenderer<T> {
 
     const str = svgToString(svg);
 
+    this.logger.trace('SVG: exporting');
+
     switch (type) {
       case 'svg':
         return str;
@@ -97,7 +99,7 @@ export class SvgRenderer<T> {
         return await drawToBlob(svgToDataUrl(str), {
           type: `image/${type}`,
           // Safari fix: https://github.com/bubkoo/html-to-image/issues/361#issuecomment-1413526381
-          multiDraw: !(await this.supportsSvgFilter) && {
+          multiDraw: !(await this.supportsSvgFilter()) && {
             count: Math.max(Math.min(embeddedTotal, 100), 2),
             delay: 50
           }
@@ -112,6 +114,11 @@ export class SvgRenderer<T> {
 
   private async resolveImages(svg: SVGSVGElement, embed: boolean, context: unknown) {
     const images = await this.extractImages(svg, context);
+
+    this.logger.trace(
+      'SVG: images extracted',
+      Array.from(images.values()).map(i => (isDataUrl(i) ? 'data:...' : i))
+    );
 
     await this.preprocessImages(images);
 
@@ -137,6 +144,8 @@ export class SvgRenderer<T> {
     if (isCustomDataUrl(url)) {
       const { kind, data, args } = fromCustomDataUrl(url);
 
+      this.logger.trace(`SVG: resolving image '${kind}'`, data, args);
+
       const result = await this.imageUrlResolvers.get(kind)?.(data, args, context);
 
       if (result) {
@@ -150,12 +159,19 @@ export class SvgRenderer<T> {
   }
 
   private async embedImages(images: Map<HTMLImageElement, string>) {
+    this.logger.debug(
+      `SVG: embedding images`,
+      Array.from(images.values()).map(i => (isDataUrl(i) ? 'data:...' : i))
+    );
+
     const fetched = new Map(await Promise.all(Array.from(new Set(images.values())).map(async url => [url, await this.fetchImage(url)] as [string, string])));
 
     Array.from(images.entries()).forEach(([img, url]) => images.set(img, fetched.get(url) ?? url));
   }
 
   private async fetchImage(url: string) {
+    !isDataUrl(url) && this.logger.trace(`SVG: fetching image: ${url}`);
+
     // To reduce image size fetchToBlob can be replaced with drawToBlob + fitToSize
     return isDataUrl(url) ? url : await blobToDataUrl(await fetchToBlob(url));
   }
@@ -165,7 +181,7 @@ export class SvgRenderer<T> {
   // #region preapply filters
 
   private async preprocessImages(images: Map<HTMLImageElement, string>) {
-    if (!(await this.supportsSvgFilter)) {
+    if (!(await this.supportsSvgFilter())) {
       await Promise.all(Array.from(images.entries()).map(async ([img, url]) => images.set(img, await this.preapplyFilters(img, url))));
     }
   }
@@ -175,6 +191,7 @@ export class SvgRenderer<T> {
     const filters = extractSvgFilters(img);
 
     if (filters) {
+      this.logger.debug(`SVG: preapplying SVG filters`, url, filters);
       const { dataUrl, width, height, rotation } = await extractImageData(url);
 
       const svg = await this.renderSvg(ApplyFilterOnImageComponent, {
@@ -195,36 +212,39 @@ export class SvgRenderer<T> {
 
   // #region support
 
-  /** Override the resolvers to defer the process by just serialising the schema, the data to be resolved and additional arguments */
+  /** Override the resolvers to defer the process by just serialising the kind, the data to be resolved and additional arguments */
   private overrideInjector(parent: EnvironmentInjector) {
     const deferredResolvers = new Map<ImageUrlResolverKind, ImageUrlResolver>(
-      Array.from(this.imageUrlResolvers.keys()).map(schema => [schema, toCustomDataUrl.bind(undefined, schema)])
+      Array.from(this.imageUrlResolvers.keys()).map(kind => [
+        kind,
+        (data: unknown, args?: unknown[]) => (this.logger.trace(`SVG: preserving resolve '${kind}'`, data, args), toCustomDataUrl(kind, data, args))
+      ])
     );
 
     return createEnvironmentInjector([{ provide: IMAGE_URL_RESOLVERS, useValue: deferredResolvers }], parent);
   }
 
-  private async log(svg: SVGSVGElement, result: string | Blob, { logLevel = 'trace', size }: RenderOptions) {
-    if (logLevel !== 'none') {
-      this.logger.debug('TIPS:');
-      this.logger.debug('- For SVG in console: Non-embedded images are not displayed');
-      this.logger.debug('- For SVG in new tab: Images with relative URLs are not displayed');
-    }
+  private async supportsSvgFilter() {
+    const { supportsSvgFilter } = await import('./utils/supports-svg-filter');
+
+    return await supportsSvgFilter(this.logger);
+  }
+
+  private async traceResult(svg: SVGSVGElement, result: string | Blob, { size }: RenderOptions) {
+    this.logger.trace('SVG: tips:');
+    this.logger.trace('- For SVG in console: Non-embedded images are not displayed');
+    this.logger.trace('- For SVG in new tab: Images with relative URLs are not displayed');
 
     // log as URLs
-    if (logLevel === 'trace') {
-      this.logger.debug(`SVG: ${URL.createObjectURL(new Blob([svgToString(svg)], { type: 'image/svg+xml' }))}`);
+    this.logger.trace(`SVG: ${URL.createObjectURL(new Blob([svgToString(svg)], { type: 'image/svg+xml' }))}`);
 
-      typeof result !== 'string' && this.logger.debug(`RESULT: ${URL.createObjectURL(result)}`);
-    }
+    typeof result !== 'string' && this.logger.trace(`RESULT: ${URL.createObjectURL(result)}`);
 
     // log as image
-    if (logLevel !== 'none') {
-      const url = await blobToDataUrl(typeof result === 'string' ? await drawToBlob(svgToDataUrl(result)) : result);
+    const url = await blobToDataUrl(typeof result === 'string' ? await drawToBlob(svgToDataUrl(result)) : result);
 
-      const { width, height } = fitToSize(size, { width: 400, height: 300 });
-      this.logger.debug('%c ', `background: center / contain no-repeat url(${url}); padding: ${height}px 0 0 ${width}px; border: thin solid #f003;`);
-    }
+    const { width, height } = fitToSize(size, { width: 400, height: 300 });
+    this.logger.trace('%c ', `background: center / contain no-repeat url(${url}); padding: ${height}px 0 0 ${width}px; border: thin solid #f003;`);
   }
 
   // #endregion

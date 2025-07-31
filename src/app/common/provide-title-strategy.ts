@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, DefaultTitleStrategy, TitleStrategy } from '@angular/router';
-import { traverse } from '../../core/utils/traverse';
+import { traverse } from '@core/utils';
 
 @Injectable()
 class CustomTitleStrategy extends DefaultTitleStrategy {

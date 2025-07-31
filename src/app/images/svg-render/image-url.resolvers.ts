@@ -1,7 +1,8 @@
 import { LocationStrategy } from '@angular/common';
 import { inject, Pipe, PipeTransform } from '@angular/core';
-import { IMAGE_URL_RESOLVERS, ImageUrlResolver, ImageUrlResolverKind } from '../../../core/svg-renderer';
-import { blobToObjectUrl, fetchToBlob, throwIt } from '../../../core/utils';
+import { throwIt } from '@core/common';
+import { IMAGE_URL_RESOLVERS, ImageUrlResolver, ImageUrlResolverKind } from '@core/svg-renderer';
+import { blobToObjectUrl, fetchToBlob } from '@core/utils';
 
 @Pipe({ name: 'resolveUrl', pure: true })
 export class ResolveUrlPipe implements PipeTransform {
@@ -19,8 +20,7 @@ export function provideImageUrlResolvers() {
       useFactory: () => {
         const base = inject(LocationStrategy).getBaseHref();
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return new Map<ImageUrlResolverKind, ImageUrlResolver<any>>([
+        return new Map<ImageUrlResolverKind, ImageUrlResolver>([
           ['local-assets', (url: string) => `${base}${url}`],
           ['api-get-url', (name: string) => Promise.resolve(`${base}${name}.png`)],
           ['api-generated', () => fetchToBlob(`${base}bender.png`).then(blobToObjectUrl)]

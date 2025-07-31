@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LOGGER } from '../../core/shared/logger';
-import { decrypt, encrypt } from '../../core/utils';
+import { LOGGER } from '@core/common';
+import { decrypt, encrypt } from '@core/utils';
 
 @Component({
   selector: 'app-crypto',

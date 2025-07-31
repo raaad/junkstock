@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { getBoundingBox } from '../../../core/utils';
+import { getBoundingBox } from '@core/utils';
 
 const INITIAL = { x: 50, y: 70, width: 200, height: 50 };
 

@@ -14,25 +14,29 @@ const SVG = `
 
 const SUCCESS_COLOR = '00ff00';
 
+let supports: Promise<boolean>;
+
 /** Detect if browser supports SVG filter in foreignObject when drawing to canvas */
-export function supportsSvgFilter(logger: Pick<Console, 'warn'> = console) {
-  let supports: Promise<boolean>;
+export function supportsSvgFilter(logger: Pick<Console, 'warn' | 'trace'> = console) {
+  return (supports ??= check(logger));
+}
 
-  return (supports ??= (async () => {
-    try {
-      const image = await fetchToImage(svgToDataUrl(SVG));
+async function check(logger: Pick<Console, 'warn' | 'trace'>) {
+  try {
+    const image = await fetchToImage(svgToDataUrl(SVG));
 
-      const canvas = new OffscreenCanvas(image.width, image.height);
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(image, 0, 0, image.width, image.height);
+    const canvas = new OffscreenCanvas(image.width, image.height);
+    const ctx = canvas.getContext('2d');
+    ctx?.drawImage(image, 0, 0, image.width, image.height);
 
-      const [r, g, b] = ctx?.getImageData(0, 0, 1, 1).data ?? [0, 0, 0];
-      const rgb = [r, g, b].map(i => i.toString(16).padStart(2, '0')).join('');
+    const [r, g, b] = ctx?.getImageData(0, 0, 1, 1).data ?? [0, 0, 0];
+    const rgb = [r, g, b].map(i => i.toString(16).padStart(2, '0')).join('');
 
-      return rgb === SUCCESS_COLOR;
-    } catch (e) {
-      logger.warn(e);
-      return false;
-    }
-  })());
+    const supports = rgb === SUCCESS_COLOR;
+    logger.trace(`SVG: svg filters support: ${supports}`);
+    return supports;
+  } catch (e) {
+    logger.warn(e);
+    return false;
+  }
 }

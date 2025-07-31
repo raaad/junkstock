@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { SvgRenderer } from '../../../core/svg-renderer';
-import { blobToObjectUrl, svgToDataUrl } from '../../../core/utils';
+import { SvgRenderer } from '@core/svg-renderer';
+import { blobToObjectUrl, svgToDataUrl } from '@core/utils';
 import { provideImageUrlResolvers } from './image-url.resolvers';
 import { RENDER_DATA } from './render-mock.data';
 import { provideRenderer } from './renderer.component';

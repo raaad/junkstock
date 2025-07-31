@@ -1,6 +1,6 @@
+import { UploadId } from '@core/upload';
+import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '@core/utils';
 import { concatMap, delay, of, tap, throwError } from 'rxjs';
-import { UploadId } from '../../core/upload/upload.types';
-import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '../../core/utils';
 
 const LOG_PREFIX = 'mock:';
 

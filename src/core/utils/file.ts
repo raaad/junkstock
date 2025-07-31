@@ -1,4 +1,4 @@
-import { throwIt } from './throw-it';
+import { throwIt } from '../common/throw-it';
 
 /** Fetch file to blob from URL (http[s]: | blob: | data:) */
 export async function fetchToBlob(url: string) {

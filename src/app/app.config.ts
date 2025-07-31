@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
-import { provideConsoleLogger, provideLogger } from '../core/shared/logger';
+import { provideConsoleLogger, provideLogger } from '@core/common';
 import { provideTitleStrategy } from './common/provide-title-strategy';
 
 import { routes } from './app.routes';

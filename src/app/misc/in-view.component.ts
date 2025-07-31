@@ -1,6 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
-import { InViewHostDirective } from '../../core/directives/in-view/in-view.host.directive';
-import { InViewTargetDirective } from '../../core/directives/in-view/in-view.target.directive';
+import { InViewHostDirective, InViewTargetDirective } from '@core/common';
 
 @Component({
   selector: 'app-in-view',

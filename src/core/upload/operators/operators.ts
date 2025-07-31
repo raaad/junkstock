@@ -18,7 +18,7 @@ import {
   timeout,
   withLatestFrom
 } from 'rxjs';
-import { Logger } from '../../shared/logger';
+import { Logger } from '../../common/logger';
 import { FileUpload, QueueUpload, Upload, UploadId, UploadState } from '../upload.types';
 import { ifFileUpload, takeUntilAbort, toFailed, toLog, toUpload } from './operators.utils';
 

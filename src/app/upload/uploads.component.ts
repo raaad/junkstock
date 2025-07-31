@@ -1,9 +1,7 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { LOGGER } from '../../core/shared/logger';
-import { Upload, Uploader, UploadState } from '../../core/upload';
-import { getFiles } from '../../core/upload/utils/get-files';
-import { withNewly } from '../../core/upload/utils/with-newly';
+import { LOGGER } from '@core/common';
+import { getFiles, Upload, Uploader, UploadState, withNewly } from '@core/upload';
 import { FilesizePipe } from './filesize.pipe';
 import { mocks } from './mocks';
 import { provideUploadPipeline } from './provide-upload-pipeline';

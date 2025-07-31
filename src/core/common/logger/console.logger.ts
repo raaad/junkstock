@@ -14,7 +14,11 @@ export function provideConsoleLogger(severity: LogLevel | 'none' = LogLevel.Trac
     provide: LOG_METHOD,
     useValue: (level: LogLevel, ...data: unknown[]) =>
       // eslint-disable-next-line no-console
-      severity !== 'none' && severity <= level && data.length && console[LEVEL_MAP.get(level) ?? 'debug'](...data),
+      shouldLog(severity, level, data) && console[LEVEL_MAP.get(level) ?? 'debug'](...data),
     multi: true
   };
+}
+
+function shouldLog(severity: LogLevel | 'none', level: LogLevel, data: unknown[]) {
+  return severity !== 'none' && severity <= level && data.length;
 }

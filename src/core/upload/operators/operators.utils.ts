@@ -1,5 +1,5 @@
 import { MonoTypeOperatorFunction, Observable, filter, merge, mergeMap, of, take, takeUntil, tap } from 'rxjs';
-import { Logger } from '../../shared/logger';
+import { Logger } from '../../common/logger';
 import { FileUpload, Upload, UploadId, UploadState } from '../upload.types';
 
 export function ifFileUpload(operators: (u: FileUpload) => Observable<FileUpload | Upload>[]) {
