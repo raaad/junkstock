@@ -31,6 +31,10 @@ body {
       @apply text-neutral-400 text-xs pointer-events-none;
       border-bottom: thin solid var(--color-neutral-200);
     }
+
+    & > span {
+      margin-left: calc(0.25rem * var(--indent, 0));
+    }
   }
 }
 

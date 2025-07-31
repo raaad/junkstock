@@ -2,6 +2,7 @@ import type { Tags as RawTags } from 'exifreader';
 import { load as loadMeta } from 'exifreader';
 import type { IExif } from 'piexif-ts';
 import { dump as dumpMeta, insert as insertMeta, Tags, TagValues, Types } from 'piexif-ts';
+import { blobToDataUrl, fetchToBlob } from '../../utils';
 
 export { heicTo } from 'heic-to';
 
@@ -65,18 +66,7 @@ export async function getMetadata(file: File) {
 }
 
 export async function insertMetadata(blob: Blob, metadata: IExif) {
-  const result = new Promise<string>(resolve => {
-    const reader = new FileReader();
-
-    reader.onload = e => {
-      const str = dumpMeta(metadata);
-      resolve(insertMeta(str, e.target?.result as string));
-    };
-
-    reader.readAsDataURL(blob);
-  });
-
-  return await (await fetch(await result)).blob();
+  return await fetchToBlob(insertMeta(dumpMeta(metadata), await blobToDataUrl(blob)));
 }
 
 // #endregion

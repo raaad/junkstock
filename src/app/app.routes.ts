@@ -19,6 +19,11 @@ export const routes: Routes = [
         path: 'sizes',
         component: SizesComponent,
         title: 'Sizes'
+      },
+      {
+        path: 'svg-render',
+        loadComponent: async () => (await import('./images/svg-render/svg-render.component')).SvgRenderComponent,
+        title: 'SVG render'
       }
     ],
     title: 'Images'

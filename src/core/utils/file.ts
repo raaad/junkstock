@@ -5,17 +5,14 @@ export async function fetchToBlob(url: string) {
   return await (await fetch(url)).blob();
 }
 
-export async function fetchToImage(url: string) {
-  const image = new Image();
-  image.crossOrigin = 'anonymous';
-  image.src = url;
-
-  await new Promise((resolve, reject) => {
-    image.addEventListener('load', resolve, false);
+export function fetchToImage(url: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    image.addEventListener('load', () => resolve(image), false);
     image.addEventListener('error', reject, false);
+    image.src = url;
   });
-
-  return image;
 }
 
 type DrawOptions = ImageEncodeOptions & {
@@ -32,7 +29,6 @@ export async function drawToBlob(data: string | HTMLImageElement, { size, multiD
 
   const { width, height } = size ?? { width: image.width, height: image.height };
   const canvas = new OffscreenCanvas(width, height);
-
   const ctx = canvas.getContext('2d');
 
   // --- drawImage
@@ -58,16 +54,14 @@ export async function drawToBlob(data: string | HTMLImageElement, { size, multiD
 }
 
 /** Convert Blob to DataURL */
-export async function blobToDataUrl(blob: Blob) {
-  const reader = new FileReader();
-
-  reader.readAsDataURL(blob);
-  await new Promise((resolve, reject) => {
-    reader.addEventListener('load', resolve, false);
+export function blobToDataUrl(blob: Blob) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => resolve(reader.result as string), false);
     reader.addEventListener('error', reject, false);
-  });
 
-  return reader.result as string;
+    reader.readAsDataURL(blob);
+  });
 }
 
 /** Create object URL from Blob */
@@ -95,9 +89,8 @@ export function downloadFile(dataUrl: string, name?: string): void;
 export function downloadFile(data: Blob | string, download = '') {
   const href =
     typeof data === 'string' ?
-      data.startsWith('data:') ?
-        data
-      : throwIt<string>('Invalid Data URL provided')
+      isDataUrl(data) ? data
+      : throwIt<string>(`Invalid Data URL provided: ${data}`)
     : blobToObjectUrl(data);
 
   const a = Object.assign(document.createElement('a'), {
@@ -109,4 +102,8 @@ export function downloadFile(data: Blob | string, download = '') {
 
   a.dispatchEvent(new MouseEvent('click'));
   typeof data !== 'string' && setTimeout(() => URL.revokeObjectURL(href));
+}
+
+export function isDataUrl(url: string) {
+  return url.startsWith('data:');
 }

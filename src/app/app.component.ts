@@ -15,7 +15,15 @@ import { ViewPageLoadingDirective } from './common/view-page-loading.direcitve';
       </ul>
       <ul class="menu size-full hidden md:block">
         @for (item of menu; track item) {
-          <li [routerLink]="[item.path]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" [class.disabled]="item.path === undefined">
+          <li
+            [routerLink]="[item.path]"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [class.disabled]="item.path === undefined"
+            [style.--indent]="item.indent"
+            #el
+            (keydown.enter)="el.click()"
+            [attr.tabindex]="item.path ? 0 : -1">
             <span>{{ item.title }}</span>
           </li>
         }
