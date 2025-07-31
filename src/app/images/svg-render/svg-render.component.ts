@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { SvgRenderer } from '../../../core/svg-renderer';
-import { blobToObjectUrl } from '../../../core/utils';
+import { blobToObjectUrl, svgToDataUrl } from '../../../core/utils';
 import { provideImageUrlResolvers } from './image-url.resolvers';
 import { RENDER_DATA } from './render-mock.data';
 import { provideRenderer } from './renderer.component';
@@ -8,10 +8,11 @@ import { provideRenderer } from './renderer.component';
 @Component({
   selector: 'app-svg-render',
   template: `
-    <div>
-      <button (click)="render()" class="btn btn-sm">Render NG component as JPG</button>
+    <div class="flex gap-3">
+      <button (click)="render('jpeg')" class="btn btn-sm">Render as JPEG</button>
+      <button (click)="render('svg')" class="btn btn-sm">Render as SVG</button>
       @if (result()) {
-        <a (click)="copy()" (keydown.enter)="copy()" class="hover:text-sky-700 cursor-pointer ml-4" tabindex="0">copy</a>
+        <a (click)="copy()" (keydown.enter)="copy()" class="hover:text-sky-700 cursor-pointer" tabindex="0">copy</a>
       }
     </div>
 
@@ -38,10 +39,15 @@ export class SvgRenderComponent {
 
   protected readonly result = signal(undefined as string | undefined);
 
-  protected async render() {
-    const blob = await this.renderer.render('jpeg', RENDER_DATA, { size: { width: 400, height: 600 }, logLevel: 'trace' });
+  protected async render(type: 'jpeg' | 'svg') {
+    const options = { size: { width: 400, height: 600 } };
 
-    this.result.set(blobToObjectUrl(blob));
+    const blob =
+      type === 'jpeg' ?
+        await this.renderer.render('jpeg', RENDER_DATA, options)
+      : await this.renderer.render('svg', RENDER_DATA, { ...options, embedImages: true });
+
+    this.result.set(blob instanceof Blob ? blobToObjectUrl(blob) : svgToDataUrl(blob));
   }
 
   protected copy() {

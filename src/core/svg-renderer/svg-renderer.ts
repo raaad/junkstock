@@ -205,7 +205,7 @@ export class SvgRenderer<T> {
     return createEnvironmentInjector([{ provide: IMAGE_URL_RESOLVERS, useValue: deferredResolvers }], parent);
   }
 
-  private async log(svg: SVGSVGElement, result: string | Blob, { logLevel, size }: RenderOptions) {
+  private async log(svg: SVGSVGElement, result: string | Blob, { logLevel = 'trace', size }: RenderOptions) {
     if (logLevel !== 'none') {
       this.logger.debug('TIPS:');
       this.logger.debug('- For SVG in console: Non-embedded images are not displayed');
