@@ -8,7 +8,7 @@ import { RENDER_DATA } from './mock.data';
   selector: 'app-render',
   imports: [ResolveUrlPipe, InterpolatePipe],
   template: `
-    <!-- <svg:defs> -> trick ng, to keep style tag  -->
+    <!-- NG trick: to keep the style tag, place it inside <svg:defs>  -->
     <svg:defs>
       <style>
         app-render {
@@ -48,16 +48,19 @@ import { RENDER_DATA } from './mock.data';
       </style>
     </svg:defs>
 
-    <svg:defs>
-      <filter id="svg-filter" color-interpolation-filters="linearRGB" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse">
-        <feComponentTransfer x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" result="componentTransfer">
-          <feFuncR type="table" tableValues="1 0 1" />
-          <feFuncG type="table" tableValues="0 1 0" />
-          <feFuncB type="table" tableValues="1 0 1" />
-          <feFuncA type="table" tableValues="0 1" />
-        </feComponentTransfer>
-      </filter>
-    </svg:defs>
+    <!-- Firefox fix: filters must be placed inside an SVG tag -->
+    <svg:svg width="0" height="0" xmlns="http://www.w3.org/2000/svg" style="position: absolute;">
+      <defs>
+        <filter id="svg-filter" color-interpolation-filters="linearRGB" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse">
+          <feComponentTransfer x="0%" y="0%" width="100%" height="100%" in="SourceGraphic" result="componentTransfer">
+            <feFuncR type="table" tableValues="1 0 1" />
+            <feFuncG type="table" tableValues="0 1 0" />
+            <feFuncB type="table" tableValues="1 0 1" />
+            <feFuncA type="table" tableValues="0 1" />
+          </feComponentTransfer>
+        </filter>
+      </defs>
+    </svg:svg>
 
     <div class="item with-filters">
       <span>Static image from local assets + CSS filters</span>
