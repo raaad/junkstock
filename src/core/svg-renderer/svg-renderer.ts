@@ -10,7 +10,7 @@ import {
   Type
 } from '@angular/core';
 import { LOGGER } from '../common/logger';
-import { blobToDataUrl, drawToBlob, fetchToBlob, fitToSize, isDataUrl, svgToDataUrl, svgToString } from '../utils';
+import { blobToDataUrl, drawToBlob, fetchToBlob, isDataUrl, svgToDataUrl, svgToString } from '../utils';
 import { RendererContainerComponent } from './container.component';
 import { RENDERER_COMPONENT_SELECTOR } from './svg-component-selector.token';
 import { ExportOptions, InputOptions, RenderOptions, RenderType, SvgRendererContainerComponent } from './svg-renderer.types';
@@ -25,10 +25,10 @@ import { fromCustomDataUrl, isCustomDataUrl, toCustomDataUrl } from './utils/cus
  *   Because the resulting SVG will be rendered to JPEG in isolated context. Only the template's inline style can be used.
  * - Async code is not supported.
  *   The rendered image will only contain what was rendered at the time of afterRender.
- * - Non-DataUri images must use - imageUrlResolver
+ * - Non-DataUrl images must use imageUrlResolver
  */
 @Injectable()
-export class SvgRenderer<T> {
+export class SvgRenderer {
   private readonly logger = inject(LOGGER);
   private readonly selector = inject(RENDERER_COMPONENT_SELECTOR);
   private readonly imageUrlResolvers = inject(IMAGE_URL_RESOLVERS);
@@ -37,10 +37,10 @@ export class SvgRenderer<T> {
   // #region render
 
   /** Render preview as SVG */
-  render<O extends InputOptions>(type: 'svg', data: T, options: O): Promise<string>;
+  render<T, O extends InputOptions>(type: 'svg', data: T, options: O): Promise<string>;
   /** Render preview as PNG | JPEG */
-  render<O extends Omit<InputOptions, 'embedImages'>>(type: Exclude<RenderType, 'svg'>, data: T, options: O): Promise<Blob>;
-  async render<O extends RenderOptions & ExportOptions>(type: RenderType, data: T, { embedImages, context, ...options }: O) {
+  render<T, O extends Omit<InputOptions, 'embedImages'>>(type: Exclude<RenderType, 'svg'>, data: T, options: O): Promise<Blob>;
+  async render<T, O extends RenderOptions & ExportOptions>(type: RenderType, data: T, { embedImages, context, ...options }: O) {
     const component = this.selector(data);
 
     const svg = await this.renderSvg(RendererContainerComponent<T, typeof options>, {
@@ -55,8 +55,6 @@ export class SvgRenderer<T> {
       ) ?
         await this.export(type, svg, { embedImages, context })
       : await this.export(type, svg, { context });
-
-    options.trace && this.traceResult(svg, result, options);
 
     return result;
   }
@@ -74,7 +72,7 @@ export class SvgRenderer<T> {
     const element = (ref.location as ElementRef<SVGSVGElement>).nativeElement;
     const svg = element.cloneNode(true) as SVGSVGElement;
 
-    this.logger.trace('SVG: rendered', svg);
+    this.logger.trace(() => ['SVG: rendered', svg.cloneNode(true)]);
 
     ref.destroy();
     return svg;
@@ -89,7 +87,7 @@ export class SvgRenderer<T> {
 
     const str = svgToString(svg);
 
-    this.logger.trace('SVG: exporting');
+    this.logger.trace(() => ['SVG: exporting', svg]);
 
     switch (type) {
       case 'svg':
@@ -115,10 +113,7 @@ export class SvgRenderer<T> {
   private async resolveImages(svg: SVGSVGElement, embed: boolean, context: unknown) {
     const images = await this.extractImages(svg, context);
 
-    this.logger.trace(
-      'SVG: images extracted',
-      Array.from(images.values()).map(i => (isDataUrl(i) ? 'data:...' : i))
-    );
+    this.logger.trace(() => ['SVG: images extracted', Array.from(images.values()).map(i => (isDataUrl(i) ? 'data:...' : i))]);
 
     await this.preprocessImages(images);
 
@@ -130,6 +125,7 @@ export class SvgRenderer<T> {
   }
 
   private async extractImages(svg: SVGSVGElement, context: unknown) {
+    // TODO: extract imageUrls from backgrounds?, CSS variables?
     return new Map(
       await Promise.all(
         Array.from(svg.querySelectorAll('img[src]'))
@@ -159,10 +155,7 @@ export class SvgRenderer<T> {
   }
 
   private async embedImages(images: Map<HTMLImageElement, string>) {
-    this.logger.debug(
-      `SVG: embedding images`,
-      Array.from(images.values()).map(i => (isDataUrl(i) ? 'data:...' : i))
-    );
+    this.logger.debug(() => [`SVG: embedding images`, Array.from(images.values()).map(i => (isDataUrl(i) ? 'data:...' : i))]);
 
     const fetched = new Map(await Promise.all(Array.from(new Set(images.values())).map(async url => [url, await this.fetchImage(url)] as [string, string])));
 
@@ -192,6 +185,7 @@ export class SvgRenderer<T> {
 
     if (filters) {
       this.logger.debug(`SVG: preapplying SVG filters`, url, filters);
+
       const { dataUrl, width, height, rotation } = await extractImageData(url);
 
       const svg = await this.renderSvg(ApplyFilterOnImageComponent, {
@@ -228,23 +222,6 @@ export class SvgRenderer<T> {
     const { supportsSvgFilter } = await import('./utils/supports-svg-filter');
 
     return await supportsSvgFilter(this.logger);
-  }
-
-  private async traceResult(svg: SVGSVGElement, result: string | Blob, { size }: RenderOptions) {
-    this.logger.trace('SVG: tips:');
-    this.logger.trace('- For SVG in console: Non-embedded images are not displayed');
-    this.logger.trace('- For SVG in new tab: Images with relative URLs are not displayed');
-
-    // log as URLs
-    this.logger.trace(`SVG: ${URL.createObjectURL(new Blob([svgToString(svg)], { type: 'image/svg+xml' }))}`);
-
-    typeof result !== 'string' && this.logger.trace(`RESULT: ${URL.createObjectURL(result)}`);
-
-    // log as image
-    const url = await blobToDataUrl(typeof result === 'string' ? await drawToBlob(svgToDataUrl(result)) : result);
-
-    const { width, height } = fitToSize(size, { width: 400, height: 300 });
-    this.logger.trace('%c ', `background: center / contain no-repeat url(${url}); padding: ${height}px 0 0 ${width}px; border: thin solid #f003;`);
   }
 
   // #endregion

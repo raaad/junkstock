@@ -18,13 +18,10 @@ import {
   timeout,
   withLatestFrom
 } from 'rxjs';
-import { Logger } from '../../common/logger';
 import { FileUpload, QueueUpload, Upload, UploadId, UploadState } from '../upload.types';
-import { ifFileUpload, takeUntilAbort, toFailed, toLog, toUpload } from './operators.utils';
+import { ifFileUpload, Log, takeUntilAbort, toFailed, toUpload } from './operators.utils';
 
-export function enqueue(logger: Logger, abort$: Observable<UploadId>) {
-  const log = toLog(logger);
-
+export function enqueue(log: Log, abort$: Observable<UploadId>) {
   return (source: Observable<QueueUpload>) =>
     source.pipe(
       mergeMap(({ id, file }) => {
@@ -53,13 +50,11 @@ export function enqueue(logger: Logger, abort$: Observable<UploadId>) {
 
 export function validate(
   rules: Record<string, (file: File) => boolean | Promise<boolean> | Observable<boolean>>,
-  logger: Logger,
+  log: Log,
   abort$: Observable<UploadId>,
   errorText = 'invalid file',
   timeoutIn = 6e4 // 1min
 ) {
-  const log = toLog(logger);
-
   return ifFileUpload(({ file, ...rest }) => [
     of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'validation')),
     defer(() =>
@@ -85,14 +80,7 @@ export function validate(
   }
 }
 
-export function preProcessing(
-  process: (file: File) => ObservableInput<File>,
-  logger: Logger,
-  abort$: Observable<UploadId>,
-  errorText = 'preprocessing failed'
-) {
-  const log = toLog(logger);
-
+export function preProcessing(process: (file: File) => ObservableInput<File>, log: Log, abort$: Observable<UploadId>, errorText = 'preprocessing failed') {
   return ifFileUpload(({ file, ...rest }) => [
     of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'preprocessing')),
     defer(() => process(file)).pipe(
@@ -106,12 +94,10 @@ export function preProcessing(
 
 export function clientThumb(
   getThumb: (file: File) => ObservableInput<Exclude<Upload['thumb'], undefined>>,
-  logger: Logger,
+  log: Log,
   abort$: Observable<UploadId>,
   errorText = 'client thumb failed'
 ) {
-  const log = toLog(logger);
-
   return ifFileUpload(({ id, file, state, ...upload }) => [
     of({ id, file, state, ...upload } as FileUpload).pipe(log('trace', 'client thumb')),
     defer(() => getThumb(file)).pipe(
@@ -136,13 +122,11 @@ export function clientThumb(
 
 export function upload(
   uploadFile: (id: UploadId, file: File, abort$: Observable<unknown>) => ObservableInput<{ uploaded: number | true }>,
-  logger: Logger,
+  log: Log,
   abort$: Observable<UploadId>,
   errorText = 'upload failed',
   timeoutIn = 36e5 // 1h
 ) {
-  const log = toLog(logger);
-
   return ifFileUpload(({ file, ...rest }) => [
     of((rest = toUpload(rest, UploadState.Uploading))).pipe(log('trace', 'uploading')),
     defer(() =>
@@ -172,13 +156,11 @@ export function upload(
 
 export function postProcessing(
   process: (id: UploadId) => ObservableInput<void>,
-  logger: Logger,
+  log: Log,
   abort$: Observable<UploadId>,
   errorText = 'postprocessing failed',
   timeoutIn = 6e4 // 1min
 ) {
-  const log = toLog(logger);
-
   return (source: Observable<Upload>) =>
     source.pipe(
       mergeMap(upload =>
@@ -198,9 +180,7 @@ export function postProcessing(
 }
 
 /** Should be on a final step to collect all the emits */
-export function canalize(logger: Logger, flush$: Observable<void>) {
-  const log = toLog(logger);
-
+export function canalize(log: Log, flush$: Observable<void>) {
   const store$ = flush$.pipe(
     log('trace', 'uploads flushed'),
     startWith(void 0),

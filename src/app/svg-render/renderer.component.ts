@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { InterpolatePipe } from '@core/common';
 import { RENDERER_COMPONENT_SELECTOR, RenderOptions, SvgRendererComponent } from '@core/svg-renderer';
 import { ResolveUrlPipe } from './image-url.resolvers';
-import { RENDER_DATA } from './render-mock.data';
+import { RENDER_DATA } from './mock.data';
 
 @Component({
   selector: 'app-render',

@@ -5,7 +5,6 @@ export type RenderType = 'svg' | 'png' | 'jpeg';
 export interface RenderOptions {
   /** Resulting image size */
   size: { width: number; height: number };
-  trace?: boolean;
 }
 
 export interface ExportOptions<C = unknown> {

@@ -3,6 +3,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { map, Subject, tap } from 'rxjs';
 import { LOGGER } from '../common/logger';
 import { canalize, enqueue } from './operators/operators';
+import { toLog } from './operators/operators.utils';
 import { UPLOAD_PIPELINE } from './upload-pipeline.token';
 import { QueueUpload, UploadId, UploadState } from './upload.types';
 
@@ -16,9 +17,9 @@ export class Uploader implements OnDestroy {
   private readonly queue$ = new Subject<QueueUpload>();
 
   readonly uploads$ = this.queue$.pipe(
-    enqueue(inject(LOGGER), this.abort$),
+    enqueue(toLog(inject(LOGGER)), this.abort$),
     inject(UPLOAD_PIPELINE)(this.abort$),
-    canalize(inject(LOGGER), this.flush$),
+    canalize(toLog(inject(LOGGER)), this.flush$),
     takeUntilDestroyed()
   );
 

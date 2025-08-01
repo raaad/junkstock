@@ -84,7 +84,7 @@ export class ThreeComponent implements OnInit {
   async ngOnInit() {
     this.onWindowResize();
 
-    this.object = await fromGltf(this.modelUrl, v => this.logger.debug(`loading: ${(v * 100).toFixed()}%`));
+    this.object = await fromGltf(this.modelUrl, v => this.logger.debug(`3D: loaded ${(v * 100).toFixed()}%`));
 
     this.scene.add(this.object);
 

@@ -27,7 +27,7 @@ const ORIENTATION_MAP: Record<ExifOrientation, RotationAngle> = {
   [ExifOrientation.Rotated270]: 270
 };
 
-export function extractSvgFilters(el: HTMLElement) {
+export function extractSvgFilters(el: HTMLElement, logger: Pick<Console, 'warn'> = console) {
   const pattern = /url\("#(.+)"\)/;
   const parent = el.closest('svg');
 
@@ -39,8 +39,12 @@ export function extractSvgFilters(el: HTMLElement) {
   const value = filters.map(id => `url("#${id}")`).join(' ');
 
   const markup = filters
-    .map(id => parent?.getElementById(id) as unknown)
-    .filter((v): v is SVGElement => v instanceof SVGElement)
+    .map(id => {
+      const el = parent?.getElementById(id);
+      !el && logger.warn(`SVG filter '${id} not found'`);
+      return el;
+    })
+    .filter((el): el is SVGElement => el instanceof SVGElement)
     .map(el => svgToString(el))
     .join('');
 

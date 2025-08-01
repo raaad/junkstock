@@ -63,7 +63,7 @@ async function getClientThumb(file: File, dimension = 100, useDataUri = false) {
   return { url: useDataUri ? await blobToDataUrl(blob) : blobToObjectUrl(blob), ...size };
 }
 
-export const mocks = {
+export const mock = {
   newIds: newIds(),
   validationRules,
   getUploadUrls,

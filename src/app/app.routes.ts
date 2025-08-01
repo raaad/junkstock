@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './common/home.component';
-import { SizesComponent } from './images/sizes/sizes.component';
 
 export const routes: Routes = [
   {
@@ -13,20 +12,9 @@ export const routes: Routes = [
     title: 'Uploads'
   },
   {
-    path: 'images',
-    children: [
-      {
-        path: 'sizes',
-        component: SizesComponent,
-        title: 'Sizes'
-      },
-      {
-        path: 'svg-render',
-        loadComponent: async () => (await import('./images/svg-render/svg-render.component')).SvgRenderComponent,
-        title: 'SVG render'
-      }
-    ],
-    title: 'Images'
+    path: 'svg-render',
+    loadComponent: async () => (await import('./svg-render/svg-render.component')).SvgRenderComponent,
+    title: 'SVG render'
   },
   {
     path: '3d',

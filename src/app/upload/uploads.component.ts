@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { LOGGER } from '@core/common';
 import { getFiles, Upload, Uploader, UploadState, withNewly } from '@core/upload';
 import { FilesizePipe } from './filesize.pipe';
-import { mocks } from './mocks';
+import { mock } from './mock.data';
 import { provideUploadPipeline } from './provide-upload-pipeline';
 
 @Component({
@@ -176,8 +176,7 @@ export class UploadsComponent {
   constructor() {
     this.uploader.uploads$.pipe(withNewly(({ state }) => state === UploadState.Uploaded)).subscribe(items =>
       this.logger.trace(
-        'uploader:',
-        'newly uploaded',
+        'uploader: newly uploaded',
         items.map(({ id }) => id)
       )
     );
@@ -186,7 +185,7 @@ export class UploadsComponent {
   private upload(files: File[]) {
     !this.uploader.hasActive() && files.length && this.uploader.flush();
 
-    this.uploader.upload(Object.fromEntries(files.map(file => [mocks.newIds(), file])));
+    this.uploader.upload(Object.fromEntries(files.map(file => [mock.newIds(), file])));
   }
 
   protected selected({ target }: Event) {
