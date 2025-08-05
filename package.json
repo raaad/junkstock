@@ -1,10 +1,10 @@
 {
   "name": "junkstock",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --base-href /junkstock/ --deploy-url /junkstock/",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "lint": "ng lint",
     "pretty": "npx prettier --write ./src/**/*.{json,js,ts,html,css}"

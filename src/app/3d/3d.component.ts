@@ -5,7 +5,7 @@ import { LOGGER } from '@core/common';
 import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMaterial, Object3D, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
-const MODEL_URL = 'duck.glb';
+const MODEL_URL = 'assets/duck.glb';
 
 @Component({
   selector: 'app-3d',

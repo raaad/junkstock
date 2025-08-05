@@ -29,7 +29,6 @@ const ORIENTATION_MAP: Record<ExifOrientation, RotationAngle> = {
 
 export function extractSvgFilters(el: HTMLElement, logger: Pick<Console, 'warn'> = console) {
   const pattern = /url\("#(.+)"\)/;
-  const parent = el.closest('svg');
 
   const filters = el.style.filter
     .split(' ')
@@ -38,6 +37,7 @@ export function extractSvgFilters(el: HTMLElement, logger: Pick<Console, 'warn'>
 
   const value = filters.map(id => `url("#${id}")`).join(' ');
 
+  const parent = el.closest('svg');
   const markup = filters
     .map(id => {
       const el = parent?.getElementById(id);

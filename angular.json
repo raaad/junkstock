@@ -52,7 +52,10 @@
                 "input": "node_modules/three/examples/jsm/libs/draco"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": ["src/styles.css"],
+            "define": {
+              "APP_VERSION": "'unknown'"
+            }
           },
           "configurations": {
             "production": {

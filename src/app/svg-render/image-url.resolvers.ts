@@ -18,7 +18,7 @@ export function provideImageUrlResolvers() {
     {
       provide: IMAGE_URL_RESOLVERS,
       useFactory: () => {
-        const base = inject(LocationStrategy).getBaseHref();
+        const base = `${inject(LocationStrategy).getBaseHref()}assets/`;
 
         return new Map<ImageUrlResolverKind, ImageUrlResolver>([
           ['local-assets', (url: string) => `${base}${url}`],

@@ -40,7 +40,9 @@ jobs:
       - name: Install
         run: npm ci
       - name: Build
-        run: npm run build
+        env:
+          BASE_HREF: /${{ github.event.repository.name }}/
+        run: npm run build -- --base-href $BASE_HREF --deploy-url $BASE_HREF --define APP_VERSION="'$(node -p "require('./package.json').version")'"
       - name: Fix 404
         run: cp ./dist/app/browser/index.html ./dist/app/browser/404.html
       - name: Upload artifact
