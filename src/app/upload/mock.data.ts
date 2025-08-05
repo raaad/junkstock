@@ -51,7 +51,7 @@ function waitForServerConfirmation(id: UploadId) {
   return of(void 0).pipe(delay(id.includes('confirmation-toolong') ? 1000 * 60 : 2000));
 }
 
-async function getClientThumb(file: File, dimension = 100, useDataUri = false) {
+async function getClientThumb(file: File, dimension = 100, useDataUrl = false) {
   // TODO: filter by supported types
 
   const url = blobToObjectUrl(file);
@@ -60,7 +60,7 @@ async function getClientThumb(file: File, dimension = 100, useDataUri = false) {
   const size = fitToSize(image, { width: dimension, height: dimension }, 'scale-down');
   const blob = await drawToBlob(image, { size, type: file.type });
 
-  return { url: useDataUri ? await blobToDataUrl(blob) : blobToObjectUrl(blob), ...size };
+  return { url: useDataUrl ? await blobToDataUrl(blob) : blobToObjectUrl(blob), ...size };
 }
 
 export const mock = {

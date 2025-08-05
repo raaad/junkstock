@@ -164,5 +164,5 @@ body {
 }
 
 .note {
-  @apply border-dashed rounded-xs text-neutral-400 border-neutral-200 p-2 text-xs truncate;
+  @apply border-dashed rounded-xs text-neutral-600 border-neutral-200 p-2 text-xs truncate;
 }
