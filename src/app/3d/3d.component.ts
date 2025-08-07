@@ -1,7 +1,7 @@
 import { LocationStrategy } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal } from '@angular/core';
 import { controlsLookAt, fitToObject, fromGltf, rotateAround, updateSize } from '@core/3d';
-import { LOGGER } from '@core/common';
+import { LOGGER } from '@core/angular';
 import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMaterial, Object3D, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 

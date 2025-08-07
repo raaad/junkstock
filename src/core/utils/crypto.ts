@@ -1,5 +1,5 @@
-import { throwIt } from '../common/throw-it';
 import { blobToDataUrl, fetchToBlob } from './file';
+import { throwIt } from './throw-it';
 
 // #region ecrypt/decrypt
 

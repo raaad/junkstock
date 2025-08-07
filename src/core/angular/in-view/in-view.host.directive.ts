@@ -1,22 +1,29 @@
-import { Directive, ElementRef, OnDestroy, inject, output } from '@angular/core';
+import { Directive, ElementRef, InjectionToken, OnDestroy, inject, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, Subject, debounceTime, distinctUntilChanged, map, merge, of, startWith, switchMap } from 'rxjs';
+import { BehaviorSubject, Subject, asapScheduler, debounceTime, distinctUntilChanged, map, merge, of, startWith, switchMap } from 'rxjs';
 
-const THRESHOLD = 0.8;
-const SCROLL_DEBOUNCE = 300; // ms
+export const INVIEW_OPTIONS = new InjectionToken<{
+  threshold: number;
+  /** ms */
+  scrollDebounce: number;
+}>('INVIEW_OPTIONS');
+
 const EMPTY = new Array<Element>();
 const DOCUMENT_POSITION_PRECEDING = 2; // Node.DOCUMENT_POSITION_PRECEDING
 
 @Directive({
-  selector: '[appInViewHost]',
+  // eslint-disable-next-line @angular-eslint/directive-selector
+  selector: '[inView]',
   host: {
     '(scroll)': 'onScroll()'
   }
 })
 export class InViewHostDirective implements OnDestroy {
+  private readonly options = inject(INVIEW_OPTIONS, { optional: true }) ?? { threshold: 0.8, scrollDebounce: 200 };
+
   private readonly observer = new IntersectionObserver(this.callback.bind(this), {
     root: inject(ElementRef).nativeElement,
-    threshold: THRESHOLD
+    threshold: this.options.threshold
   });
 
   private readonly data = new Map<Element, unknown>();
@@ -27,15 +34,13 @@ export class InViewHostDirective implements OnDestroy {
 
   private readonly output$ = this.scrolled$.pipe(
     startWith(void 0),
-    switchMap(() => merge(of(EMPTY), this.targets$.pipe(debounceTime(SCROLL_DEBOUNCE)))),
+    switchMap(() => merge(of(EMPTY), this.targets$.pipe(debounceTime(this.options.scrollDebounce, this.options.scrollDebounce ? undefined : asapScheduler)))),
     distinctUntilChanged(),
     takeUntilDestroyed(),
     map(targets => targets.map(target => ({ target, data: this.data.get(target) })))
   );
 
-  readonly inView = output<{ target: Element; data: unknown }[]>({
-    alias: 'appInViewHost'
-  });
+  readonly inView = output<{ target: Element; data: unknown }[]>();
 
   constructor() {
     this.output$.subscribe(targets => this.inView.emit(targets));

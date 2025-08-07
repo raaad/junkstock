@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { InterpolatePipe } from '@core/common';
+import { InterpolatePipe } from '@core/angular';
 import { RENDERER_COMPONENT_SELECTOR, RenderOptions, SvgRendererComponent } from '@core/svg-renderer';
 import { ResolveUrlPipe } from './image-url.resolvers';
 import { RENDER_DATA } from './mock.data';

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LOGGER } from '@core/common';
+import { LOGGER } from '@core/angular';
 import { decrypt, encrypt } from '@core/utils';
 
 @Component({

@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { LOGGER } from '@core/common';
+import { LOGGER } from '@core/angular';
 import { getFiles, Upload, Uploader, UploadState, withNewly } from '@core/upload';
 import { FilesizePipe } from './filesize.pipe';
 import { mock } from './mock.data';
@@ -51,7 +51,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
               <img [src]="url" [alt]="item.name" class="size-full object-cover" />
             }
           </div>
-          <div class="flex-1 truncate" [title]="item.path || item.name">
+          <div class="flex-1 truncate" [attr.title]="item.path || item.name">
             {{ item.id }}: <span class="text-neutral-400">{{ item.path.substring(0, item.path.lastIndexOf('/') + 1) }}</span
             >{{ item.name }}
           </div>
@@ -60,7 +60,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
             @if (item.state < UploadState.Failed) {
               <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ getProgress(item).toFixed(2) }}%</span>
               @if (item.state < UploadState.Uploaded) {
-                <button class="text-xs cursor-pointer pl-1 text-red-400" (click)="uploader.abort(item.id)">🛇</button>
+                <button class="text-xs cursor-pointer pl-1" (click)="uploader.abort(item.id)">🚫</button>
               }
             } @else {
               {{ item.error ?? '' }}

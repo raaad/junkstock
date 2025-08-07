@@ -5,7 +5,10 @@ import { FitToSizeComponent } from './fit-to-size.component';
 @Component({
   selector: 'app-sizes',
   imports: [BoundingBoxComponent, FitToSizeComponent],
-  template: ` <app-bounding-box class="flex-1" /> <app-fit-to-size class="flex-1" /> `,
+  template: `
+    <app-bounding-box class="flex-1" />
+    <app-fit-to-size class="flex-1" />
+  `,
   styles: [
     `
       :host {
@@ -13,6 +16,7 @@ import { FitToSizeComponent } from './fit-to-size.component';
         flex-wrap: wrap;
         align-items: start;
         gap: 2rem;
+        padding: 1rem;
       }
     `
   ],

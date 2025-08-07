@@ -9,7 +9,7 @@ import {
   inputBinding,
   Type
 } from '@angular/core';
-import { LOGGER } from '../common/logger';
+import { LOGGER } from '../angular/logger';
 import { blobToDataUrl, drawToBlob, fetchToBlob, isDataUrl, svgToDataUrl, svgToString } from '../utils';
 import { RendererContainerComponent } from './container.component';
 import { RENDERER_COMPONENT_SELECTOR } from './svg-component-selector.token';

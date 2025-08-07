@@ -5,7 +5,7 @@
     "types": [],
     "paths": {
       "@core/3d": ["./src/core/3d"],
-      "@core/common": ["./src/core/common"],
+      "@core/angular": ["./src/core/angular"],
       "@core/svg-renderer": ["./src/core/svg-renderer"],
       "@core/types": ["./src/core/types"],
       "@core/upload": ["./src/core/upload"],

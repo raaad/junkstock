@@ -1,8 +1,7 @@
 import { LocationStrategy } from '@angular/common';
 import { inject, Pipe, PipeTransform } from '@angular/core';
-import { throwIt } from '@core/common';
 import { IMAGE_URL_RESOLVERS, ImageUrlResolver, ImageUrlResolverKind } from '@core/svg-renderer';
-import { blobToObjectUrl, fetchToBlob } from '@core/utils';
+import { blobToObjectUrl, fetchToBlob, throwIt } from '@core/utils';
 
 @Pipe({ name: 'resolveUrl', pure: true })
 export class ResolveUrlPipe implements PipeTransform {

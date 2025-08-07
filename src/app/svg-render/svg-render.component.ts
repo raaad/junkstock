@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { LOGGER, Logger } from '@core/common';
+import { LOGGER, Logger } from '@core/angular';
 import { RenderOptions, SvgRenderer } from '@core/svg-renderer';
 import { blobToDataUrl, blobToObjectUrl, drawToBlob, fitToSize, svgToDataUrl } from '@core/utils';
 import { provideImageUrlResolvers } from './image-url.resolvers';

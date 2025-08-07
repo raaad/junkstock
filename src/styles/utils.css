@@ -57,3 +57,11 @@
 }
 
 /* #endregion */
+
+@utility separator {
+  & > * + *::before {
+    content: '';
+    display: block;
+    border-top: dashed thin var(--color-neutral-200);
+  }
+}

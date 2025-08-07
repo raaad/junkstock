@@ -1,16 +1,23 @@
 import { Component } from '@angular/core';
-import { DateComponent } from './date.component';
+import { ConfirmComponent } from './confirm.component';
 import { InViewComponent } from './in-view.component';
 
 @Component({
   selector: 'app-misc',
-  imports: [InViewComponent, DateComponent],
-  template: `<app-date /> <app-in-view class="min-h-0" /> `,
+  imports: [ConfirmComponent, InViewComponent],
+  template: `
+    <app-confirm />
+    <app-in-view />
+  `,
   styles: [
     `
+      @reference "../../styles.css";
+
       :host {
         display: flex;
         flex-direction: column;
+
+        @apply separator;
       }
     `
   ]

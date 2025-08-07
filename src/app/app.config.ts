@@ -1,7 +1,8 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
-import { provideConsoleLogger, provideLogger } from '@core/common';
+import { provideConfirmActionEventPlugin, provideConsoleLogger, provideLogger } from '@core/angular';
 import { provideTitleStrategy } from './common/provide-title-strategy';
+import { provideConfirmAction } from './misc/confirm.component';
 
 import { routes } from './app.routes';
 
@@ -14,6 +15,9 @@ export const appConfig: ApplicationConfig = {
     provideTitleStrategy(),
 
     provideLogger(),
-    provideConsoleLogger()
+    provideConsoleLogger(),
+
+    provideConfirmActionEventPlugin(),
+    provideConfirmAction()
   ]
 };

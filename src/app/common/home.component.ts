@@ -14,7 +14,7 @@ import { Route, Router, RouterLink } from '@angular/router';
           tabindex="0"
           class="grid border border-dashed bg-neutral-50 border-neutral-300 rounded-xs cursor-pointer">
           <figure class="row-start-1 row-end-3 col-start-1 overflow-hidden"></figure>
-          <div class="row-start-2 col-start-1 backdrop-blur-md border-t border-neutral-200">
+          <div class="row-start-2 col-start-1 flex items-end justify-end backdrop-blur-md border-t border-neutral-200">
             <span class="block title">{{ item.title }}</span>
           </div>
         </div>
@@ -23,10 +23,11 @@ import { Route, Router, RouterLink } from '@angular/router';
   `,
   styles: [
     `
+      @reference "../../styles.css";
+
       :host {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-auto-rows: 10rem;
+        @apply grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[10rem];
+
         gap: 2rem;
         align-items: stretch;
         padding: 2rem;

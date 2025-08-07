@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ClassProvider, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, DefaultTitleStrategy, TitleStrategy } from '@angular/router';
 import { traverse } from '@core/utils';
 
@@ -11,7 +11,7 @@ class CustomTitleStrategy extends DefaultTitleStrategy {
   }
 }
 
-export function provideTitleStrategy() {
+export function provideTitleStrategy(): ClassProvider {
   return {
     provide: TitleStrategy,
     useClass: CustomTitleStrategy

@@ -1,5 +1,5 @@
 import { FactoryProvider, inject } from '@angular/core';
-import { LOGGER } from '@core/common';
+import { LOGGER } from '@core/angular';
 import { clientThumb, heic, postProcessing, preProcessing, progressiveUpload, toLog, upload, UPLOAD_PIPELINE, UploadPipeline, validate } from '@core/upload';
 import { batched } from '@core/utils';
 import { concatMap, of } from 'rxjs';

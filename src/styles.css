@@ -53,19 +53,38 @@ body {
 
 /* #endregion */
 
+/* #region radio | checkbox */
+
+input[type='radio'],
+input[type='checkbox'] {
+  appearance: none;
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+  margin-top: calc(var(--spacing) / 2);
+  border: thin solid var(--color-neutral-600);
+  padding: var(--spacing);
+  @apply transition-shadow;
+
+  &:checked {
+    box-shadow:
+      0 0 0 2px inset white,
+      0 0 0 1rem inset currentColor;
+  }
+}
+input[type='radio'] {
+  border-radius: 50%;
+}
+
+input[type='checkbox'] {
+  border-radius: 2px;
+}
+
+/* #endregion */
+
 /* #region button */
 
-.btn {
-  @apply py-2 px-4 rounded-xs border-1 text-neutral-600 transition-colors cursor-pointer;
-
-  &:hover {
-    @apply text-sky-700;
-  }
-
-  &:disabled,
-  &.disabled {
-    @apply text-neutral-300 pointer-events-none cursor-default;
-  }
+@utility fancy-border {
+  @apply rounded-xs border-1;
 
   /* #region deco */
   position: relative;
@@ -78,12 +97,13 @@ body {
     height: 6px;
     pointer-events: none;
     border: 2px solid;
+    border-color: inherit;
   }
 
   &:before {
     top: 0;
     left: 0;
-    transform: translate(-1.5px, -1.5px);
+    translate: -1.5px -1.5px;
     border-bottom: none;
     border-right: none;
     border-top-left-radius: 2px;
@@ -92,35 +112,83 @@ body {
   &:after {
     bottom: 0;
     right: 0;
-    transform: translate(1.5px, 1.5px);
+    translate: 1.5px 1.5px;
     border-top: none;
     border-left: none;
     border-bottom-right-radius: 2px;
   }
+}
 
-  /* #endregion */
+.btn {
+  @apply fancy-border py-2 px-4 text-neutral-600 transition-colors cursor-pointer;
+
+  &:hover {
+    @apply text-sky-700;
+  }
+
+  &:disabled,
+  &.disabled {
+    @apply text-neutral-300 pointer-events-none cursor-default;
+  }
 }
 
 .btn-sm {
   @apply py-1 px-2 text-xs;
 }
 
+.btn-icon {
+  @apply border-0;
+
+  &:before,
+  &:after {
+    content: none;
+  }
+}
+
+.btn-primary:not(:disabled):not(:hover) {
+  @apply border-sky-600;
+}
+
+.btn-reject:not(:disabled):not(:hover) {
+  @apply border-red-400;
+}
+
 /* #endregion */
 
-/* #region radio */
+/* #region dialog */
 
-.radio {
-  appearance: none;
-  width: calc(var(--spacing) * 4);
-  height: calc(var(--spacing) * 4);
-  margin-top: calc(var(--spacing) / 2);
-  border-radius: 50%;
-  border: thin solid var(--color-neutral-600);
-  padding: var(--spacing);
-  @apply transition-shadow;
+dialog {
+  @apply flex-col fancy-border overflow-visible;
+  max-width: 30rem;
+  min-width: min(25em, 90vw);
+  min-height: 12rem;
+  margin: auto;
+  animation: dialog 200ms forwards;
 
-  &:checked {
-    box-shadow: 0 0 0 2px inset currentColor;
+  &[open] {
+    @apply flex;
+    scale: 1;
+  }
+
+  &::backdrop {
+    animation: dialog-backdrop 300ms forwards;
+  }
+
+  section {
+    @apply overflow-auto flex-1;
+  }
+}
+
+@keyframes dialog {
+  from {
+    translate: 0 -100%;
+  }
+}
+
+@keyframes dialog-backdrop {
+  to {
+    background-color: #0005;
+    backdrop-filter: blur(4px);
   }
 }
 
