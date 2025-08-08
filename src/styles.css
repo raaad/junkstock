@@ -137,8 +137,9 @@ input[type='checkbox'] {
 }
 
 .btn-icon {
-  @apply border-0;
-
+  @apply border-0 p-1;
+  aspect-ratio: 1;
+  border-radius: 50%;
   &:before,
   &:after {
     content: none;
@@ -159,9 +160,8 @@ input[type='checkbox'] {
 
 dialog {
   @apply flex-col fancy-border overflow-visible;
-  max-width: 30rem;
-  min-width: min(25em, 90vw);
-  min-height: 12rem;
+  min-width: min(25rem, calc(100vw - 2rem));
+  max-width: min(40rem, calc(100vw - 2rem));
   margin: auto;
   animation: dialog 200ms forwards;
 
@@ -172,10 +172,9 @@ dialog {
 
   &::backdrop {
     animation: dialog-backdrop 300ms forwards;
-  }
-
-  section {
-    @apply overflow-auto flex-1;
+    /* Firefox fallback */
+    background-color: #0005;
+    backdrop-filter: blur(4px);
   }
 }
 
@@ -186,6 +185,11 @@ dialog {
 }
 
 @keyframes dialog-backdrop {
+  from {
+    background-color: transparent;
+    backdrop-filter: none;
+  }
+
   to {
     background-color: #0005;
     backdrop-filter: blur(4px);

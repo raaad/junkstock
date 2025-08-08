@@ -61,14 +61,14 @@ export function provideConfirmAction() {
     <dialog #dEl (close)="dialog()?.reject()">
       @if (dialog(); as dlg) {
         @let options = $any(dEl.showModal()) || dlg.options;
-        <div class="flex p-4">
-          <span>Confirm title</span>
+        <div class="flex items-center p-4">
+          <span class="truncate">Confirm title</span>
           <button (click)="dEl.close(); dlg.reject()" class="btn btn-sm btn-icon ml-auto">✖</button>
         </div>
-        <section class="px-4">{{ options.message ?? 'Default message?' }}</section>
+        <div class="px-4 overflow-auto">{{ options.message ?? 'Default message?' }}</div>
         <div class="flex p-4 gap-4">
-          <button (click)="dEl.close(); dlg.accept('ok')" class="btn btn-sm btn-primary ml-auto">{{ options.accept ?? 'Ok' }}</button>
-          <button (click)="dEl.close(); dlg.reject()" class="btn btn-sm btn-reject">{{ options.reject ?? 'Cancel' }}</button>
+          <button (click)="dEl.close(); dlg.accept('ok')" class="btn btn-sm btn-primary min-w-[4rem] ml-auto">{{ options.accept ?? 'Ok' }}</button>
+          <button (click)="dEl.close(); dlg.reject()" class="btn btn-sm min-w-[4rem] btn-reject">{{ options.reject ?? 'Cancel' }}</button>
         </div>
       }
     </dialog>

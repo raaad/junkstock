@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { getMenu } from './common/home.component';
 import { ViewPageLoadingDirective } from './common/view-page-loading.direcitve';
@@ -69,7 +69,8 @@ import { ViewPageLoadingDirective } from './common/view-page-loading.direcitve';
       }
     `
   ],
-  hostDirectives: [ViewPageLoadingDirective]
+  hostDirectives: [ViewPageLoadingDirective],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
   protected menu = getMenu(inject(Router).config);
