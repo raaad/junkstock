@@ -61,8 +61,8 @@ export function provideConfirmAction() {
     <dialog #dEl (close)="dialog()?.reject()">
       @if (dialog(); as dlg) {
         @let options = $any(dEl.showModal()) || dlg.options;
-        <div class="flex p-4">
-          <span>Confirm title</span>
+        <div class="flex items-center p-4">
+          <span class="truncate">Confirm title</span>
           <button (click)="dEl.close(); dlg.reject()" class="btn btn-sm btn-icon ml-auto">✖</button>
         </div>
         <section class="px-4">{{ options.message ?? 'Default message?' }}</section>

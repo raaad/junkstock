@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { InViewHostDirective, InViewTargetDirective } from '@core/angular';
 
 @Component({
@@ -26,7 +26,8 @@ import { InViewHostDirective, InViewTargetDirective } from '@core/angular';
         min-height: 0;
       }
     `
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InViewComponent {
   protected readonly items = new Array(100).fill(0).map((_, i) => i + 1);

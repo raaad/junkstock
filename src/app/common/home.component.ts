@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Route, Router, RouterLink } from '@angular/router';
 
 @Component({
@@ -33,7 +33,8 @@ import { Route, Router, RouterLink } from '@angular/router';
         padding: 2rem;
       }
     `
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
   protected menu = getMenu(inject(Router).config);
