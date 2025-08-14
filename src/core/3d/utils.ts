@@ -63,8 +63,8 @@ export function getMassCenter(object: Object3D) {
 }
 
 /** Get all intersecting objects by coordinates */
-export function getIntersects(camera: PerspectiveCamera, scene: Scene, x: number, y: number) {
-  const point = new Vector2((x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1);
+export function getIntersects(camera: PerspectiveCamera, scene: Scene, x: number, y: number, win = window) {
+  const point = new Vector2((x / win.innerWidth) * 2 - 1, -(y / win.innerHeight) * 2 + 1);
 
   const raycaster = new Raycaster();
   raycaster.setFromCamera(point, camera);

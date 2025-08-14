@@ -1,10 +1,10 @@
-import { Directive, ElementRef, OnDestroy, effect, inject, input } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, effect, inject, input } from '@angular/core';
 import { InViewHostDirective } from './in-view.host.directive';
 
 @Directive({
   selector: '[appInViewTarget]'
 })
-export class InViewTargetDirective implements OnDestroy {
+export class InViewTargetDirective {
   private readonly host = inject(InViewHostDirective, { optional: true });
   private readonly element = inject(ElementRef).nativeElement;
 
@@ -13,6 +13,7 @@ export class InViewTargetDirective implements OnDestroy {
 
   constructor() {
     const host = this.host;
+
     if (host) {
       effect(() => {
         const data = this.data();
@@ -21,10 +22,8 @@ export class InViewTargetDirective implements OnDestroy {
         host.unobserve(this.element);
         !disabled && host.observe(this.element, data);
       });
-    }
-  }
 
-  ngOnDestroy() {
-    this.host?.unobserve(this.element);
+      inject(DestroyRef).onDestroy(() => host.unobserve(this.element));
+    }
   }
 }

@@ -8,8 +8,8 @@ import { Route, Router, RouterLink } from '@angular/router';
     @for (item of menu; track item) {
       @if (item.path) {
         <div
-          [routerLink]="[item.path]"
           #el
+          [routerLink]="[item.path]"
           (keydown.enter)="el.click()"
           tabindex="0"
           class="grid border border-dashed bg-neutral-50 border-neutral-300 rounded-xs cursor-pointer">
@@ -42,7 +42,7 @@ export class HomeComponent {
 
 export function getMenu(routes: Route[], base = new Array<string | undefined>()): { title: string; path?: string; indent: number }[] {
   return routes.flatMap(({ title, path, children }) => [
-    ...(typeof title === 'string' && path ? [{ title, path: children ? undefined : [...base, path].join('/'), indent: base.length }] : []),
+    ...(typeof title === 'string' ? [{ title, path: children ? undefined : [...base, path].join('/'), indent: base.length }] : []),
     ...getMenu(children ?? [], [...base, path])
   ]);
 }

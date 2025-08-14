@@ -3,18 +3,18 @@ import { ConfirmAction } from './confirm-action.token';
 
 @Injectable({ providedIn: 'root' })
 export class CustomConfirmRegistry {
-  private readonly map = new Map<Element, ConfirmAction>();
+  private readonly registry = new Map<Element, ConfirmAction>();
 
   register(element: Element, action: ConfirmAction) {
-    this.map.set(element, action);
+    this.registry.set(element, action);
   }
 
   unregister(element: Element) {
-    this.map.delete(element);
+    this.registry.delete(element);
   }
 
   get(element: Element) {
-    return this.map.get(element);
+    return this.registry.get(element);
   }
 }
 

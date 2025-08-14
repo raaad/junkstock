@@ -5,33 +5,33 @@ import { LOGGER } from '../logger';
 import { CONFIRM_ACTION } from './confirm-action.token';
 import { CustomConfirmRegistry } from './custom-confirm.directive';
 
-type EventType = 'confirmed' | 'rejected';
+type EventKind = 'confirmed' | 'rejected';
 
-const EVENT_TYPES = new Array<EventType>('confirmed', 'rejected');
+const EVENT_KINDS = new Array<EventKind>('confirmed', 'rejected');
 
 export function provideConfirmActionEventPlugin(): ClassProvider {
-  return { provide: EVENT_MANAGER_PLUGINS, multi: true, useClass: ConfirmEventManagerPlugin };
+  return { provide: EVENT_MANAGER_PLUGINS, multi: true, useClass: ConfirmActionEventPlugin };
 }
 
 /** Adds support for the {event}.confirmed | {event}.rejected. After an event occurs, CONFIRM_ACTION must be used to confirm it before the handler is executed */
-export class ConfirmEventManagerPlugin extends EventManagerPlugin {
+export class ConfirmActionEventPlugin extends EventManagerPlugin {
   private readonly logger = inject(LOGGER, { optional: true });
   private readonly default = inject(CONFIRM_ACTION, { optional: true });
   private readonly custom = inject(CustomConfirmRegistry);
 
-  private readonly rejects = new Map<Element, () => void>();
+  private readonly rejects = new Map<Element, Map<string, () => void>>();
 
   override supports(eventName: string): boolean {
-    return EVENT_TYPES.some(e => eventName.endsWith(`.${e}`));
+    return EVENT_KINDS.some(e => eventName.endsWith(`.${e}`));
   }
 
   override addEventListener(element: HTMLElement, eventName: string, handler: () => void, options?: ListenerOptions) {
-    const event = eventName.substring(0, eventName.lastIndexOf('.'));
-    const type: EventType = eventName.substring(eventName.lastIndexOf('.') + 1) as EventType;
+    const type = eventName.substring(0, eventName.lastIndexOf('.'));
+    const kind: EventKind = eventName.substring(eventName.lastIndexOf('.') + 1) as EventKind;
 
-    return type === 'confirmed' ?
-        this.manager.addEventListener(element, event, this.onConfirm.bind(this, element, handler), options)
-      : (this.rejects.set(element, handler), this.rejects.delete.bind(this.rejects, element));
+    return kind === 'confirmed' ?
+        this.manager.addEventListener(element, type, this.onConfirm.bind(this, element, handler), options)
+      : (this.addReject(element, type, handler), () => this.removeReject(element, type));
   }
 
   private async onConfirm(element: Element, handler: (result?: unknown) => void, event: Event) {
@@ -40,8 +40,16 @@ export class ConfirmEventManagerPlugin extends EventManagerPlugin {
     try {
       handler(await confirm(element, event));
     } catch (e) {
-      this.rejects.get(element)?.();
+      this.rejects.get(element)?.get(event.type)?.();
       e && this.logger?.trace(e);
     }
+  }
+
+  private addReject(element: Element, type: string, handler: () => void) {
+    this.rejects.set(element, (this.rejects.get(element) ?? new Map()).set(type, handler));
+  }
+
+  private removeReject(element: Element, type: string) {
+    this.rejects.get(element)?.delete(type) && !this.rejects.get(element)?.size && this.rejects.delete(element);
   }
 }

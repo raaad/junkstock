@@ -13,13 +13,17 @@ import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
  * }
  * ```
  */
-@Directive({ selector: '[appAniIndex]', exportAs: 'aniIndex' })
+@Directive({
+  selector: '[appAniIndex]',
+  exportAs: 'aniIndex',
+  host: {
+    '(resized.no-initial.debounced.300)': 'update(true)'
+  }
+})
 export class AniIndexDirective {
   private readonly host = inject<ElementRef<Element>>(ElementRef).nativeElement;
 
-  private readonly mutation = new MutationObserver(this.animate.bind(this));
-
-  private readonly resize = new ResizeObserver(debounced(this.update.bind(this, true)));
+  private readonly mutation = new MutationObserver(() => this.animate());
 
   private prevIndexes = new Map<Element, number>();
   private prevPoints = new Map<Element, Pick<DOMRect, 'x' | 'y'>>();
@@ -27,9 +31,7 @@ export class AniIndexDirective {
   constructor() {
     this.mutation.observe(this.host, { childList: true });
 
-    this.resize.observe(this.host);
-
-    inject(DestroyRef).onDestroy(() => (this.mutation.disconnect(), this.resize.disconnect()));
+    inject(DestroyRef).onDestroy(() => this.mutation.disconnect());
   }
 
   private animate() {
@@ -61,10 +63,4 @@ export class AniIndexDirective {
   update(force = false) {
     this.prevPoints = new Map(Array.from(this.prevIndexes.keys()).map(i => [i, (!force && this.prevPoints.get(i)) || i.getBoundingClientRect()]));
   }
-}
-
-function debounced<A extends unknown[]>(action: (...a: A) => void, debounce = 100, skitFirst = true) {
-  let id = 0;
-  return (...a: A) =>
-    skitFirst ? (skitFirst = !skitFirst) : (clearTimeout(id), (id = setTimeout(action.bind<undefined, A, never, void>(undefined, ...a), debounce)));
 }

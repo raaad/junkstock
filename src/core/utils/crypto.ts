@@ -4,17 +4,17 @@ import { throwIt } from './throw-it';
 // #region ecrypt/decrypt
 
 /** Encrypt (AES-GCM) string with the provided string key */
-export async function encrypt(message: string, password: string) {
-  const iv = crypto().getRandomValues(new Uint8Array(12));
+export async function encrypt(message: string, password: string, crypto = defaultCrypto()) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
 
-  const salt = crypto().getRandomValues(new Uint8Array(16));
+  const salt = crypto.getRandomValues(new Uint8Array(16));
 
-  const key = await getKey(password, salt);
+  const key = await getKey(password, salt, crypto.subtle);
 
   const data = new TextEncoder().encode(message);
 
   const encrypted = new Uint8Array(
-    await crypto().subtle.encrypt(
+    await crypto.subtle.encrypt(
       {
         iv,
         name: 'AES-GCM'
@@ -28,13 +28,13 @@ export async function encrypt(message: string, password: string) {
 }
 
 /** Decrypt (AES-GCM) string with the provided string key */
-export async function decrypt(message: string, password: string) {
+export async function decrypt(message: string, password: string, crypto = defaultCrypto().subtle) {
   const { salt, iv, data } = await unwrap(message);
 
-  const key = await getKey(password, salt);
+  const key = await getKey(password, salt, crypto);
 
   const decrypted = new Uint8Array(
-    await crypto().subtle.decrypt(
+    await crypto.decrypt(
       {
         iv,
         name: 'AES-GCM'
@@ -50,10 +50,10 @@ export async function decrypt(message: string, password: string) {
 // #region support
 
 /** Generate a CryptoKey (AES-GCM) from the provided text key */
-async function getKey(key: string, salt: Uint8Array) {
-  const baseKey = await crypto().subtle.importKey('raw', new TextEncoder().encode(key), 'PBKDF2', false, ['deriveKey']);
+async function getKey(key: string, salt: Uint8Array, crypto: SubtleCrypto) {
+  const baseKey = await crypto.importKey('raw', new TextEncoder().encode(key), 'PBKDF2', false, ['deriveKey']);
 
-  return await crypto().subtle.deriveKey(
+  return await crypto.deriveKey(
     {
       name: 'PBKDF2',
       salt,
@@ -93,7 +93,7 @@ async function unwrap(dataUrl: string) {
   return { salt, iv, data };
 }
 
-function crypto() {
+function defaultCrypto() {
   return window.crypto ?? throwIt('Crypto is not available');
 }
 
@@ -101,9 +101,9 @@ function crypto() {
 
 // #endregion
 
-export async function sha256(string: string) {
+export async function sha256(string: string, crypto = defaultCrypto().subtle) {
   const uint8 = new TextEncoder().encode(string);
-  const hashBuffer = await crypto().subtle.digest('SHA-256', uint8);
+  const hashBuffer = await crypto.digest('SHA-256', uint8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }

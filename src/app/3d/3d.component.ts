@@ -11,16 +11,16 @@ const MODEL_URL = 'assets/duck.glb';
   selector: 'app-3d',
   imports: [],
   template: `
-    <div class="absolute w-full top-0 flex flex-wrap gap-5 p-5 justify-between">
+    <div class="absolute w-full top-0 flex flex-wrap gap-5 p-5">
       <div class="flex gap-2 items-center">
-        <button (click)="fit(); render()" class="btn btn-sm">fitToObject</button>
+        <button (click)="fit()" class="btn btn-sm">fitToObject</button>
         <span class="note">GLTF format + DRACO compression</span>
       </div>
-      <div class="flex gap-2">
-        <button (click)="triggerKey('ArrowLeft')" title="rotate left" class="btn btn-sm">⇐</button>
-        <button (click)="triggerKey('ArrowRight')" title="rotate right" class="btn btn-sm">⇒</button>
-        <button (click)="triggerKey('ArrowUp')" title="rotate up" class="btn btn-sm">⇑</button>
-        <button (click)="triggerKey('ArrowDown')" title="rotate down" class="btn btn-sm">⇓</button>
+      <div class="flex gap-2 ml-auto">
+        <button (click)="rotate('left')" title="rotate left" class="btn btn-sm">⇐</button>
+        <button (click)="rotate('right')" title="rotate right" class="btn btn-sm">⇒</button>
+        <button (click)="rotate('up')" title="rotate up" class="btn btn-sm">⇑</button>
+        <button (click)="rotate('down')" title="rotate down" class="btn btn-sm">⇓</button>
       </div>
     </div>
   `,
@@ -61,9 +61,12 @@ const MODEL_URL = 'assets/duck.glb';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(dblclick)': 'onDblClick()',
-    '(window:resize)': 'onWindowResize()',
-    '(document:keydown)': 'onKeydown($event)',
+    '(document:keydown.arrowLeft)': 'rotate("left")',
+    '(document:keydown.arrowRight)': 'rotate("right")',
+    '(document:keydown.arrowUp)': 'rotate("up")',
+    '(document:keydown.arrowDown)': 'rotate("down")',
+    '(dblclick)': 'fit()',
+    '(resized)': 'resize()',
     '[class.loading]': 'loading()'
   }
 })
@@ -82,46 +85,36 @@ export class ThreeComponent implements OnInit {
   protected readonly loading = signal(true);
 
   async ngOnInit() {
-    this.onWindowResize();
-
     this.object = await fromGltf(this.modelUrl, v => this.logger.debug(`3D: loaded ${(v * 100).toFixed()}%`));
 
     this.scene.add(this.object);
 
     this.fit();
 
-    this.render();
-
     this.loading.set(false);
   }
 
-  protected onWindowResize() {
-    updateSize(this.container, this.camera, this.renderer);
-
-    this.render();
-  }
-
-  protected onKeydown({ key }: KeyboardEvent) {
+  protected rotate(to: 'left' | 'right' | 'up' | 'down') {
     const step = 10;
     let hAngle = 0;
     let vAngle = 0;
 
-    switch (key) {
-      case 'ArrowLeft':
+    switch (to) {
+      case 'left':
         hAngle += step;
         break;
-      case 'ArrowRight':
+      case 'right':
         hAngle -= step;
         break;
-      case 'ArrowDown':
+      case 'up':
         vAngle += step;
         break;
-      case 'ArrowUp':
+      case 'down':
         vAngle -= step;
         break;
     }
 
-    animate.call(this, { hAngle, vAngle }, ({ hAngle, vAngle }) => {
+    this.animate({ hAngle, vAngle }, ({ hAngle, vAngle }) => {
       rotateAround(this.camera, this.controls.target, {
         hAngle,
         vAngle
@@ -129,35 +122,31 @@ export class ThreeComponent implements OnInit {
 
       this.render();
     });
+  }
 
-    function animate(this: ThreeComponent, { hAngle, vAngle }: { hAngle: number; vAngle: number }, callback: (v: { hAngle: number; vAngle: number }) => void) {
-      this.frameHandle && cancelAnimationFrame(this.frameHandle);
+  private animate({ hAngle, vAngle }: { hAngle: number; vAngle: number }, callback: (v: { hAngle: number; vAngle: number }) => void) {
+    cancelAnimationFrame(this.frameHandle);
 
-      const h = increment(hAngle);
-      const v = increment(vAngle);
+    const h = increment(hAngle);
+    const v = increment(vAngle);
 
-      hAngle -= h;
-      vAngle -= v;
+    hAngle -= h;
+    vAngle -= v;
 
-      this.frameHandle = Math.abs(hAngle + vAngle) && requestAnimationFrame(animate.bind(this, { hAngle, vAngle }, callback));
+    callback({ hAngle: h, vAngle: v });
 
-      callback({ hAngle: h, vAngle: v });
+    this.frameHandle = Math.abs(hAngle + vAngle) && requestAnimationFrame(() => this.animate({ hAngle, vAngle }, callback));
 
-      function increment(v: number) {
-        return v / Math.abs(v || 1);
-      }
+    function increment(v: number) {
+      return v / Math.abs(v || 1);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   private frameHandle = 0;
 
-  protected triggerKey(key: 'ArrowLeft' | 'ArrowRight' | 'ArrowDown' | 'ArrowUp') {
-    this.onKeydown(new KeyboardEvent('keydown', { key }));
-  }
-
-  protected onDblClick() {
-    this.fit();
+  protected resize() {
+    updateSize(this.container, this.camera, this.renderer);
 
     this.render();
   }
@@ -173,6 +162,8 @@ export class ThreeComponent implements OnInit {
         vAngle: -30
       });
     }
+
+    this.render();
   }
 
   protected render() {
@@ -209,7 +200,8 @@ function createControls(camera: Camera, container: HTMLElement, callback: () => 
   return controls;
 }
 
-export function createCube() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function createCube() {
   const boxWidth = 1;
   const boxHeight = 1;
   const boxDepth = 1;

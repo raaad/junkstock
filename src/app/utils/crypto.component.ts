@@ -9,8 +9,8 @@ import { decrypt, encrypt } from '@core/utils';
   template: `
     <div class="title">Crypto</div>
     <div class="flex gap-4 m-4">
-      <input [(ngModel)]="text" [ngModelOptions]="{ standalone: true }" type="text" placeholder="text to encrypt" class="input flex-1" />
-      <input [(ngModel)]="password" [ngModelOptions]="{ standalone: true }" type="text" placeholder="password" class="input" />
+      <input [(ngModel)]="text" [ngModelOptions]="{ standalone: true }" type="text" placeholder="text to encrypt" class="input flex-2" />
+      <input [(ngModel)]="password" [ngModelOptions]="{ standalone: true }" type="text" placeholder="password" class="input flex-1" />
     </div>
     <div class="flex gap-4 m-4">
       <button (click)="encrypt(text, password)" [disabled]="!text || !password" class="btn">encrypt</button>

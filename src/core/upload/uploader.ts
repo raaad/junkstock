@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, OnDestroy } from '@angular/core';
+import { computed, DestroyRef, inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { map, Subject, tap } from 'rxjs';
 import { LOGGER } from '../angular/logger';
@@ -8,7 +8,7 @@ import { UPLOAD_PIPELINE } from './upload-pipeline.token';
 import { QueueUpload, UploadId, UploadState } from './upload.types';
 
 @Injectable()
-export class Uploader implements OnDestroy {
+export class Uploader {
   private readonly flush$ = new Subject<void>();
 
   private readonly aborting$ = new Subject<UploadId>();
@@ -42,6 +42,12 @@ export class Uploader implements OnDestroy {
 
   // #endregion
 
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.abortAll());
+
+    this.flushThumbs();
+  }
+
   // #region methods
 
   upload(uploads: Record<UploadId, File>) {
@@ -64,21 +70,19 @@ export class Uploader implements OnDestroy {
     this.flush$.next(void 0);
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  readonly ngOnDestroy = this.abortAll.bind(this);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  private thumbsRevocation = this.flush$
-    .pipe(
-      tap(() =>
-        this.uploads()
-          .map(({ thumb }) => thumb?.url)
-          .filter((url): url is string => !!url)
-          .forEach(url => url.startsWith('blob:') && URL.revokeObjectURL(url))
-      ),
-      takeUntilDestroyed()
-    )
-    .subscribe();
+  private flushThumbs() {
+    this.flush$
+      .pipe(
+        tap(() =>
+          this.uploads()
+            .map(({ thumb }) => thumb?.url)
+            .filter((url): url is string => !!url && url.startsWith('blob:'))
+            .forEach(url => URL.revokeObjectURL(url))
+        ),
+        takeUntilDestroyed()
+      )
+      .subscribe();
+  }
 
   // #endregion
 }

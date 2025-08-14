@@ -12,15 +12,22 @@ export const routes: Routes = [
     title: 'Uploads'
   },
   {
-    path: '3d',
-    loadComponent: async () => (await import('./3d/3d.component')).ThreeComponent,
-    title: '3D'
+    path: '',
+    children: [
+      {
+        path: '3d',
+        loadComponent: async () => (await import('./3d/3d.component')).ThreeComponent,
+        title: '3D'
+      },
+      {
+        path: 'svg-render',
+        loadComponent: async () => (await import('./svg-render/svg-render.component')).SvgRenderComponent,
+        title: 'SVG render'
+      }
+    ],
+    title: '2D / 3D'
   },
-  {
-    path: 'svg-render',
-    loadComponent: async () => (await import('./svg-render/svg-render.component')).SvgRenderComponent,
-    title: 'SVG render'
-  },
+
   {
     path: 'utils',
     loadComponent: async () => (await import('./utils/utils.component')).UtilsComponent,

@@ -16,7 +16,7 @@ type Options = { desc?: boolean } & (
  * ```
  */
 export function compareBy<T, R extends Comparable>(selector: ((i: T) => R) | OfType<T, R>, { desc, ...options }: Options = {}) {
-  const collator = lazy('collator' in options ? () => options.collator : defaultCollator.bind(void 0, options.locales, options.ignoreCase));
+  const collator = lazy(() => ('collator' in options ? options.collator : defaultCollator(options.locales, options.ignoreCase)));
   const fn = typeof selector === 'function' ? selector : (i: T) => i[selector] as R;
 
   return (a: T, b: T) => {

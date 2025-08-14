@@ -1,4 +1,4 @@
-import { Directive, ElementRef, InjectionToken, OnDestroy, inject, output } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, InjectionToken, inject, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, Subject, asapScheduler, debounceTime, distinctUntilChanged, map, merge, of, startWith, switchMap } from 'rxjs';
 
@@ -18,10 +18,10 @@ const DOCUMENT_POSITION_PRECEDING = 2; // Node.DOCUMENT_POSITION_PRECEDING
     '(scroll)': 'onScroll()'
   }
 })
-export class InViewHostDirective implements OnDestroy {
+export class InViewHostDirective {
   private readonly options = inject(INVIEW_OPTIONS, { optional: true }) ?? { threshold: 0.8, scrollDebounce: 200 };
 
-  private readonly observer = new IntersectionObserver(this.callback.bind(this), {
+  private readonly observer = new IntersectionObserver(v => this.callback(v), {
     root: inject(ElementRef).nativeElement,
     threshold: this.options.threshold
   });
@@ -43,7 +43,9 @@ export class InViewHostDirective implements OnDestroy {
   readonly inView = output<{ target: Element; data: unknown }[]>();
 
   constructor() {
-    this.output$.subscribe(targets => this.inView.emit(targets));
+    this.output$.subscribe(v => this.inView.emit(v));
+
+    inject(DestroyRef).onDestroy(() => this.observer.disconnect());
   }
 
   observe(target: Element, data: unknown) {
@@ -56,10 +58,6 @@ export class InViewHostDirective implements OnDestroy {
     this.observer.unobserve(target);
 
     this.targets$.next(this.targets$.value.filter(i => i !== target));
-  }
-
-  ngOnDestroy() {
-    this.observer.disconnect();
   }
 
   private callback(entries: IntersectionObserverEntry[]) {
