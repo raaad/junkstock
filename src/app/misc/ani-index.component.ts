@@ -15,7 +15,7 @@ import { compareBy } from '@core/utils';
       <button (click)="truncate()" class="btn btn-sm btn-reject">truncate</button>
       <button (click)="remove()" class="btn btn-sm btn-reject">remove</button>
     </div>
-    <div class="flex gap-4 p-4">
+    <div class="flex gap-4 p-4 flex-col md:flex-row h-[50vh] overflow-auto">
       <ul appAniIndex class="flex flex-wrap flex-1 gap-4 content-start">
         @for (item of items(); track item) {
           <li [style.background-color]="item" class="tile"></li>

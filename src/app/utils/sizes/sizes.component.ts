@@ -6,7 +6,7 @@ import { FitToSizeComponent } from './fit-to-size.component';
   selector: 'app-sizes',
   imports: [BoundingBoxComponent, FitToSizeComponent],
   template: `
-    <app-bounding-box class="flex-1 min-w-[20rem]" />
+    <app-bounding-box class="flex-1" />
     <app-fit-to-size class="flex-1" />
   `,
   styles: [
@@ -19,6 +19,9 @@ import { FitToSizeComponent } from './fit-to-size.component';
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'flex-col md:flex-row'
+  }
 })
 export class SizesComponent {}

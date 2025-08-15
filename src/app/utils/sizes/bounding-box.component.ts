@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
-import { SizeVarsDirective } from '@core/angular';
 import { getBoundingBox } from '@core/utils';
 
 @Component({
@@ -30,26 +29,22 @@ import { getBoundingBox } from '@core/utils';
 
       .canvas {
         position: relative;
-        flex: 1;
-        aspect-ratio: 3/1;
+        flex-basis: 15rem;
       }
 
       .rect {
         position: absolute;
         outline: 1px solid var(--color-red-300);
         background: var(--color-red-100);
-        will-change: rotate;
       }
 
       .box {
         position: absolute;
         outline: 1px dashed var(--color-blue-400);
-        will-change: top, left, width, height;
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [SizeVarsDirective]
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BoundingBoxComponent {
   protected rect = this.getRect();
@@ -90,7 +85,8 @@ export class BoundingBoxComponent {
   }
 
   private getRect({ width: w, height: h } = { width: 0, height: 0 }) {
-    const width = Math.min(w, h) / 2;
+    const factor = 1.5;
+    const width = Math.min(w, h) / factor;
     const height = width / 3;
 
     return { x: (w - width) / 2, y: (h - height) / 2, width, height };

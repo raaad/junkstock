@@ -9,7 +9,7 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
   imports: [FormsModule],
   template: `
     <div class="title">fitToSize</div>
-    <div class="canvas" (resized.no-initial)="reset()">
+    <div class="canvas" (resized.no-initial)="reset()" [style.touch-action]="resizing ? 'none' : ''">
       <div class="rect" [style.top.px]="rect.y" [style.left.px]="rect.x" [style.width.px]="rect.width" [style.height.px]="rect.height"></div>
       <div
         #boxEl
@@ -18,7 +18,7 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
         [style.left.px]="box().x"
         [style.width.px]="box().width"
         [style.height.px]="box().height"
-        (mousedown)="resizing = true"></div>
+        (pointerdown)="resizing = true"></div>
     </div>
     <div class="flex items-center gap-2 px-4 py-2">
       <label class="flex items-center gap-1"><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" />contain</label>
@@ -31,6 +31,8 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
   `,
   styles: [
     `
+      @reference "../../../styles.css";
+
       :host {
         display: inline-flex;
         flex-direction: column;
@@ -39,8 +41,7 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
 
       .canvas {
         position: relative;
-        flex: 1;
-        aspect-ratio: 3/1;
+        flex-basis: 15rem;
         overflow: hidden;
         padding: 1rem;
       }
@@ -54,7 +55,7 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
           content: '';
           position: absolute;
           width: 0.5rem;
-          height: 0.5rem;
+          aspect-ratio: 1;
           right: 0;
           bottom: 0;
           transform: translate(50%, 50%);
@@ -63,6 +64,12 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
           pointer-events: all;
           cursor: grabbing;
           border-radius: 50%;
+        }
+
+        @variant not-sm {
+          &:before {
+            width: 1.5rem;
+          }
         }
       }
 
@@ -75,8 +82,8 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(document:mousemove)': 'resize($event)',
-    '(document:mouseup)': 'stop()'
+    '(document:pointermove)': 'resize($event)',
+    '(document:pointerup)': 'stop()'
   }
 })
 export class FitToSizeComponent {
