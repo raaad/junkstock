@@ -61,6 +61,7 @@ export class AniIndexDirective {
   }
 
   update(force = false) {
+    console.log(force);
     this.prevPoints = new Map(Array.from(this.prevIndexes.keys()).map(i => [i, (!force && this.prevPoints.get(i)) || i.getBoundingClientRect()]));
   }
 }

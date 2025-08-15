@@ -23,7 +23,7 @@ import { compareBy } from '@core/utils';
       </ul>
       <ul appAniIndex class="flex flex-col flex-1 overflow-auto">
         @for (item of items().slice(0, 10); track item) {
-          <li [style.background-color]="item + '32'" class="p-2">{{ item }}</li>
+          <li [style.background-color]="item + '32'" class="px-2 py-1">{{ item }}</li>
         }
       </ul>
     </div>
@@ -49,7 +49,7 @@ import { compareBy } from '@core/utils';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AniIndexComponent {
-  protected readonly items = signal(new Array(50).fill(0).map(this.create));
+  protected readonly items = signal(new Array(10).fill(0).map(this.create));
 
   protected prepend() {
     this.items.set([this.create(), ...this.items()]);

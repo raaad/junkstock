@@ -17,10 +17,10 @@ const MODEL_URL = 'assets/duck.glb';
         <span class="note">GLTF format + DRACO compression</span>
       </div>
       <div class="flex gap-2 ml-auto">
-        <button (click)="rotate('left')" title="rotate left" class="btn btn-sm">⇐</button>
-        <button (click)="rotate('right')" title="rotate right" class="btn btn-sm">⇒</button>
-        <button (click)="rotate('up')" title="rotate up" class="btn btn-sm">⇑</button>
-        <button (click)="rotate('down')" title="rotate down" class="btn btn-sm">⇓</button>
+        <button (pointerdown)="rotate('left')" title="rotate left" class="btn btn-sm">⇐</button>
+        <button (pointerdown)="rotate('right')" title="rotate right" class="btn btn-sm">⇒</button>
+        <button (pointerdown)="rotate('up')" title="rotate up" class="btn btn-sm">⇑</button>
+        <button (pointerdown)="rotate('down')" title="rotate down" class="btn btn-sm">⇓</button>
       </div>
     </div>
   `,
