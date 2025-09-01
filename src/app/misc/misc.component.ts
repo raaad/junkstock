@@ -13,7 +13,7 @@ import { InViewComponent } from './in-view.component';
   `,
   styles: [
     `
-      @reference "../../styles.css";
+      @reference "#main";
 
       :host {
         display: flex;

@@ -4,12 +4,12 @@ import { RouteConfigLoadEnd, RouteConfigLoadStart, Router } from '@angular/route
 import { filter, map } from 'rxjs';
 
 @Directive({
-  selector: '[appViewPageLoading]',
+  selector: '[appViewLoading]',
   host: {
     '[class.view-loading]': 'loading()'
   }
 })
-export class ViewPageLoadingDirective {
+export class ViewLoadingDirective {
   protected readonly loading = toSignal(
     inject(Router).events.pipe(
       filter(e => e instanceof RouteConfigLoadStart || e instanceof RouteConfigLoadEnd),

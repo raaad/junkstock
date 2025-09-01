@@ -1,0 +1,27 @@
+.btn {
+  @apply py-2 px-4 text-neutral-600 border-1 rounded-xs transition-colors cursor-pointer;
+
+  &:hover {
+    @apply text-sky-700;
+  }
+
+  &:disabled {
+    @apply text-neutral-300 cursor-default;
+  }
+}
+
+.btn-sm {
+  @apply py-1 px-2 text-xs;
+}
+
+.btn-icon {
+  @apply border-0 p-1 aspect-square;
+}
+
+.btn-primary:not(:disabled):not(:hover) {
+  @apply border-sky-600;
+}
+
+.btn-reject:not(:disabled):not(:hover) {
+  @apply border-red-400;
+}

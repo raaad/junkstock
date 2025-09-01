@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './common/home.component';
+import { MiscComponent } from './misc/misc.component';
+import { UploadsComponent } from './upload/uploads.component';
+import { UtilsComponent } from './utils/utils.component';
 
 export const routes: Routes = [
   {
@@ -8,7 +11,7 @@ export const routes: Routes = [
   },
   {
     path: 'uploads',
-    loadComponent: async () => (await import('./upload/uploads.component')).UploadsComponent,
+    component: UploadsComponent,
     title: 'Uploads'
   },
   {
@@ -27,15 +30,14 @@ export const routes: Routes = [
     ],
     title: '2D / 3D'
   },
-
   {
     path: 'utils',
-    loadComponent: async () => (await import('./utils/utils.component')).UtilsComponent,
+    component: UtilsComponent,
     title: 'Utils'
   },
   {
     path: 'misc',
-    loadComponent: async () => (await import('./misc/misc.component')).MiscComponent,
+    component: MiscComponent,
     title: 'Misc'
   },
   {

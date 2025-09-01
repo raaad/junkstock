@@ -13,7 +13,7 @@ import { SizesComponent } from './sizes/sizes.component';
   `,
   styles: [
     `
-      @reference "../../styles.css";
+      @reference "#main";
 
       :host {
         @apply separator;

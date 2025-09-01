@@ -1,0 +1,59 @@
+::view-transition-group(*) {
+  animation-duration: var(--ani-duration);
+}
+
+::view-transition-group(page) {
+  --in: -ua-view-transition-fade-in, slide-in;
+  --out: -ua-view-transition-fade-out, slide-out;
+}
+
+::view-transition-old(page) {
+  animation-name: var(--out);
+}
+
+::view-transition-new(page) {
+  animation-name: var(--in);
+}
+
+.view-transition-reversed {
+  &::view-transition-old(page) {
+    animation-name: var(--in);
+    animation-direction: reverse;
+  }
+
+  &::view-transition-new(page) {
+    animation-name: var(--out);
+    animation-direction: reverse;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    translate: -100%;
+  }
+}
+
+@keyframes slide-out {
+  to {
+    translate: 100%;
+  }
+}
+
+/* only for nav to be over the page during transition */
+::view-transition-group(nav),
+::view-transition-group(nav-item) {
+  z-index: 1;
+}
+
+::view-transition-new(nav) {
+  animation-name: shadow-in;
+}
+
+@keyframes shadow-in {
+  50% {
+    box-shadow: 0.25rem 0 0.5rem var(--color-neutral-200);
+  }
+  to {
+    box-shadow: none;
+  }
+}

@@ -26,7 +26,7 @@ const MODEL_URL = 'assets/duck.glb';
   `,
   styles: [
     `
-      @reference "../../styles/utils.css";
+      @reference "#main";
 
       :host {
         position: relative;
@@ -37,25 +37,6 @@ const MODEL_URL = 'assets/duck.glb';
         &.loading {
           @apply progress-bar progress-unknown progress-bottom;
         }
-      }
-
-      .actions {
-        position: absolute;
-        width: 100%;
-        top: 0;
-        padding: 1rem;
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        box-sizing: border-box;
-      }
-
-      .actions > div {
-        opacity: 0.5;
-        display: flex;
-        gap: 1rem;
-        align-items: center;
       }
     `
   ],

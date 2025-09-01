@@ -1,5 +1,5 @@
 import { OfType } from '../types/utils';
-import { lazy } from './misc';
+import { lazy } from './lazy';
 
 type Comparable = string | number | Date | boolean | undefined | null;
 
@@ -30,7 +30,7 @@ export function compareBy<T, R extends Comparable>(selector: ((i: T) => R) | OfT
 function narrow(i: Comparable) {
   return (
     i instanceof Date ? i.getTime()
-    : typeof i === 'boolean' ? +i
+    : typeof i === 'boolean' ? Number(i)
     : (i ?? 0)
   );
 }

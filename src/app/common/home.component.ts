@@ -1,13 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Route, Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { getFlatMenu } from './get-flat-menu';
 
 @Component({
-  selector: 'app-home',
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: 'ul[app-home]',
   imports: [RouterLink],
   template: `
     @for (item of menu; track item) {
       @if (item.path) {
-        <div
+        <li
           #el
           [routerLink]="[item.path]"
           (keydown.enter)="el.click()"
@@ -17,13 +19,13 @@ import { Route, Router, RouterLink } from '@angular/router';
           <div class="row-start-2 col-start-1 flex items-end justify-end backdrop-blur-md border-t border-neutral-200">
             <span class="block title">{{ item.title }}</span>
           </div>
-        </div>
+        </li>
       }
     }
   `,
   styles: [
     `
-      @reference "../../styles.css";
+      @reference "#main";
 
       :host {
         @apply grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[10rem];
@@ -37,12 +39,5 @@ import { Route, Router, RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
-  protected menu = getMenu(inject(Router).config);
-}
-
-export function getMenu(routes: Route[], base = new Array<string | undefined>()): { title: string; path?: string; indent: number }[] {
-  return routes.flatMap(({ title, path, children }) => [
-    ...(typeof title === 'string' ? [{ title, path: children ? undefined : [...base, path].join('/'), indent: base.length }] : []),
-    ...getMenu(children ?? [], [...base, path])
-  ]);
+  protected menu = getFlatMenu();
 }

@@ -1,5 +1,6 @@
+import { coerceArray } from '@angular/cdk/coercion';
 import { FactoryProvider, inject } from '@angular/core';
-import { asArray, lazy } from '../../utils/misc';
+import { lazy } from '../../utils/lazy';
 import { Logger, LOGGER, LOGGER_IMPL, LoggerImpl, LogLevel } from './logger.types';
 
 const LEVEL_MAP = new Map<LogLevel, keyof Logger>([
@@ -18,7 +19,7 @@ export function provideLogger(): FactoryProvider {
 
 function createLogger(loggers: LoggerImpl[]) {
   const log: LoggerImpl = (level: LogLevel, ...data: unknown[]) => {
-    const args = lazy(() => asArray(isDeferred(data) ? data[0]() : data));
+    const args = lazy(() => coerceArray(isDeferred(data) ? data[0]() : data));
     loggers.forEach(log => shouldLog(log.severity ?? 'none', level, data) && log(level, ...args()));
   };
 

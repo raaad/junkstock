@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessC
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideConfirmActionEventPlugin, provideConsoleLogger, provideLogger, provideResizedEventPlugin } from '@core/angular';
 import { provideTitleStrategy } from './common/provide-title-strategy';
+import { viewTransitionReversed as onViewTransitionCreated } from './common/view-transition-reversed';
 import { provideConfirmAction } from './misc/confirm.component';
 
 import { routes } from './app.routes';
@@ -11,7 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
 
-    provideRouter(routes, withViewTransitions()),
+    provideRouter(routes, withViewTransitions({ onViewTransitionCreated })),
     provideTitleStrategy(),
 
     provideLogger(),

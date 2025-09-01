@@ -1,0 +1,155 @@
+dialog {
+  --min-width: 24rem;
+  --max-width: 42rem;
+  --start-position: 0 calc(-50vh - 50%);
+  --edge-offset: 0;
+
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  min-width: min(var(--min-width), calc(100% - 2rem));
+  max-width: min(var(--max-width), calc(100% - 2rem));
+  animation: dialog var(--ani-duration);
+
+  &[open] {
+    display: flex;
+  }
+
+  /* #region positions */
+
+  &.top {
+    --start-position: 0 -100%;
+    margin-top: var(--edge-offset);
+  }
+
+  &.bottom {
+    --start-position: 0 100%;
+    margin-bottom: var(--edge-offset);
+  }
+
+  &.left {
+    --start-position: -100% 0;
+    margin-left: var(--edge-offset);
+  }
+
+  &.right {
+    --start-position: 100% 0;
+    margin-right: var(--edge-offset);
+  }
+
+  /* #endregion */
+
+  /* #region edge */
+
+  &.edge {
+    &.left,
+    &.right {
+      height: 100%;
+      max-height: unset;
+    }
+
+    &.top,
+    &.bottom {
+      --content-min-width: minmax(min(var(--min-width), 100%), auto);
+
+      grid: auto 1fr / var(--content-min-width);
+
+      width: 100%;
+      max-width: unset;
+      min-width: unset;
+
+      &[open] {
+        display: grid;
+      }
+
+      & > * {
+        max-width: var(--max-width);
+      }
+    }
+  }
+
+  /* #endregion */
+
+  &::backdrop {
+    background-color: color-mix(in srgb, var(--color-black) 30%, transparent);
+    backdrop-filter: blur(var(--spacing));
+    animation: dialog-backdrop var(--ani-duration);
+  }
+}
+
+/* #region keyframes */
+
+@keyframes dialog {
+  from {
+    translate: var(--start-position);
+  }
+}
+
+@keyframes dialog-backdrop {
+  from {
+    background-color: transparent;
+    backdrop-filter: none;
+  }
+}
+
+/* #endregion */
+
+/* #region theme */
+
+dialog {
+  border: 0 dashed var(--color-neutral-400);
+
+  &.edge {
+    &.left {
+      border-right-width: thin;
+    }
+
+    &.right {
+      border-left-width: thin;
+    }
+
+    &.top {
+      border-bottom-width: thin;
+    }
+
+    &.bottom {
+      border-top-width: thin;
+    }
+  }
+
+  &:not(.edge) {
+    --edge-offset: 1rem;
+    border-width: thin;
+    border-radius: var(--spacing);
+  }
+}
+
+/* #endregion */
+
+/* #region with-pseudo */
+
+dialog.edge.with-pseudo {
+  grid-template-areas:
+    'left header right'
+    'left body right'
+    'left footer right';
+  grid-template-columns: 1fr var(--content-min-width) 1fr;
+
+  &:before,
+  &:after {
+    content: '';
+    background-color: var(--color-neutral-100);
+  }
+
+  &:before {
+    grid-area: left;
+    border-right: thin dashed var(--color-neutral-400);
+  }
+
+  &:after {
+    grid-area: right;
+    border-left: thin dashed var(--color-neutral-400);
+  }
+}
+
+/* #endregion */

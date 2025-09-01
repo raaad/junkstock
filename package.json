@@ -1,6 +1,7 @@
 {
   "name": "junkstock",
   "version": "0.1.0",
+  "private": true,
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -9,8 +10,11 @@
     "lint": "ng lint",
     "pretty": "npx prettier --write ./src/**/*.{json,js,ts,html,css}"
   },
-  "private": true,
+  "imports": {
+    "#main": "./src/styles.css"
+  },
   "dependencies": {
+    "@angular/cdk": "^20.2.0",
     "@angular/common": "^20.1.0",
     "@angular/compiler": "^20.1.0",
     "@angular/core": "^20.1.0",

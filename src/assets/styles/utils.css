@@ -58,6 +58,39 @@
 
 /* #endregion */
 
+@utility fancy-border {
+  @apply relative rounded-xs border-1;
+
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    pointer-events: none;
+    border: 2px solid;
+    border-color: inherit;
+  }
+
+  &:before {
+    top: 0;
+    left: 0;
+    translate: -1.5px -1.5px;
+    border-bottom: none;
+    border-right: none;
+    border-top-left-radius: 2px;
+  }
+
+  &:after {
+    bottom: 0;
+    right: 0;
+    translate: 1.5px 1.5px;
+    border-top: none;
+    border-left: none;
+    border-bottom-right-radius: 2px;
+  }
+}
+
 @utility separator {
   & > * + *::before {
     content: '';

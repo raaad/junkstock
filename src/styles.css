@@ -1,5 +1,10 @@
 @import 'tailwindcss';
-@reference './styles/utils.css';
+
+@reference './assets/styles/utils.css';
+
+:root {
+  --ani-duration: 300ms;
+}
 
 html {
   height: 100%;
@@ -10,238 +15,16 @@ body {
   @apply font-light text-neutral-600;
 }
 
-/* #region menu */
-
-.menu {
-  @apply bg-neutral-50;
-
-  li {
-    @apply py-2 px-4 transition-all cursor-pointer;
-
-    &:not(.disabled):hover {
-      @apply bg-neutral-100;
-    }
-
-    &.active {
-      view-transition-name: nav-item;
-
-      @apply bg-neutral-100 border-r-4;
-    }
-    &.disabled {
-      @apply text-neutral-400 text-xs pointer-events-none;
-      border-bottom: thin solid var(--color-neutral-200);
-    }
-
-    & > span {
-      margin-left: calc(0.25rem * var(--indent, 0));
-    }
-  }
-}
-
-/* #endregion */
-
-/* #region input */
-
-.input {
-  @apply min-w-0 py-2 px-4 rounded-xs border-1 border-neutral-300 transition-colors;
-
-  &:focus {
-    @apply border-sky-700;
-    outline: none;
-  }
-}
-
-/* #endregion */
-
-/* #region radio | checkbox */
-
-input[type='radio'],
-input[type='checkbox'] {
-  appearance: none;
-  width: calc(var(--spacing) * 4);
-  height: calc(var(--spacing) * 4);
-  margin-top: calc(var(--spacing) / 2);
-  border: thin solid var(--color-neutral-600);
-  padding: var(--spacing);
-  @apply transition-shadow;
-
-  &:checked {
-    box-shadow:
-      0 0 0 2px inset white,
-      0 0 0 1rem inset currentColor;
-  }
-}
-input[type='radio'] {
-  border-radius: 50%;
-}
-
-input[type='checkbox'] {
-  border-radius: 2px;
-}
-
-/* #endregion */
-
-/* #region button */
-
-@utility fancy-border {
-  @apply rounded-xs border-1;
-
-  position: relative;
-
-  &:before,
-  &:after {
-    content: '';
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    pointer-events: none;
-    border: 2px solid;
-    border-color: inherit;
-  }
-
-  &:before {
-    top: 0;
-    left: 0;
-    translate: -1.5px -1.5px;
-    border-bottom: none;
-    border-right: none;
-    border-top-left-radius: 2px;
-  }
-
-  &:after {
-    bottom: 0;
-    right: 0;
-    translate: 1.5px 1.5px;
-    border-top: none;
-    border-left: none;
-    border-bottom-right-radius: 2px;
-  }
-}
-
-.btn {
-  @apply fancy-border py-2 px-4 text-neutral-600 transition-colors cursor-pointer;
-
-  &:hover {
-    @apply text-sky-700;
-  }
-
-  &:disabled,
-  &.disabled {
-    @apply text-neutral-300 pointer-events-none cursor-default;
-  }
-}
-
-.btn-sm {
-  @apply py-1 px-2 text-xs;
-}
-
-.btn-icon {
-  @apply border-0 p-1;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  &:before,
-  &:after {
-    content: none;
-  }
-}
-
-.btn-primary:not(:disabled):not(:hover) {
-  @apply border-sky-600;
-}
-
-.btn-reject:not(:disabled):not(:hover) {
-  @apply border-red-400;
-}
-
-/* #endregion */
-
-/* #region dialog */
-
-dialog {
-  @apply flex-col fancy-border overflow-visible;
-  min-width: min(25rem, calc(100vw - 2rem));
-  max-width: min(40rem, calc(100vw - 2rem));
-  margin: auto;
-  animation: dialog 200ms forwards;
-
-  &[open] {
-    @apply flex;
-    scale: 1;
-  }
-
-  &::backdrop {
-    animation: dialog-backdrop 300ms forwards;
-    /* Firefox fallback */
-    background-color: #0005;
-    backdrop-filter: blur(4px);
-  }
-}
-
-@keyframes dialog {
-  from {
-    translate: 0 -100%;
-  }
-}
-
-@keyframes dialog-backdrop {
-  from {
-    background-color: transparent;
-    backdrop-filter: none;
-  }
-
-  to {
-    background-color: #0005;
-    backdrop-filter: blur(4px);
-  }
-}
-
-/* #endregion */
-
-/* #region route transitions */
-
-::view-transition-old(page),
-::view-transition-new(page) {
-  animation-duration: 200ms;
-  animation-name: -ua-view-transition-fade-in, slide-in;
-}
-
-::view-transition-old(page) {
-  animation-name: -ua-view-transition-fade-out, slide-out;
-}
-
-::view-transition-group(nav),
-::view-transition-group(nav-item) {
-  z-index: 1;
-}
-
-@keyframes slide-in {
-  from {
-    translate: -100%;
-  }
-}
-
-@keyframes slide-out {
-  to {
-    translate: 100%;
-  }
-}
-
-/* #endregion */
-
-@apply progress-keyframes;
-
-/* #region misc */
-
 :focus-visible {
   outline-color: var(--color-sky-100);
 }
 
-.title {
-  @apply mx-4 my-5 text-xl;
-}
+@import './assets/styles/button.css';
+@import './assets/styles/input.css';
 
-.note {
-  @apply border-dashed rounded-xs text-neutral-600 border-neutral-200 p-2 text-xs truncate;
-}
+@import './assets/styles/nav.css';
+@import './assets/styles/dialog.css';
+@import './assets/styles/view-transition.css';
+@import './assets/styles/misc.css';
 
-/* #endregion */
+@apply progress-keyframes;

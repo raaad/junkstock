@@ -1,30 +1,24 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { getMenu } from './common/home.component';
-import { ViewPageLoadingDirective } from './common/view-page-loading.direcitve';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { getFlatMenu } from './common/get-flat-menu';
+import { ViewLoadingDirective } from './common/view-loading.direcitve';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
     <nav class="min-w-3xs">
-      <ul class="menu md:hidden">
-        <li [routerLink]="['']">
-          <span>Home</span>
+      <ul>
+        <li>
+          <a [routerLink]="['']">Home</a>
         </li>
-      </ul>
-      <ul class="menu size-full hidden md:block">
         @for (item of menu; track item) {
-          <li
-            #el
-            [routerLink]="[item.path]"
-            (keydown.enter)="el.click()"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            [class.disabled]="item.path === undefined"
-            [style.--indent]="item.indent"
-            [attr.tabindex]="item.path ? 0 : -1">
-            <span>{{ item.title }}</span>
+          <li [style.--indent]="item.indent">
+            @if (item.path !== undefined) {
+              <a [routerLink]="[item.path]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ item.title }}</a>
+            } @else {
+              <span>{{ item.title }}</span>
+            }
           </li>
         }
       </ul>
@@ -36,28 +30,18 @@ import { ViewPageLoadingDirective } from './common/view-page-loading.direcitve';
   },
   styles: [
     `
-      @reference "../styles/utils.css";
+      @reference "#main";
 
       :host {
         display: flex;
         height: inherit;
       }
 
-      :host::ng-deep router-outlet + * {
-        flex: 1;
-        overflow: auto;
-      }
-
-      nav {
-        view-transition-name: nav;
-
-        border-right: thin dashed var(--color-neutral-200);
-      }
-
-      /* view-transition */
-
       router-outlet::ng-deep + * {
         view-transition-name: page;
+
+        flex: 1;
+        overflow: auto;
       }
 
       /* view-loading */
@@ -69,9 +53,9 @@ import { ViewPageLoadingDirective } from './common/view-page-loading.direcitve';
       }
     `
   ],
-  hostDirectives: [ViewPageLoadingDirective],
+  hostDirectives: [ViewLoadingDirective],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  protected menu = getMenu(inject(Router).config);
+  protected menu = getFlatMenu();
 }

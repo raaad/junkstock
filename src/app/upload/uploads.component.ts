@@ -72,7 +72,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
   `,
   styles: [
     `
-      @reference "../../styles.css";
+      @reference "#main";
 
       :host {
         margin: 1em;

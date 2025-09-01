@@ -31,7 +31,7 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
   `,
   styles: [
     `
-      @reference "../../../styles.css";
+      @reference "#main";
 
       :host {
         display: inline-flex;

@@ -1,0 +1,45 @@
+nav {
+  view-transition-name: nav;
+
+  @apply border-dashed border-neutral-200;
+
+  @variant max-md {
+    @apply border-b;
+
+    li:not(:first-child) {
+      display: none;
+    }
+  }
+
+  @variant md {
+    @apply border-r;
+  }
+
+  ul {
+    @apply size-full bg-neutral-50;
+  }
+
+  li {
+    @apply transition-colors;
+    margin-left: calc(0.5rem * var(--indent, 0));
+
+    &:has(a):hover {
+      @apply bg-neutral-100;
+    }
+
+    &:has(a.active) {
+      view-transition-name: nav-item;
+
+      @apply bg-neutral-100 border-r-4;
+    }
+
+    a,
+    span {
+      @apply inline-block w-full py-2 px-4;
+    }
+
+    span {
+      @apply text-neutral-400 text-xs border-b border-neutral-200;
+    }
+  }
+}
