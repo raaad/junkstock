@@ -12,11 +12,11 @@ import { DomSanitizer } from '@angular/platform-browser';
  * data = { user: { name: 'Bob' } }
  * ```
  */
-export function interpolate(template: string, context: unknown) {
+export function interpolate(template: string, context: unknown): string {
   const names = isObject((context ??= '')) ? Object.keys(context) : [];
   const values = isObject(context) ? Object.values(context) : [];
 
-  return new Function(...names, `return \`${template}\`;`).call(context, ...values);
+  return new Function(...names, `return \`${template || ''}\`;`).call(context, ...values);
 
   function isObject(i: unknown): i is object {
     return typeof i === 'object';

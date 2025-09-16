@@ -15,7 +15,7 @@ import { ViewLoadingDirective } from './common/view-loading.direcitve';
         @for (item of menu; track item) {
           <li [style.--indent]="item.indent">
             @if (item.path !== undefined) {
-              <a [routerLink]="[item.path]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ item.title }}</a>
+              <a [routerLink]="[item.path]" routerLinkActive="active">{{ item.title }}</a>
             } @else {
               <span>{{ item.title }}</span>
             }

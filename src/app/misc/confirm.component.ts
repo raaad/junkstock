@@ -1,54 +1,58 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, inject, InjectionToken, Signal, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { CONFIRM_ACTION, ConfirmAction, CustomConfirmDirective } from '@core/angular';
-import { DialogComponent, DialogOptions, DialogRequest } from './dialog.component';
+import { catchError, concatMap, from, map, merge, of, Subject } from 'rxjs';
+import { DialogComponent, DialogOptions } from './dialog.component';
 
-export interface ConfirmOptions {
-  type: 'dialog' | 'popover';
-  // disabled?: 'true';
-  dismissible?: 'false';
-  title?: string;
-  message?: string;
-  accept?: string;
-  reject?: string;
-}
-
-function getOptions(element: Element, attrPrefix = 'confirm-') {
+function getOptions(element: Element | undefined, attrPrefix = 'confirm-') {
   return Object.fromEntries(
-    Array.from(element.attributes ?? [])
+    Array.from(element?.attributes ?? [])
       .filter(({ name, value }) => name.startsWith(attrPrefix) && value)
       .map(({ name, value }) => [name.substring(attrPrefix.length), value])
   );
 }
 
+export interface DialogRequest<R = void> {
+  options?: DialogOptions;
+  accept: (r: R) => void;
+  reject: () => void;
+}
+
 const DIALOG_REQUEST = new InjectionToken<Signal<DialogRequest | null>>('DIALOG_REQUEST');
 
 export function provideConfirmAction() {
-  const request = signal<DialogRequest | null>(null);
+  const queue = new Subject<DialogRequest & { promise: Promise<unknown> }>();
 
   return [
     {
       provide: DIALOG_REQUEST,
-      useValue: request
+      useFactory: () =>
+        toSignal(
+          queue.pipe(
+            concatMap(({ promise, ...request }) =>
+              merge(
+                of(request),
+                from(promise).pipe(
+                  catchError(e => of(e)),
+                  map(() => null)
+                )
+              )
+            ),
+            takeUntilDestroyed()
+          )
+        )
     },
     {
       provide: CONFIRM_ACTION,
-      useFactory: (): ConfirmAction<unknown> => {
-        return el =>
-          new Promise<unknown>((resolve, reject) => {
-            const { disabled, dismissable, ...options } = getOptions(el);
+      useFactory: (): ConfirmAction<unknown> => el => {
+        const { promise, resolve: accept, reject } = Promise.withResolvers<void>();
 
-            booleanAttribute(disabled) ?
-              resolve('ok')
-            : request.set({
-                options: {
-                  ...(options as Omit<DialogOptions, 'dismissable'>),
-                  dismissable: booleanAttribute(dismissable || true)
-                } as DialogOptions,
-                accept: (result?: unknown) => (resolve(result), request.set(null)),
-                reject: () => (reject(), request.set(null))
-              });
-          });
+        const { disabled, ...options } = getOptions(el);
+
+        booleanAttribute(disabled) ? accept() : queue.next({ promise, accept, reject, options });
+
+        return promise;
       }
     }
   ];
@@ -58,47 +62,77 @@ export function provideConfirmAction() {
   selector: 'app-confirm',
   imports: [FormsModule, CustomConfirmDirective, DialogComponent],
   template: `
-    <!-- <dialog #dEl (close)="dialog()?.reject()" (click)="$event.target === $event.currentTarget && dEl.close()">
-      @if (dialog(); as dlg) {
-        @let options = $any(dEl.showModal()) || dlg.options;
-        <div class="flex items-center p-4">
-          <span class="truncate">Confirm title</span>
-          <button (click)="dEl.close()" class="btn btn-sm btn-icon ml-auto">✖</button>
-        </div>
-        <div class="px-4 overflow-auto">{{ options.message ?? 'Default message?' }}</div>
-        <div class="flex p-4 gap-4">
-          <button (click)="dEl.close(); dlg.accept('ok')" class="btn btn-sm btn-primary min-w-[4rem] ml-auto">{{ options.accept ?? 'Ok' }}</button>
-          <button (click)="dEl.close()" class="btn btn-sm min-w-[4rem] btn-reject">{{ options.reject ?? 'Cancel' }}</button>
-        </div>
-      }
-    </dialog> -->
-    <dialog [request]="dialog()" [class]="classes">
-      Default message?Default message?Default message?Default message?Default message?Default message?Default message?Default message?
-      <div class="flex">
-        <div class="m-auto inline-grid grid-cols-5  grid-rows-5 gap-4">
-          <button (click)="classes = 'edge top'" [disabled]="classes === 'edge top'" class="btn btn-sm col-start-2 col-span-3">↟</button>
-          <button (click)="classes = 'edge left'" [disabled]="classes === 'edge left'" class="btn btn-sm row-start-2 row-span-3">↞</button>
-          <button (click)="classes = 'edge right'" [disabled]="classes === 'edge right'" class="btn btn-sm row-start-2 row-span-3">↠</button>
-          <button (click)="classes = 'edge bottom'" [disabled]="classes === 'edge bottom'" class="btn btn-sm col-start-2 col-span-3">↡</button>
-          <button (click)="classes = 'top left'" [disabled]="classes === 'top left'" class="btn btn-sm row-start-2 col-start-2">⇖</button>
-          <button (click)="classes = 'top'" [disabled]="classes === 'top'" class="btn btn-sm row-start-2 col-start-3">⇑</button>
-          <button (click)="classes = 'top right'" [disabled]="classes === 'top right'" class="btn btn-sm row-start-2 col-start-4">⇗</button>
-          <button (click)="classes = 'left'" [disabled]="classes === 'left'" class="btn btn-sm row-start-3 col-start-2">⇐</button>
-          <button (click)="classes = ''" [disabled]="classes === ''" class="btn btn-sm row-start-3 col-start-3">x</button>
-          <button (click)="classes = 'right'" [disabled]="classes === 'right'" class="btn btn-sm row-start-3 col-start-4">⇒</button>
-          <button (click)="classes = 'bottom left'" [disabled]="classes === 'bottom left'" class="btn btn-sm row-start-4 col-start-2">⇙</button>
-          <button (click)="classes = 'bottom'" [disabled]="classes === 'bottom'" class="btn btn-sm row-start-4 col-start-3">⇓</button>
-          <button (click)="classes = 'bottom right'" [disabled]="classes === 'bottom right'" class="btn btn-sm row-start-4 col-start-4">⇘</button>
-        </div>
-      </div>
+    <dialog
+      [show]="!!dialog()"
+      (accept)="dialog()?.accept()"
+      (reject)="dialog()?.reject()"
+      [options]="dialog()?.options"
+      [dismissable]="dismissable()"
+      [class]="style()">
+      @if (showBody()) {
+        @if (showLayouts()) {
+          <div class="flex">
+            <div class="m-auto inline-grid grid-cols-5 grid-rows-5 gap-4">
+              <button (click)="style.set('edge top')" class="btn btn-sm col-start-2 col-span-3">↟</button>
+              <button (click)="style.set('edge left')" class="btn btn-sm row-start-2 row-span-3">↞</button>
+              <button (click)="style.set('edge right')" class="btn btn-sm row-start-2 row-span-3">↠</button>
+              <button (click)="style.set('edge bottom')" class="btn btn-sm col-start-2 col-span-3">↡</button>
+              <button (click)="style.set('top left')" class="btn btn-sm row-start-2 col-start-2">⇖</button>
+              <button (click)="style.set('top')" class="btn btn-sm row-start-2 col-start-3">⇑</button>
+              <button (click)="style.set('top right')" class="btn btn-sm row-start-2 col-start-4">⇗</button>
+              <button (click)="style.set('left')" class="btn btn-sm row-start-3 col-start-2">⇐</button>
+              <button (click)="style.set('')" class="btn btn-sm row-start-3 col-start-3">x</button>
+              <button (click)="style.set('right')" class="btn btn-sm row-start-3 col-start-4">⇒</button>
+              <button (click)="style.set('bottom left')" class="btn btn-sm row-start-4 col-start-2">⇙</button>
+              <button (click)="style.set('bottom')" class="btn btn-sm row-start-4 col-start-3">⇓</button>
+              <button (click)="style.set('bottom right')" class="btn btn-sm row-start-4 col-start-4">⇘</button>
+            </div>
+          </div>
+        }
 
-      <!-- <ng-container ngProjectAs="header" /> -->
-      <!-- <ng-container ngProjectAs="footer">
-        <div class="-m-4 flex flex-1">
-         
+        <div class="mt-4 flex gap-4 flex-wrap max-w-sm">
+          <label class="flex items-center gap-1">
+            <input [ngModel]="dismissable()" (ngModelChange)="dismissable.set(!dismissable())" [ngModelOptions]="{ standalone: true }" type="checkbox" />
+            dismissable
+          </label>
+          <label class="flex items-center gap-1">
+            <input [ngModel]="showLayouts()" (ngModelChange)="showLayouts.set(!showLayouts())" [ngModelOptions]="{ standalone: true }" type="checkbox" />
+            show layouts
+          </label>
+          <label class="flex items-center gap-1">
+            <input [ngModel]="showBody()" (ngModelChange)="showBody.set(!showBody())" [ngModelOptions]="{ standalone: true }" type="checkbox" />
+            show body
+          </label>
+          <label class="flex items-center gap-1">
+            <input [ngModel]="largeBody()" (ngModelChange)="largeBody.set(!largeBody())" [ngModelOptions]="{ standalone: true }" type="checkbox" />
+            large body
+          </label>
+          <label class="flex items-center gap-1">
+            <input [ngModel]="footerExtra()" (ngModelChange)="footerExtra.set(!footerExtra())" [ngModelOptions]="{ standalone: true }" type="checkbox" />
+            show extra footer
+          </label>
         </div>
-      </ng-container> -->
-      <!-- <ng-container ngProjectAs="footer-extra"><span>sfsfsd</span></ng-container> -->
+
+        @if (largeBody()) {
+          <div class="mt-4 flex gap-4">
+            @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+              <span class="inline-block w-32 h-8 bg-neutral-200 m-1"></span>
+            }
+          </div>
+        }
+      }
+
+      <!-- <ng-container ngProjectAs="header" /> --><!--no header-->
+      <!-- <div ngProjectAs="header" class="-m-4 flex-1 content-center self-stretch px-1 bg-neutral-200">Custom header</div> -->
+      <!-- <ng-container ngProjectAs="title"><b class="uppercase">Custom title</b></ng-container> -->
+
+      <!-- <ng-container ngProjectAs="footer" /> --><!--no footer-->
+      <!-- <div ngProjectAs="footer" class="-m-4 flex-1 content-center px-1 bg-neutral-200">Custom footer</div> -->
+      <ng-container ngProjectAs="footer-extra">
+        @if (footerExtra()) {
+          Extra footer
+        }
+      </ng-container>
     </dialog>
 
     <div class="title">Confirm Action</div>
@@ -111,8 +145,10 @@ export function provideConfirmAction() {
       <button (click.confirmed)="confirmed($event)" [appCustomConfirm]="custom" class="btn btn-sm">Custom confirm</button>
       <button (click.confirmed)="confirmed($event)" (click.rejected)="rejected()" class="btn btn-sm">With rejected</button>
 
-      <label class="flex items-center gap-1"> <input [(ngModel)]="disabled" [ngModelOptions]="{ standalone: true }" type="checkbox" /> disable </label>
-      <button (click.confirmed)="confirmed($event)" [attr.confirm-disabled]="disabled" class="btn btn-sm">{{ disabled ? 'No confirm' : 'Confirm' }}</button>
+      <label class="flex items-center gap-1">
+        <input [ngModel]="disabled()" (ngModelChange)="disabled.set(!disabled())" [ngModelOptions]="{ standalone: true }" type="checkbox" /> disable
+      </label>
+      <button (click.confirmed)="confirmed($event)" [attr.confirm-disabled]="disabled()" class="btn btn-sm">{{ disabled() ? 'No confirm' : 'Confirm' }}</button>
 
       <!-- Not working without {event}.confirmed -->
       <button (click.rejected)="rejected()" class="btn btn-sm">Not working</button>
@@ -120,16 +156,28 @@ export function provideConfirmAction() {
 
     <div class="m-4">Result: {{ result() }}</div>
   `,
+  styles: [
+    `
+      :host {
+        interpolate-size: allow-keywords;
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfirmComponent {
   protected dialog = inject(DIALOG_REQUEST);
 
-  protected disabled = false;
-
   protected result = signal('');
+  protected disabled = signal(false);
 
-  protected classes = '';
+  protected style = signal('edge top');
+
+  protected dismissable = signal(true);
+  protected showLayouts = signal(true);
+  protected showBody = signal(true);
+  protected largeBody = signal(false);
+  protected footerExtra = signal(false);
 
   confirmed(result?: unknown) {
     this.result.set(`confirmed: ${result}`);
@@ -141,9 +189,9 @@ export class ConfirmComponent {
 
   protected reset() {
     this.result.set('');
+
+    this.showBody.set(true);
   }
 
-  protected custom() {
-    return confirm('Custom confirm?') ? Promise.resolve() : Promise.reject();
-  }
+  protected readonly custom = () => (confirm('Custom confirm?') ? Promise.resolve() : Promise.reject());
 }

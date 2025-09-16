@@ -1,5 +1,5 @@
-import { LocationStrategy } from '@angular/common';
 import { inject, Pipe, PipeTransform } from '@angular/core';
+import { injectNonI18nBaseHref } from '@core/angular/i18n';
 import { IMAGE_URL_RESOLVERS, ImageUrlResolver, ImageUrlResolverKind } from '@core/svg-renderer';
 import { blobToObjectUrl, fetchToBlob, throwIt } from '@core/utils';
 
@@ -17,7 +17,7 @@ export function provideImageUrlResolvers() {
     {
       provide: IMAGE_URL_RESOLVERS,
       useFactory: () => {
-        const base = `${inject(LocationStrategy).getBaseHref()}assets/`;
+        const base = `${injectNonI18nBaseHref()}assets/`;
 
         return new Map<ImageUrlResolverKind, ImageUrlResolver>([
           ['local-assets', (url: string) => `${base}${url}`],

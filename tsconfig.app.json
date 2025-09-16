@@ -6,6 +6,7 @@
     "paths": {
       "@core/3d": ["./src/core/3d"],
       "@core/angular": ["./src/core/angular"],
+      "@core/angular/i18n": ["./src/core/angular/i18n"],
       "@core/svg-renderer": ["./src/core/svg-renderer"],
       "@core/types": ["./src/core/types"],
       "@core/upload": ["./src/core/upload"],

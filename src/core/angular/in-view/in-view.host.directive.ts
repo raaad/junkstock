@@ -22,7 +22,7 @@ export class InViewHostDirective {
   private readonly options = inject(INVIEW_OPTIONS, { optional: true }) ?? { threshold: 0.8, scrollDebounce: 200 };
 
   private readonly observer = new IntersectionObserver(v => this.callback(v), {
-    root: inject(ElementRef).nativeElement,
+    root: inject<ElementRef<Element>>(ElementRef).nativeElement,
     threshold: this.options.threshold
   });
 

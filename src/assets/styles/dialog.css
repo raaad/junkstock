@@ -2,38 +2,37 @@ dialog {
   --min-width: 24rem;
   --max-width: 42rem;
   --start-position: 0 calc(-50vh - 50%);
-  --edge-offset: 0;
+  --edge-offset: 0px;
 
   flex-direction: column;
   justify-content: center;
   margin: auto;
   min-width: min(var(--min-width), calc(100% - 2rem));
   max-width: min(var(--max-width), calc(100% - 2rem));
-  animation: dialog var(--ani-duration);
 
-  &[open] {
+  &:open {
     display: flex;
   }
 
   /* #region positions */
 
   &.top {
-    --start-position: 0 -100%;
+    --start-position: 0 calc(-100% - var(--edge-offset));
     margin-top: var(--edge-offset);
   }
 
   &.bottom {
-    --start-position: 0 100%;
+    --start-position: 0 calc(100% + var(--edge-offset));
     margin-bottom: var(--edge-offset);
   }
 
   &.left {
-    --start-position: -100% 0;
+    --start-position: calc(-100% - var(--edge-offset)) 0;
     margin-left: var(--edge-offset);
   }
 
   &.right {
-    --start-position: 100% 0;
+    --start-position: calc(100% + var(--edge-offset)) 0;
     margin-right: var(--edge-offset);
   }
 
@@ -58,7 +57,7 @@ dialog {
       max-width: unset;
       min-width: unset;
 
-      &[open] {
+      &:open {
         display: grid;
       }
 
@@ -69,27 +68,49 @@ dialog {
   }
 
   /* #endregion */
+}
+
+/* #region show animation */
+
+dialog {
+  /* allow-discrete for overlay, display is mandatory */
+  transition: all var(--ani-duration) allow-discrete;
+  translate: var(--start-position);
+
+  &:open {
+    translate: inherit;
+
+    @starting-style {
+      translate: var(--start-position);
+    }
+  }
+
+  /* speed x2 on close */
+  &:not(:open) {
+    transition-duration: calc(var(--ani-duration) / 2);
+  }
+
+  /* #region backdrop */
 
   &::backdrop {
-    background-color: color-mix(in srgb, var(--color-black) 30%, transparent);
-    backdrop-filter: blur(var(--spacing));
-    animation: dialog-backdrop var(--ani-duration);
-  }
-}
-
-/* #region keyframes */
-
-@keyframes dialog {
-  from {
-    translate: var(--start-position);
-  }
-}
-
-@keyframes dialog-backdrop {
-  from {
+    transition: inherit;
     background-color: transparent;
-    backdrop-filter: none;
+    backdrop-filter: initial;
   }
+
+  &:open::backdrop {
+    background-color: rgb(from var(--color-black) r g b / 0.15);
+    backdrop-filter: blur(var(--spacing));
+  }
+
+  @starting-style {
+    &:open::backdrop {
+      background-color: transparent;
+      backdrop-filter: initial;
+    }
+  }
+
+  /* #endregion */
 }
 
 /* #endregion */

@@ -1,8 +1,10 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideConfirmActionEventPlugin, provideConsoleLogger, provideLogger, provideResizedEventPlugin } from '@core/angular';
+import { provideI18n } from '@core/angular/i18n';
 import { provideTitleStrategy } from './common/provide-title-strategy';
-import { viewTransitionReversed as onViewTransitionCreated } from './common/view-transition-reversed';
+import { skipSubsets, withReversed } from './common/view-transition.rules';
+import { ensureLocale } from './i18n/ensure-locale';
 import { provideConfirmAction } from './misc/confirm.component';
 
 import { routes } from './app.routes';
@@ -12,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
 
-    provideRouter(routes, withViewTransitions({ onViewTransitionCreated })),
+    provideRouter(routes, withViewTransitions({ onViewTransitionCreated: t => (withReversed(t), skipSubsets(t)) })),
     provideTitleStrategy(),
 
     provideLogger(),
@@ -21,6 +23,8 @@ export const appConfig: ApplicationConfig = {
     provideConfirmActionEventPlugin(),
     provideConfirmAction(),
 
-    provideResizedEventPlugin()
+    provideResizedEventPlugin(),
+
+    provideI18n(lc => import(`./i18n/i18n.common.${lc}.ts`), ensureLocale(['en', 'us'] as const, 'en'))
   ]
 };

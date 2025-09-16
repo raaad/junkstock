@@ -1,15 +1,12 @@
-import { LocationStrategy } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal } from '@angular/core';
 import { controlsLookAt, fitToObject, fromGltf, rotateAround, updateSize } from '@core/3d';
 import { LOGGER } from '@core/angular';
+import { injectNonI18nBaseHref } from '@core/angular/i18n';
 import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMaterial, Object3D, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
-const MODEL_URL = 'assets/duck.glb';
-
 @Component({
   selector: 'app-3d',
-  imports: [],
   template: `
     <div class="absolute w-full top-0 flex flex-wrap gap-5 p-5">
       <div class="flex gap-2 items-center">
@@ -53,8 +50,9 @@ const MODEL_URL = 'assets/duck.glb';
 })
 export class ThreeComponent implements OnInit {
   private readonly logger = inject(LOGGER);
-  private readonly container = inject(ElementRef<HTMLElement>).nativeElement;
-  private readonly modelUrl = `${inject(LocationStrategy).getBaseHref()}${MODEL_URL}`;
+  private readonly container = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private readonly modelPath = `${injectNonI18nBaseHref()}assets/duck.glb`;
+  private readonly decoderPath = injectNonI18nBaseHref();
 
   private readonly renderer = createRenderer(this.container);
   private readonly camera = new PerspectiveCamera().add(...createLights());
@@ -66,7 +64,7 @@ export class ThreeComponent implements OnInit {
   protected readonly loading = signal(true);
 
   async ngOnInit() {
-    this.object = await fromGltf(this.modelUrl, v => this.logger.debug(`3D: loaded ${(v * 100).toFixed()}%`));
+    this.object = await fromGltf(this.modelPath, this.decoderPath, v => this.logger.debug(`3D: loaded ${(v * 100).toFixed()}%`));
 
     this.scene.add(this.object);
 

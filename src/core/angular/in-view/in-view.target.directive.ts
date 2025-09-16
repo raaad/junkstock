@@ -6,7 +6,7 @@ import { InViewHostDirective } from './in-view.host.directive';
 })
 export class InViewTargetDirective {
   private readonly host = inject(InViewHostDirective, { optional: true });
-  private readonly element = inject(ElementRef).nativeElement;
+  private readonly element = inject<ElementRef<Element>>(ElementRef).nativeElement;
 
   readonly data = input<unknown>(undefined, { alias: 'appInViewTarget' });
   readonly disabled = input(false, { alias: 'appInViewTargetDisabled' });
