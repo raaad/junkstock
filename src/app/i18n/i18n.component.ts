@@ -37,5 +37,5 @@ export class I18nComponent {
   protected locale = inject(I18N_LOCALE);
 
   protected codeOnly = injectI18n()('Code only string');
-  protected typedKeys = injectI18n<typeof COMMON>()('SOME_KEY');
+  protected typedKeys = injectI18n<typeof COMMON>()('SOME_KEY', { price: 0 });
 }

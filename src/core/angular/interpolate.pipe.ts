@@ -12,8 +12,8 @@ import { DomSanitizer } from '@angular/platform-browser';
  * data = { user: { name: 'Bob' } }
  * ```
  */
-export function interpolate(template: string, context: unknown): string {
-  const names = isObject((context ??= '')) ? Object.keys(context) : [];
+export function interpolate<T = unknown>(template: string, context?: T): string {
+  const names = isObject((context ??= '' as T)) ? Object.keys(context) : [];
   const values = isObject(context) ? Object.values(context) : [];
 
   return new Function(...names, `return \`${template || ''}\`;`).call(context, ...values);

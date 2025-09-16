@@ -58,7 +58,8 @@ export function injectI18n<T extends Record<string, string> = Record<string, str
   const i18n = inject(I18N) as T;
   const logger = inject(LOGGER);
 
-  return (key: Exclude<keyof T, number | symbol>, context?: unknown) => interpolate(i18n[key] || (logger.trace(`i18n: '${key}' key as value`), key), context);
+  return <C = unknown>(key: Exclude<keyof T, number | symbol>, context?: C) =>
+    interpolate(i18n[key] || (logger.trace(`i18n: '${key}' key as value`), key), context);
 }
 
 /** Translate, key and interpolate if needed */
