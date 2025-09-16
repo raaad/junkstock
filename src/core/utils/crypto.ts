@@ -50,7 +50,7 @@ export async function decrypt(message: string, password: string, crypto = defaul
 // #region support
 
 /** Generate a CryptoKey (AES-GCM) from the provided text key */
-async function getKey(key: string, salt: Uint8Array, crypto: SubtleCrypto) {
+async function getKey(key: string, salt: BufferSource, crypto: SubtleCrypto) {
   const baseKey = await crypto.importKey('raw', new TextEncoder().encode(key), 'PBKDF2', false, ['deriveKey']);
 
   return await crypto.deriveKey(
