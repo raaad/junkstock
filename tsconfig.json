@@ -12,7 +12,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "lib": ["ES2024", "ESNext.Array", "ES2024.Promise", "dom"]
+    "lib": ["ES2024", "ESNext.Array", "ESNext.Promise", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
