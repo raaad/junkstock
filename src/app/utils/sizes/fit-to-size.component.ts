@@ -26,7 +26,7 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
         ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" />scale-down</label
       >
       <label class="flex items-center gap-1"><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" />cover</label>
-      <button (click)="reset()" class="btn btn-sm">reset</button>
+      <button (click)="reset()" class="btn">reset</button>
     </div>
   `,
   styles: [

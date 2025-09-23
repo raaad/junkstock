@@ -7,10 +7,11 @@ dialog {
   flex-direction: column;
   justify-content: center;
   margin: auto;
+  inset: 0;
   min-width: min(var(--min-width), calc(100% - 2rem));
   max-width: min(var(--max-width), calc(100% - 2rem));
 
-  &:open {
+  &[open] {
     display: flex;
   }
 
@@ -52,12 +53,13 @@ dialog {
       --content-min-width: minmax(min(var(--min-width), 100%), auto);
 
       grid: auto 1fr / var(--content-min-width);
+      grid-template-rows: repeat(3, minmax(auto, min-content)); /* for safari */
 
       width: 100%;
       max-width: unset;
       min-width: unset;
 
-      &:open {
+      &[open] {
         display: grid;
       }
 
@@ -70,41 +72,45 @@ dialog {
   /* #endregion */
 }
 
-/* #region show animation */
+/* #region display animation */
 
 dialog {
   /* allow-discrete for overlay, display is mandatory */
   transition: all var(--ani-duration) allow-discrete;
   translate: var(--start-position);
+  z-index: 1; /* for safari */
 
-  &:open {
+  &[open] {
     translate: inherit;
+  }
 
-    @starting-style {
+  @starting-style {
+    &[open] {
       translate: var(--start-position);
     }
   }
 
-  /* speed x2 on close */
-  &:not(:open) {
-    transition-duration: calc(var(--ani-duration) / 2);
+  /* speed x1.5 on close */
+  &:not([open]) {
+    transition-duration: calc(var(--ani-duration) / 1.5);
   }
 
   /* #region backdrop */
 
   &::backdrop {
     transition: inherit;
+    transition-duration: calc(var(--ani-duration) * 2);
     background-color: transparent;
     backdrop-filter: initial;
   }
 
-  &:open::backdrop {
-    background-color: rgb(from var(--color-black) r g b / 0.15);
+  &[open]::backdrop {
+    background-color: rgb(from var(--color-black) r g b / 0.2);
     backdrop-filter: blur(var(--spacing));
   }
 
   @starting-style {
-    &:open::backdrop {
+    &[open]::backdrop {
       background-color: transparent;
       backdrop-filter: initial;
     }

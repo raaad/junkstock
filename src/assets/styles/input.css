@@ -1,7 +1,7 @@
 /* #region input */
 
 .input {
-  @apply min-w-0 py-2 px-4 rounded-xs border border-neutral-300 transition-colors;
+  @apply min-w-0 py-1.5 px-3 text-sm  rounded-xs border border-neutral-300 transition-colors;
 
   &:focus {
     @apply border-sky-700 outline-0;

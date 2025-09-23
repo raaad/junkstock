@@ -34,7 +34,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
         <div class="text-xs">{{ uploader.active().length }} / {{ uploader.uploads().length }}</div>
         <div class="text-xs">{{ uploader.progress().uploaded | filesize }} / {{ uploader.progress().total | filesize }}</div>
       </div>
-      <div class="flex gap-5 items-center flex-wrap note"><span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span></div>
+      <div class="flex gap-5 items-center flex-wrap text-xs"><span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span></div>
     </div>
     <!--list-->
     <ul class="text-xs flex flex-col gap-1">
@@ -60,7 +60,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
             @if (item.state < UploadState.Failed) {
               <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ getProgress(item).toFixed(2) }}%</span>
               @if (item.state < UploadState.Uploaded) {
-                <button class="text-xs cursor-pointer pl-1" (click)="uploader.abort(item.id)">🚫</button>
+                <button class="pl-1 text-xs cursor-pointer text-red-500" title="abort" (click)="uploader.abort(item.id)">✕</button>
               }
             } @else {
               {{ item.error ?? '' }}

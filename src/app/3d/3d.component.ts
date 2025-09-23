@@ -10,14 +10,14 @@ import { OrbitControls } from 'three/examples/jsm/Addons.js';
   template: `
     <div class="absolute w-full top-0 flex flex-wrap gap-5 p-5">
       <div class="flex gap-2 items-center">
-        <button (click)="fit()" class="btn btn-sm">fitToObject</button>
-        <span class="note">GLTF format + DRACO compression</span>
+        <button (click)="fit()" class="btn">fitToObject</button>
+        <span class="text-xs">GLTF format + DRACO compression</span>
       </div>
       <div class="flex gap-2 ml-auto">
-        <button (pointerdown)="rotate('left')" title="rotate left" class="btn btn-sm">⇐</button>
-        <button (pointerdown)="rotate('right')" title="rotate right" class="btn btn-sm">⇒</button>
-        <button (pointerdown)="rotate('up')" title="rotate up" class="btn btn-sm">⇑</button>
-        <button (pointerdown)="rotate('down')" title="rotate down" class="btn btn-sm">⇓</button>
+        <button (pointerdown)="rotate('left')" title="rotate left" class="btn btn-icon">❮</button>
+        <button (pointerdown)="rotate('right')" title="rotate right" class="btn btn-icon">❯</button>
+        <button (pointerdown)="rotate('up')" title="rotate up" class="btn btn-icon"><span class="inline-block rotate-90">❮</span></button>
+        <button (pointerdown)="rotate('down')" title="rotate down" class="btn btn-icon"><span class="inline-block -rotate-90">❮</span></button>
       </div>
     </div>
   `,

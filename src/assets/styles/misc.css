@@ -1,7 +1,12 @@
+:focus-visible {
+  outline: 1px dashed var(--color-sky-100);
+  outline-offset: -1px;
+}
+
 .title {
   @apply mx-4 my-5 text-xl;
 }
 
 .note {
-  @apply border-dashed rounded-xs text-neutral-600 border-neutral-200 p-2 text-xs truncate;
+  @apply px-1.5 py-2 text-xs truncate border-1 border-dashed rounded-xs border-neutral-200;
 }

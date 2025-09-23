@@ -8,10 +8,10 @@ import { formatISODate } from '@core/utils';
     @for (item of items; track item) {
       <div class="flex items-center gap-4 m-4">
         <span class="flex-1 capitalize">{{ item.kind }}:</span>
-        <span class="flex-2 note border-1" [class.!text-neutral-200]="item.now()">{{ item.input() }}</span>
-        <button (click)="item.now.set(!item.now())" class="btn btn-sm">Now</button>
-        <span class="flex-2 note border-1">{{ item.date() }}</span>
-        <span class="flex-2 note border-1">{{ item.formatted() }}</span>
+        <span class="flex-2 note" [class.!text-neutral-200]="item.now()">{{ item.input() }}</span>
+        <button (click)="item.now.set(!item.now())" class="btn">Now</button>
+        <span class="flex-2 note">{{ item.date() }}</span>
+        <span class="flex-2 note">{{ item.formatted() }}</span>
       </div>
     }
   `,

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import base from './i18n.common.en';
+import base from './common.i18n';
 
 export default {
   ...base,

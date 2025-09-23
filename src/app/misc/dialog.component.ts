@@ -17,7 +17,7 @@ export interface DialogOptions {
           <ng-content select="title">{{ options().title ?? 'Confirm title' }}</ng-content>
         </span>
         @if (dismissable()) {
-          <button (click)="reject.emit()" class="ml-auto btn btn-sm btn-icon" title="Close">✖</button>
+          <button (click)="reject.emit()" class="ml-auto btn btn-icon border-transparent" title="Close">✕</button>
         }
       </ng-content>
     </div>
@@ -27,15 +27,17 @@ export interface DialogOptions {
     <div class="p-4 mt-auto empty:hidden [:empty+&]:pt-2 flex gap-4 wrap-anywhere">
       <ng-content select="footer">
         <ng-content select="footer-extra" />
-        <button (click)="accept.emit()" class="ml-auto btn btn-sm btn-primary min-w-[4rem]">{{ options().accept ?? 'Ok' }}</button>
-        <button (click)="reject.emit()" class="btn btn-sm btn-reject min-w-[4rem]">{{ options().reject ?? 'Cancel' }}</button>
+        <button (click)="accept.emit()" class="ml-auto btn btn-primary min-w-[4rem]">{{ options().accept ?? 'Ok' }}</button>
+        <button (click)="reject.emit()" class="btn btn-reject min-w-[4rem]">{{ options().reject ?? 'Cancel' }}</button>
       </ng-content>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.closedby]': 'dismissable() ? "any": "none"',
-    '(close)': 'reject.emit()'
+    '(close)': 'reject.emit()',
+    '(click)': 'closedbyFix(dismissable(), $event)',
+    '(keydown.esc)': 'closedbyFix(dismissable(), $event)'
   }
 })
 export class DialogComponent {
@@ -53,5 +55,22 @@ export class DialogComponent {
 
   constructor() {
     effect(() => (this.show() ? this.dialog.showModal() : this.dialog.close()));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  protected closedbyFix = closedbyFix;
+}
+
+/** hey safari */
+function closedbyFix(dismissable: boolean, e: Event | MouseEvent) {
+  dismissable && !('closedBy' in HTMLDialogElement.prototype) && (!(e instanceof MouseEvent) || isBackdrop(e)) && e.target?.dispatchEvent(new Event('close'));
+
+  function isBackdrop({ target, currentTarget: host, clientX: x, clientY: y }: MouseEvent) {
+    return target === host && host instanceof HTMLElement && !inside(host);
+
+    function inside(e: HTMLElement) {
+      const { left, right, top, bottom } = e.getBoundingClientRect();
+      return left <= x && x <= right && top <= y && y <= bottom;
+    }
   }
 }

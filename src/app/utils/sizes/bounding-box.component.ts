@@ -16,7 +16,7 @@ import { getBoundingBox } from '@core/utils';
         [style.rotate.deg]="angle()"></div>
       <div class="box" [style.top.px]="box.y" [style.left.px]="box.x" [style.width.px]="box.width" [style.height.px]="box.height" role="presentation"></div>
     </div>
-    <div class="note !px-4">
+    <div class="text-xs !px-4">
       Click to Pause/Resume, <b>{{ angle() }} °</b>
     </div>
   `,

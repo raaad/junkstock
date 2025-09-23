@@ -7,13 +7,13 @@ import { compareBy } from '@core/utils';
   imports: [AniIndexDirective],
   template: `
     <div class="flex flex-wrap gap-4 p-4">
-      <button (click)="shuffle()" class="btn btn-sm">shuffle</button>
-      <button (click)="prepend()" class="btn btn-sm">prepend</button>
-      <button (click)="append()" class="btn btn-sm">append</button>
-      <button (click)="insert()" class="btn btn-sm">insert</button>
-      <button (click)="pop()" class="btn btn-sm btn-reject">pop</button>
-      <button (click)="truncate()" class="btn btn-sm btn-reject">truncate</button>
-      <button (click)="remove()" class="btn btn-sm btn-reject">remove</button>
+      <button (click)="shuffle()" class="btn">shuffle</button>
+      <button (click)="prepend()" class="btn">prepend</button>
+      <button (click)="append()" class="btn">append</button>
+      <button (click)="insert()" class="btn">insert</button>
+      <button (click)="pop()" class="btn btn-reject">pop</button>
+      <button (click)="truncate()" class="btn btn-reject">truncate</button>
+      <button (click)="remove()" class="btn btn-reject">remove</button>
     </div>
     <div class="flex gap-4 p-4 flex-col md:flex-row h-[50vh] overflow-auto">
       <ul appAniIndex class="flex flex-wrap flex-1 gap-4 content-start">

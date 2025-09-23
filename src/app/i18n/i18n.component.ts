@@ -4,23 +4,23 @@ import { InterpolatePipe } from '@core/angular';
 import { I18N_LOCALE, I18nDirective, I18nPipe, injectI18n, injectNonI18nBaseHref } from '@core/angular/i18n';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-import type COMMON from './i18n.common.en';
+import type COMMON from './common.i18n';
 
 @Component({
   selector: 'app-i18n',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, I18nPipe, I18nDirective, InterpolatePipe],
   template: `
-    <div class="flex gap-4 p-4">
-      <a [attr.href]="'\${base}\${path}' | interpolate: { base, path }" [class.text-sky-600]="locale === 'en'">EN</a>
-      <a [attr.href]="'\${base}/us\${path}' | interpolate: { base, path }" [class.text-sky-600]="locale === 'us'">US</a>
+    <div class="flex p-4">
+      <a [attr.href]="'\${base}\${path}' | interpolate: { base, path }" [class.text-sky-600]="locale === 'en'" class="px-2">EN</a>
+      <a [attr.href]="'\${base}/us\${path}' | interpolate: { base, path }" [class.text-sky-600]="locale === 'us'" class="px-2">US</a>
     </div>
     <div class="flex gap-4 p-4 items-center">
-      <span class="note border-1">{{ 'SOME_KEY' | i18n: { price: 666 } }}</span>
-      <span class="note border-1" x18n>Static string</span>
-      <span class="note border-1">{{ codeOnly }}</span>
-      <button routerLink="lazy" routerLinkActive #link="routerLinkActive" [class.hidden]="link.isActive" class="btn btn-sm">Load lazy</button>
+      <span class="note">{{ 'SOME_KEY' | i18n: { price: 666 } }}</span>
+      <span class="note" x18n>Static string</span>
+      <span class="note">{{ codeOnly }}</span>
+      <button routerLink="lazy" routerLinkActive #link="routerLinkActive" [class.hidden]="link.isActive" class="btn">Load lazy</button>
       <router-outlet hidden />
-      <button routerLink="./" routerLinkActive #link="routerLinkActive" [class.hidden]="!link.isActive" class="btn btn-sm">Reset</button>
+      <button routerLink="./" routerLinkActive #link="routerLinkActive" [class.hidden]="!link.isActive" class="btn">Reset</button>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-@reference './assets/styles/utils.css';
+@reference './assets/styles/utils';
 
 :root {
   --ani-duration: 300ms;
@@ -15,16 +15,12 @@ body {
   @apply font-light text-neutral-600;
 }
 
-:focus-visible {
-  outline-color: var(--color-sky-100);
-}
+@import './assets/styles/button';
+@import './assets/styles/input';
 
-@import './assets/styles/button.css';
-@import './assets/styles/input.css';
-
-@import './assets/styles/nav.css';
-@import './assets/styles/dialog.css';
-@import './assets/styles/view-transition.css';
-@import './assets/styles/misc.css';
+@import './assets/styles/nav';
+@import './assets/styles/dialog';
+@import './assets/styles/view-transition';
+@import './assets/styles/misc';
 
 @apply progress-keyframes;

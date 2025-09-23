@@ -1,6 +1,5 @@
 import { Object3D } from 'three';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader, GLTFLoader } from 'three/examples/jsm/Addons.js';
 
 /** loading from GLTF|GLB + Draco */
 export function fromGltf(url: string, decoderPath = '', progress?: (v: number) => void) {

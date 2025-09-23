@@ -10,8 +10,8 @@ import { provideRenderer } from './renderer.component';
   selector: 'app-svg-render',
   template: `
     <div class="flex gap-3">
-      <button (click)="render('jpeg')" class="btn btn-sm">Render as JPEG</button>
-      <button (click)="render('svg')" class="btn btn-sm">Render as SVG</button>
+      <button (click)="render('jpeg')" class="btn">Render as JPEG</button>
+      <button (click)="render('svg')" class="btn">Render as SVG</button>
       @if (result()) {
         <a (click)="copy()" (keydown.enter)="copy()" class="hover:text-sky-700 cursor-pointer" tabindex="0">copy</a>
       }

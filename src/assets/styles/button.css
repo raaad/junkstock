@@ -1,5 +1,5 @@
 .btn {
-  @apply py-2 px-4 text-neutral-600 border-1 rounded-xs transition-colors cursor-pointer;
+  @apply text-sm leading-none py-1.5 px-3 border-1 rounded-xs text-neutral-500 transition-colors cursor-pointer;
 
   &:hover {
     @apply text-sky-700;
@@ -10,18 +10,24 @@
   }
 }
 
-.btn-sm {
-  @apply py-1 px-2 text-xs;
-}
-
 .btn-icon {
-  @apply border-0 p-1 aspect-square;
+  @apply p-1.5 aspect-square;
+  min-width: calc(var(--text-sm) + var(--spacing) * 3 + 2px); /* symbol-width + padding * 2 + border * 2 */
 }
 
-.btn-primary:not(:disabled):not(:hover) {
-  @apply border-sky-600;
+.btn-primary,
+.btn-reject {
+  box-shadow: 3px 0 0 var(--btn-accent) inset;
+
+  &:disabled {
+    --btn-accent: currentColor;
+  }
 }
 
-.btn-reject:not(:disabled):not(:hover) {
-  @apply border-red-400;
+.btn-primary {
+  --btn-accent: var(--color-sky-600);
+}
+
+.btn-reject {
+  --btn-accent: var(--color-red-400);
 }
