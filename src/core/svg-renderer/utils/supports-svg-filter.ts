@@ -2,12 +2,11 @@ import { fetchToImage, svgToDataUrl } from '../../utils';
 
 const SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" width="1" height="1">
-  <filter id="f"><feFlood flood-color="#00ff00" /></filter>
+  <filter id="a">
+    <feFlood flood-color="#0f0"/>
+  </filter>
   <foreignObject width="100%" height="100%">
-    <div
-      xmlns="http://www.w3.org/1999/xhtml"
-      style="height: 100%; background: #ff0000; filter: url(#f)"
-    ></div>
+    <div xmlns="http://www.w3.org/1999/xhtml" style="height:100%;background:#f00;filter:url(#a)"/>
   </foreignObject>
 </svg>
 `;

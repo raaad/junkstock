@@ -151,6 +151,22 @@ dialog {
   }
 }
 
+dialog {
+  &.edge {
+    &.top,
+    &.bottom {
+      background-color: rgb(from canvas r g b / 0.75);
+      backdrop-filter: blur(var(--spacing));
+
+      & > * {
+        background-color: canvas;
+        border-inline: inherit;
+        border-inline-width: thin;
+      }
+    }
+  }
+}
+
 /* #endregion */
 
 /* #region with-pseudo */

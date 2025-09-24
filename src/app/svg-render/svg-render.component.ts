@@ -55,7 +55,11 @@ export class SvgRenderComponent {
   }
 
   protected copy() {
-    navigator.clipboard.writeText(this.result() ?? '');
+    try {
+      navigator.clipboard.writeText(this.result() ?? '');
+    } catch (e) {
+      this.logger.warn('Failed to copy to clipboard', e);
+    }
   }
 }
 
