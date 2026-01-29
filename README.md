@@ -1,11 +1,17 @@
 # Junkstock
 
-## Development server
+## Live
 
-To start a local development server, run:
+https://raaad.github.io/junkstock
+
+## Dev
+
+- Open Visual Studio Code
+
+- To start a local development server, run:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:5000/`. The application will automatically reload whenever you modify any of the source files.
+- If the browser does not open automatically, navigate to `http://localhost:5000`

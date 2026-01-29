@@ -55,7 +55,8 @@
             "styles": ["src/styles.css"],
             "define": {
               "APP_VERSION": "'unknown'"
-            }
+            },
+            "allowedCommonJsDependencies": ["piexif-ts"]
           },
           "configurations": {
             "production": {

@@ -15,10 +15,10 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
       class="selector progress flex flex-col gap-5 p-5 border-1 border-dashed rounded-xs border-neutral-200 mb-5"
       [style.--progress.%]="(uploader.progress().uploaded / (uploader.progress().total || 1)) * 100"
       [class.active]="uploader.hasActive()"
-      [class.dropover]="dropover()"
-      (dragover)="dropover.set(true); $event.preventDefault()"
-      (dragleave)="dropover.set(false)"
-      (drop)="dropOrPaste($event); $event.preventDefault(); dropover.set(false)"
+      [class.dragover]="dragover()"
+      (dragover)="dragover.set(true); $event.preventDefault()"
+      (dragleave)="dragover.set(false)"
+      (drop)="dropOrPaste($event); $event.preventDefault(); dragover.set(false)"
       (paste)="dropOrPaste($event)"
       tabindex="0">
       <div class="flex gap-5 items-center flex-wrap">
@@ -83,7 +83,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
           border-color 0.2s,
           background 0.2s;
 
-        &.dropover,
+        &.dragover,
         &:focus {
           border-color: var(--color-sky-400);
           background: var(--color-sky-100);
@@ -171,7 +171,7 @@ export class UploadsComponent {
 
   protected readonly uploader = inject(Uploader);
 
-  protected dropover = signal(false);
+  protected dragover = signal(false);
 
   constructor() {
     this.uploader.uploads$.pipe(withNewly(({ state }) => state === UploadState.Uploaded)).subscribe(items =>

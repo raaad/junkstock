@@ -1,4 +1,4 @@
-import { Tags } from 'exifreader';
+import type { Tags } from 'exifreader';
 import { blobToDataUrl, blobToObjectUrl, fetchToBlob, fetchToImage, svgToString } from '../../utils';
 
 export type RotationAngle = 0 | 90 | 180 | 270;
