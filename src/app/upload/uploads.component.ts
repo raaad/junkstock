@@ -12,7 +12,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
   template: `
     <!--selector-->
     <div
-      class="selector progress flex flex-col gap-5 p-5 border-1 border-dashed rounded-xs border-neutral-200 mb-5"
+      class="selector progress flex flex-col gap-5 p-5 border border-dashed rounded-xs border-neutral-200 mb-5"
       [style.--progress.%]="(uploader.progress().uploaded / (uploader.progress().total || 1)) * 100"
       [class.active]="uploader.hasActive()"
       [class.dragover]="dragover()"

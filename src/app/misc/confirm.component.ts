@@ -20,15 +20,15 @@ import { DialogComponent, DialogOptions } from './dialog.component';
         @if (showLayouts()) {
           <div class="mb-4 flex">
             <div class="m-auto inline-grid grid-cols-5 grid-rows-5 gap-2">
-              <button (click)="style.set('edge top')" class="btn btn-icon !aspect-auto col-start-2 col-span-3">
+              <button (click)="style.set('edge top')" class="btn btn-icon aspect-auto! col-start-2 col-span-3">
                 <span class="inline-block rotate-90">❮</span>
               </button>
-              <button (click)="style.set('edge left')" class="btn btn-icon !aspect-auto row-start-2 row-span-3">❮</button>
-              <button (click)="style.set('edge right')" class="btn btn-icon !aspect-auto row-start-2 row-span-3">❯</button>
-              <button (click)="style.set('edge bottom')" class="btn btn-icon !aspect-auto col-start-2 col-span-3">
+              <button (click)="style.set('edge left')" class="btn btn-icon aspect-auto! row-start-2 row-span-3">❮</button>
+              <button (click)="style.set('edge right')" class="btn btn-icon aspect-auto! row-start-2 row-span-3">❯</button>
+              <button (click)="style.set('edge bottom')" class="btn btn-icon aspect-auto! col-start-2 col-span-3">
                 <span class="inline-block -rotate-90">❮</span>
               </button>
-              <button (click)="style.set('top left')" class="btn btn-icon !aspect-auto row-start-2 col-start-2">
+              <button (click)="style.set('top left')" class="btn btn-icon aspect-auto! row-start-2 col-start-2">
                 <span class="inline-block rotate-45">❮</span>
               </button>
               <button (click)="style.set('top')" class="btn btn-icon row-start-2 col-start-3"><span class="inline-block rotate-90">❮</span></button>
