@@ -10,7 +10,7 @@
 {
   // user
 
-  "workbench.colorTheme": "Default Light Modern",
+  "workbench.colorTheme": "Light Modern",
   "workbench.sideBar.location": "right",
   "debug.toolBarLocation": "docked",
   "editor.minimap.enabled": false,

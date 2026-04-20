@@ -27,8 +27,8 @@ export interface DialogOptions {
     <div class="p-4 mt-auto empty:hidden [:empty+&]:pt-2 flex gap-4 wrap-anywhere">
       <ng-content select="footer">
         <ng-content select="footer-extra" />
-        <button (click)="accept.emit()" class="ml-auto btn btn-primary min-w-[4rem]">{{ options().accept ?? 'Ok' }}</button>
-        <button (click)="reject.emit()" class="btn btn-reject min-w-[4rem]">{{ options().reject ?? 'Cancel' }}</button>
+        <button (click)="accept.emit()" class="ml-auto btn btn-primary min-w-16">{{ options().accept ?? 'Ok' }}</button>
+        <button (click)="reject.emit()" class="btn btn-reject min-w-16">{{ options().reject ?? 'Cancel' }}</button>
       </ng-content>
     </div>
   `,
