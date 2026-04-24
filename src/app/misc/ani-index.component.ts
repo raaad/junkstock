@@ -15,13 +15,13 @@ import { compareBy } from '@core/utils';
       <button (click)="truncate()" class="btn btn-reject">truncate</button>
       <button (click)="remove()" class="btn btn-reject">remove</button>
     </div>
-    <div class="flex gap-4 p-4 flex-col md:flex-row h-[50vh] overflow-auto">
-      <ul appAniIndex class="flex flex-wrap flex-1 gap-4 content-start">
+    <div class="flex h-[50vh] flex-col gap-4 overflow-auto p-4 md:flex-row">
+      <ul appAniIndex class="flex flex-1 flex-wrap content-start gap-4">
         @for (item of items(); track item) {
           <li [style.background-color]="item" class="tile"></li>
         }
       </ul>
-      <ul appAniIndex class="flex flex-col flex-1 overflow-auto">
+      <ul appAniIndex class="flex flex-1 flex-col overflow-auto">
         @for (item of items().slice(0, 10); track item) {
           <li [style.background-color]="item + '32'" class="px-2 py-1">{{ item }}</li>
         }

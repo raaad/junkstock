@@ -40,8 +40,7 @@
   "editor.formatOnType": true,
   // git
   "gitlens.telemetry.enabled": false,
-  // typescript
-  "typescript.tsdk": "<workspace>/node_modules/typescript/lib",
+  "js/ts.tsdk.path": "./node_modules/typescript/lib",
   // other
   // override prettier
   "[csharp]": {
@@ -50,5 +49,7 @@
   // for 'PostCSS Language Support' extension
   "emmet.includeLanguages": {
     "postcss": "css"
-  }
+  },
+  // Copilot
+  "chat.disableAIFeatures": true
 }

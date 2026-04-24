@@ -8,5 +8,5 @@
 }
 
 .note {
-  @apply px-1.5 py-2 text-xs truncate border-1 border-dashed rounded-xs border-neutral-200;
+  @apply truncate rounded-xs border border-dashed border-neutral-200 px-1.5 py-2 text-xs;
 }

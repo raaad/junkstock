@@ -6,7 +6,7 @@ import { InViewHostDirective, InViewTargetDirective } from '@core/angular';
   imports: [InViewHostDirective, InViewTargetDirective],
   template: `
     <div class="p-4">in view: {{ inView().join(', ') }}</div>
-    <ul (inView)="update($event)" class="flex flex-col gap-4 px-4 overflow-auto">
+    <ul (inView)="update($event)" class="flex flex-col gap-4 overflow-auto px-4">
       @for (item of items; track item) {
         @let disabled = !(item % 5);
         <li [appInViewTarget]="item" [appInViewTargetDisabled]="disabled">

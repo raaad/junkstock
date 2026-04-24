@@ -14,7 +14,7 @@ import type COMMON from './common.i18n';
       <a [attr.href]="'\${base}\${path}' | interpolate: { base, path }" [class.text-sky-600]="locale === 'en'" class="px-2">EN</a>
       <a [attr.href]="'\${base}/us\${path}' | interpolate: { base, path }" [class.text-sky-600]="locale === 'us'" class="px-2">US</a>
     </div>
-    <div class="flex gap-4 p-4 items-center">
+    <div class="flex items-center gap-4 p-4">
       <span class="note">{{ 'SOME_KEY' | i18n: { price: 666 } }}</span>
       <span class="note" x18n>Static string</span>
       <span class="note">{{ codeOnly }}</span>

@@ -11,23 +11,23 @@ export interface DialogOptions {
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'dialog',
   template: `
-    <div class="p-4 empty:hidden has-[+:empty]:pb-2 flex items-center">
+    <div class="flex items-center p-4 empty:hidden has-[+:empty]:pb-2">
       <ng-content select="header">
         <span class="truncate">
           <ng-content select="title">{{ options().title ?? 'Confirm title' }}</ng-content>
         </span>
         @if (dismissable()) {
-          <button (click)="reject.emit()" class="ml-auto btn btn-icon border-transparent" title="Close">✕</button>
+          <button (click)="reject.emit()" class="btn btn-icon ml-auto border-transparent" title="Close">✕</button>
         }
       </ng-content>
     </div>
-    <div class="px-4 overflow-auto empty:hidden [:empty+&]:mt-4 has-[+:empty]:mb-4">
+    <div class="overflow-auto px-4 empty:hidden has-[+:empty]:mb-4 [:empty+&]:mt-4">
       <ng-content>{{ options().message ?? 'Default message?' }}</ng-content>
     </div>
-    <div class="p-4 mt-auto empty:hidden [:empty+&]:pt-2 flex gap-4 wrap-anywhere">
+    <div class="mt-auto flex gap-4 p-4 wrap-anywhere empty:hidden [:empty+&]:pt-2">
       <ng-content select="footer">
         <ng-content select="footer-extra" />
-        <button (click)="accept.emit()" class="ml-auto btn btn-primary min-w-16">{{ options().accept ?? 'Ok' }}</button>
+        <button (click)="accept.emit()" class="btn btn-primary ml-auto min-w-16">{{ options().accept ?? 'Ok' }}</button>
         <button (click)="reject.emit()" class="btn btn-reject min-w-16">{{ options().reject ?? 'Cancel' }}</button>
       </ng-content>
     </div>
@@ -61,7 +61,7 @@ export class DialogComponent {
   protected closedbyFix = closedbyFix;
 }
 
-/** hey safari */
+/** hey, safari */
 function closedbyFix(dismissable: boolean, e: Event | MouseEvent) {
   dismissable && !('closedBy' in HTMLDialogElement.prototype) && (!(e instanceof MouseEvent) || isBackdrop(e)) && e.target?.dispatchEvent(new Event('close'));
 

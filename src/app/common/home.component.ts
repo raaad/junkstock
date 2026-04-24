@@ -14,10 +14,10 @@ import { getFlatMenu } from './get-flat-menu';
           [routerLink]="[item.path]"
           (keydown.enter)="el.click()"
           tabindex="0"
-          class="grid border border-dashed bg-neutral-50 border-neutral-300 rounded-xs cursor-pointer">
-          <figure class="row-start-1 row-end-3 col-start-1 overflow-hidden"></figure>
-          <div class="row-start-2 col-start-1 flex items-end justify-end backdrop-blur-md border-t border-neutral-200">
-            <span class="block title">{{ item.title }}</span>
+          class="grid cursor-pointer rounded-xs border border-dashed border-neutral-300 bg-neutral-50">
+          <figure class="col-start-1 row-start-1 row-end-3 overflow-hidden"></figure>
+          <div class="col-start-1 row-start-2 flex items-end justify-end border-t border-neutral-200 backdrop-blur-md">
+            <span class="title block">{{ item.title }}</span>
           </div>
         </li>
       }
@@ -28,7 +28,7 @@ import { getFlatMenu } from './get-flat-menu';
       @reference "#main";
 
       :host {
-        @apply grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[10rem];
+        @apply grid auto-rows-[10rem] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
 
         gap: 2rem;
         align-items: stretch;

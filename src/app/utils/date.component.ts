@@ -6,12 +6,12 @@ import { formatISODate } from '@core/utils';
   template: `
     <div class="title">Date</div>
     @for (item of items; track item) {
-      <div class="flex items-center gap-4 m-4">
+      <div class="m-4 flex items-center gap-4">
         <span class="flex-1 capitalize">{{ item.kind }}:</span>
-        <span class="flex-2 note" [class.!text-neutral-200]="item.now()">{{ item.input() }}</span>
+        <span class="note flex-2" [class.!text-neutral-200]="item.now()">{{ item.input() }}</span>
         <button (click)="item.now.set(!item.now())" class="btn">Now</button>
-        <span class="flex-2 note">{{ item.date() }}</span>
-        <span class="flex-2 note">{{ item.formatted() }}</span>
+        <span class="note flex-2">{{ item.date() }}</span>
+        <span class="note flex-2">{{ item.formatted() }}</span>
       </div>
     }
   `,

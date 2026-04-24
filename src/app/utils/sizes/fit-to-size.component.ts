@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, effect, ElementRef, signal, viewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { form, FormField } from '@angular/forms/signals';
 import { fitToSize } from '@core/utils';
 
 const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
 
 @Component({
   selector: 'app-fit-to-size',
-  imports: [FormsModule],
+  imports: [FormField],
   template: `
     <div class="title">fitToSize</div>
     <div class="canvas" (resized.no-initial)="reset()" [style.touch-action]="resizing ? 'none' : ''">
@@ -21,11 +21,9 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
         (pointerdown)="resizing = true"></div>
     </div>
     <div class="flex items-center gap-2 px-4 py-2">
-      <label class="flex items-center gap-1"><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="contain" type="radio" />contain</label>
-      <label class="flex items-center gap-1"
-        ><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="scale-down" type="radio" />scale-down</label
-      >
-      <label class="flex items-center gap-1"><input [(ngModel)]="mode" [ngModelOptions]="{ standalone: true }" value="cover" type="radio" />cover</label>
+      <label class="flex items-center gap-1"><input [formField]="mode" value="contain" type="radio" />contain</label>
+      <label class="flex items-center gap-1"><input [formField]="mode" value="scale-down" type="radio" />scale-down</label>
+      <label class="flex items-center gap-1"><input [formField]="mode" value="cover" type="radio" />cover</label>
       <button (click)="reset()" class="btn">reset</button>
     </div>
   `,
@@ -89,15 +87,15 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
 export class FitToSizeComponent {
   private readonly boxEl = viewChild<ElementRef<HTMLDivElement>>('boxEl');
 
-  protected mode = signal('contain' as 'contain' | 'scale-down' | 'cover');
+  protected mode = form(signal<'contain' | 'scale-down' | 'cover'>('contain'));
 
   protected box = signal({ ...INITIAL, width: INITIAL.width + 20, height: INITIAL.height + 20 });
-  protected rect = { ...INITIAL, ...fitToSize(INITIAL, this.box(), this.mode()) };
+  protected rect = { ...INITIAL, ...fitToSize(INITIAL, this.box(), this.mode().value()) };
 
   protected resizing = false;
 
   constructor() {
-    effect(() => (this.rect = { ...this.rect, ...fitToSize(this.rect, this.box(), this.mode()) }));
+    effect(() => (this.rect = { ...this.rect, ...fitToSize(this.rect, this.box(), this.mode().value()) }));
   }
 
   protected resize({ x, y }: MouseEvent) {
@@ -110,7 +108,7 @@ export class FitToSizeComponent {
 
     const box = { ...this.box(), width: Math.max(Math.min(x, bounds.right - 10) - left, 10), height: Math.max(Math.min(y, bounds.bottom - 10) - top, 10) };
 
-    const rect = { ...this.rect, ...fitToSize(this.rect, box, this.mode()) };
+    const rect = { ...this.rect, ...fitToSize(this.rect, box, this.mode().value()) };
 
     if (bounds.right > left + rect.width && bounds.bottom > top + rect.height) {
       this.box.set(box);

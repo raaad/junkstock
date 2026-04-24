@@ -12,7 +12,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
   template: `
     <!--selector-->
     <div
-      class="selector progress flex flex-col gap-5 p-5 border border-dashed rounded-xs border-neutral-200 mb-5"
+      class="selector progress mb-5 flex flex-col gap-5 rounded-xs border border-dashed border-neutral-200 p-5"
       [style.--progress.%]="(uploader.progress().uploaded / (uploader.progress().total || 1)) * 100"
       [class.active]="uploader.hasActive()"
       [class.dragover]="dragover()"
@@ -21,7 +21,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
       (drop)="dropOrPaste($event); $event.preventDefault(); dragover.set(false)"
       (paste)="dropOrPaste($event)"
       tabindex="0">
-      <div class="flex gap-5 items-center flex-wrap">
+      <div class="flex flex-wrap items-center gap-5">
         <label class="picker btn w-56">
           <input type="file" (change)="selected($event)" multiple />
           <span>Select files</span>
@@ -34,10 +34,10 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
         <div class="text-xs">{{ uploader.active().length }} / {{ uploader.uploads().length }}</div>
         <div class="text-xs">{{ uploader.progress().uploaded | filesize }} / {{ uploader.progress().total | filesize }}</div>
       </div>
-      <div class="flex gap-5 items-center flex-wrap text-xs"><span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span></div>
+      <div class="flex flex-wrap items-center gap-5 text-xs"><span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span></div>
     </div>
     <!--list-->
-    <ul class="text-xs flex flex-col gap-1">
+    <ul class="flex flex-col gap-1 text-xs">
       @for (item of uploader.uploads(); track item.id) {
         <li
           [style.--progress.%]="getProgress(item)"
@@ -45,7 +45,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
           [class.pre-upload]="item.state < UploadState.Uploading || (item.state === UploadState.Uploading && !item.uploaded)"
           [class.post-upload]="item.state === UploadState.Uploading && item.uploaded === item.size"
           [ngClass]="UploadState[item.state].toLocaleLowerCase()"
-          class="progress flex gap-2 items-center">
+          class="progress flex items-center gap-2">
           <div class="size-8 bg-neutral-100">
             @if (item.thumb?.url; as url) {
               <img [src]="url" [alt]="item.name" class="size-full object-cover" />
@@ -56,11 +56,11 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
             >{{ item.name }}
           </div>
           <div class="state truncate text-right">{{ UploadState[item.state] }}</div>
-          <div class="flex items-center truncate w-48 justify-end">
+          <div class="flex w-48 items-center justify-end truncate">
             @if (item.state < UploadState.Failed) {
               <span class="min-w-0">{{ item.uploaded | filesize }} / {{ item.size | filesize }}, {{ getProgress(item).toFixed(2) }}%</span>
               @if (item.state < UploadState.Uploaded) {
-                <button class="pl-1 text-xs cursor-pointer text-red-500" title="abort" (click)="uploader.abort(item.id)">✕</button>
+                <button class="cursor-pointer pl-1 text-xs text-red-500" title="abort" (click)="uploader.abort(item.id)">✕</button>
               }
             } @else {
               {{ item.error ?? '' }}

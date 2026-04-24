@@ -44,7 +44,7 @@ export class ResizedEventPlugin extends EventManagerPlugin {
 }
 
 function debounced<A extends unknown[]>(action: (...a: A) => void, debounce = 100, handle = 0) {
-  return (...a: A) => (clearTimeout(handle), (handle = setTimeout((() => action(...a)) as TimerHandler, debounce)));
+  return (...a: A) => (clearTimeout(handle), (handle = setTimeout(() => action(...a), debounce)));
 }
 
 function noInitial<A extends unknown[]>(action: (...a: A) => void, skip = true) {

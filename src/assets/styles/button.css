@@ -1,17 +1,17 @@
 .btn {
-  @apply text-sm leading-none py-1.5 px-3 border-1 rounded-xs text-neutral-500 transition-colors cursor-pointer;
+  @apply cursor-pointer rounded-xs border px-3 py-1.5 text-sm leading-none text-neutral-500 transition-colors;
 
   &:hover {
     @apply text-sky-700;
   }
 
   &:disabled {
-    @apply text-neutral-300 cursor-default;
+    @apply cursor-default text-neutral-300;
   }
 }
 
 .btn-icon {
-  @apply p-1.5 aspect-square;
+  @apply aspect-square p-1.5;
   min-width: calc(var(--text-sm) + var(--spacing) * 3 + 2px); /* symbol-width + padding * 2 + border * 2 */
 }
 
@@ -30,4 +30,9 @@
 
 .btn-reject {
   --btn-accent: var(--color-red-400);
+}
+
+.btn-focus {
+  outline: 1px dashed var(--color-sky-100);
+  outline-offset: -1px;
 }

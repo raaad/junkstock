@@ -64,6 +64,7 @@ export async function extractImageData(url: string, logger: Pick<Console, 'warn'
 
   const { load } = await import('exifreader');
   const exif: Tags = await load(new File([blob], ''), { async: true }).catch(e => (logger.warn(e), {} as Tags));
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const rotation = ORIENTATION_MAP[(exif.Orientation?.value as ExifOrientation) ?? ExifOrientation.None];
 
   const dataUrl = await blobToDataUrl(blob);

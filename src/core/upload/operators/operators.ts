@@ -66,7 +66,7 @@ export function validate(
       takeUntilAbort(abort$, rest.id),
       timeout({ first: timeoutIn }),
       catchError(e => of(errorText).pipe(log('error', e, rest))),
-      map(error => (error ? toFailed(rest, error) : ({ ...rest, file } as FileUpload))),
+      map(error => (error ? toFailed(rest, error) : { ...rest, file })),
       log('debug', ({ error }) => (error ? 'invalid' : 'valid'))
     )
   ]);
@@ -85,7 +85,7 @@ export function preProcessing(process: (file: File) => ObservableInput<File>, lo
     of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'preprocessing')),
     defer(() => process(file)).pipe(
       takeUntilAbort(abort$, rest.id),
-      map(file => ({ ...rest, file, name: file.name, size: file.size }) as FileUpload),
+      map(file => ({ ...rest, file, name: file.name, size: file.size })),
       log('debug', 'preprocessed'),
       catchError(e => of(toFailed(rest, errorText)).pipe(log('error', errorText, e)))
     )
@@ -99,13 +99,13 @@ export function clientThumb(
   errorText = 'client thumb failed'
 ) {
   return ifFileUpload(({ id, file, state, ...upload }) => [
-    of({ id, file, state, ...upload } as FileUpload).pipe(log('trace', 'client thumb')),
+    of({ id, file, state, ...upload }).pipe(log('trace', 'client thumb')),
     defer(() => getThumb(file)).pipe(
       takeUntilAbort(abort$, id),
       catchError(e =>
         of(e).pipe(
           log('warn', errorText, { id, file, ...upload }),
-          filter((i): i is Exclude<Upload['thumb'], undefined> => false) // just to log error and suppress
+          filter((i): i is Exclude<Upload['thumb'], undefined> => !i) // just to log error and suppress
         )
       ),
       map(thumb =>

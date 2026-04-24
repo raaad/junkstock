@@ -19,7 +19,7 @@ export class ConfirmActionEventPlugin extends EventManagerPlugin {
   private readonly default = inject(CONFIRM_ACTION, { optional: true });
   private readonly custom = inject(CustomConfirmRegistry);
 
-  private readonly rejects = new Map<Element, Map<string, () => void>>();
+  private readonly rejects = new Map<Element, Map<string, (e: unknown) => void>>();
 
   override supports(eventName: string): boolean {
     return EVENT_KINDS.some(e => eventName.endsWith(`.${e}`));
@@ -40,7 +40,7 @@ export class ConfirmActionEventPlugin extends EventManagerPlugin {
     try {
       handler(await confirm(element, event));
     } catch (e) {
-      this.rejects.get(element)?.get(event.type)?.();
+      this.rejects.get(element)?.get(event.type)?.(e);
       e && this.logger?.trace(e);
     }
   }
