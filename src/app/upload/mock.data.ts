@@ -1,8 +1,9 @@
+import { Logger } from '@core/angular';
 import { UploadId } from '@core/upload';
 import { blobToDataUrl, blobToObjectUrl, drawToBlob, fetchToImage, fitToSize } from '@core/utils';
 import { concatMap, delay, of, tap, throwError } from 'rxjs';
 
-const LOG_PREFIX = 'mock:';
+const LOG_PREFIX = 'uploader: mock:';
 
 function newIds() {
   let ids = 0;
@@ -16,18 +17,17 @@ const validationRules = {
 };
 
 /** trigger keyword in the id: **no-upload-url** */
-function getUploadUrls(ids: UploadId[]) {
+function getUploadUrls(this: Logger, ids: UploadId[]) {
   return ids.some(id => id.includes('no-upload-url')) ?
       throwError(() => new Error(`${LOG_PREFIX} getUploadUrls error: ${ids.join(', ')}`))
     : of(Object.fromEntries(ids.map(id => [id, `http://x.com/upload/${id}`]))).pipe(
-        // eslint-disable-next-line no-console
-        tap(ids => console.log(LOG_PREFIX, 'getUploadUrls', ids)),
+        tap(ids => this.trace(LOG_PREFIX, 'getUploadUrls', ids)),
         delay(1000)
       );
 }
 
 /** trigger keyword in the filename: **no-upload** */
-function uploadFile(url: string, { name, size }: File) {
+function uploadFile(this: Logger, url: string, { name, size }: File) {
   const chunksSize = 100 * 1024;
   const chunks = new Array(Math.floor(size / chunksSize))
     .fill(0)
@@ -38,8 +38,7 @@ function uploadFile(url: string, { name, size }: File) {
     : of(...chunks.map(uploaded => ({ uploaded })), { uploaded: true } as { uploaded: true }).pipe(
         concatMap(i =>
           of(i).pipe(
-            // eslint-disable-next-line no-console
-            tap(i => console.log(LOG_PREFIX, 'uploaded chunk', i, name)),
+            tap(i => this.trace(LOG_PREFIX, 'uploaded chunk', i, name)),
             delay(1000)
           )
         )
@@ -54,13 +53,15 @@ function waitForServerConfirmation(id: UploadId) {
 async function getClientThumb(file: File, dimension = 100, useDataUrl = false) {
   // TODO: filter by supported types
 
-  const url = blobToObjectUrl(file);
-  const image = await fetchToImage(url).finally(() => URL.revokeObjectURL(url));
+  const originUrl = blobToObjectUrl(file);
+  const image = await fetchToImage(originUrl).finally(() => URL.revokeObjectURL(originUrl));
 
   const size = fitToSize(image, { width: dimension, height: dimension }, 'scale-down');
   const blob = await drawToBlob(image, { size, type: file.type });
 
-  return { url: useDataUrl ? await blobToDataUrl(blob) : blobToObjectUrl(blob), ...size };
+  const url = useDataUrl ? await blobToDataUrl(blob) : blobToObjectUrl(blob);
+
+  return { url, ...size, dispose: () => !useDataUrl && URL.revokeObjectURL(url) };
 }
 
 export const mock = {

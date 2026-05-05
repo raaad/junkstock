@@ -9,17 +9,18 @@ export function provideUploadPipeline(): FactoryProvider {
   return {
     provide: UPLOAD_PIPELINE,
     useFactory: (): UploadPipeline => {
-      const log = toLog(inject(LOGGER));
+      const logger = inject(LOGGER);
+      const log = toLog(logger);
 
-      const batchUrls = batched(mock.getUploadUrls);
+      const batchUrls = batched(mock.getUploadUrls.bind(logger));
 
-      return abort$ => source =>
+      return (abort$, flush$) => source =>
         source.pipe(
           preProcessing(file => (heic.isHeic(file) ? heic.convert(file) : of(file)), log, abort$),
           validate(mock.validationRules, log, abort$),
-          clientThumb(mock.getClientThumb, log, abort$),
+          clientThumb(mock.getClientThumb, log, abort$, flush$),
           upload(
-            progressiveUpload((id, file) => batchUrls(id).pipe(concatMap(url => mock.uploadFile(url, file))), 5),
+            progressiveUpload((id, file) => batchUrls(id).pipe(concatMap(url => mock.uploadFile.call(logger, url, file))), 5),
             log,
             abort$
           ),

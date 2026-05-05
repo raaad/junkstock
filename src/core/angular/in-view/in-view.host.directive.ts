@@ -43,7 +43,7 @@ export class InViewHostDirective {
   readonly inView = output<{ target: Element; data: unknown }[]>();
 
   constructor() {
-    this.output$.subscribe(v => this.inView.emit(v));
+    this.output$.pipe(takeUntilDestroyed()).subscribe(v => this.inView.emit(v));
 
     inject(DestroyRef).onDestroy(() => this.observer.disconnect());
   }

@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions({ onViewTransitionCreated: t => (withReversed(t), skipSubsets(t)) })),
     provideTitleStrategy(),
 
-    provideLogger(),
+    provideLogger({ suppress: ['uploader:'] }),
     provideConsoleLogger(),
 
     provideConfirmActionEventPlugin(),

@@ -1,7 +1,9 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LOGGER } from '@core/angular';
 import { getFiles, Upload, Uploader, UploadState, withNewly } from '@core/upload';
+import { from, map, ObservableInput } from 'rxjs';
 import { FilesizePipe } from './filesize.pipe';
 import { mock } from './mock.data';
 import { provideUploadPipeline } from './provide-upload-pipeline';
@@ -174,34 +176,37 @@ export class UploadsComponent {
   protected dragover = signal(false);
 
   constructor() {
-    this.uploader.uploads$.pipe(withNewly(({ state }) => state === UploadState.Uploaded)).subscribe(items =>
-      this.logger.trace(
-        'uploader: newly uploaded',
-        items.map(({ id }) => id)
+    this.uploader.uploads$
+      .pipe(
+        withNewly(({ state }) => state === UploadState.Uploaded),
+        takeUntilDestroyed()
       )
-    );
+      .subscribe(items =>
+        this.logger.trace(
+          'uploader: newly uploaded',
+          items.map(({ id }) => id)
+        )
+      );
   }
 
-  private upload(files: File[]) {
-    !this.uploader.hasActive() && files.length && this.uploader.flush();
+  private upload(files: ObservableInput<File>) {
+    !this.uploader.hasActive() && this.uploader.flush();
 
-    this.uploader.upload(Object.fromEntries(files.map(file => [mock.newIds(), file])));
+    this.uploader.upload(from(files).pipe(map(file => [mock.newIds(), file])));
   }
 
   protected selected({ target }: Event) {
     if (target instanceof HTMLInputElement) {
-      const files = Array.from(target.files ?? []);
+      this.upload(target.files ?? []);
       target.value = '';
-
-      this.upload(files);
     }
   }
 
   protected async dropOrPaste(e: DragEvent | ClipboardEvent) {
     try {
-      const files = await getFiles((e instanceof DragEvent ? e.dataTransfer : e.clipboardData)?.items);
+      const items = (e instanceof DragEvent ? e.dataTransfer : e.clipboardData)?.items;
 
-      this.upload(files);
+      this.upload(getFiles(items));
     } catch (e) {
       this.logger.warn('uploader:', e);
     }

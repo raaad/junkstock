@@ -1,6 +1,7 @@
 export * from './compare-by';
 export * from './crypto';
 export * from './date';
+export * from './eval-if-fn';
 export * from './file';
 export * from './lazy';
 export * from './math';

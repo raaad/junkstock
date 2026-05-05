@@ -93,15 +93,17 @@ export function preProcessing(process: (file: File) => ObservableInput<File>, lo
 }
 
 export function clientThumb(
-  getThumb: (file: File) => ObservableInput<Exclude<Upload['thumb'], undefined>>,
+  getThumb: (file: File) => ObservableInput<Exclude<Upload['thumb'], undefined> & { dispose: () => void }>,
   log: Log,
   abort$: Observable<UploadId>,
+  flush$: Observable<void>,
   errorText = 'client thumb failed'
 ) {
   return ifFileUpload(({ id, file, state, ...upload }) => [
     of({ id, file, state, ...upload }).pipe(log('trace', 'client thumb')),
     defer(() => getThumb(file)).pipe(
       takeUntilAbort(abort$, id),
+      map(({ dispose, ...thumb }) => (flush$.pipe(take(1)).subscribe(dispose), thumb)),
       catchError(e =>
         of(e).pipe(
           log('warn', errorText, { id, file, ...upload }),

@@ -1,5 +1,6 @@
 import { MonoTypeOperatorFunction, Observable, filter, merge, mergeMap, of, take, takeUntil, tap } from 'rxjs';
 import { Logger } from '../../angular/logger';
+import { evalIfFn } from '../../utils/eval-if-fn';
 import { FileUpload, Upload, UploadId, UploadState } from '../upload.types';
 
 export function ifFileUpload(operators: (u: FileUpload) => Observable<FileUpload | Upload>[]) {
@@ -34,6 +35,5 @@ export function takeUntilAbort<T>(abort$: Observable<UploadId>, id: UploadId) {
 export type Log = <T>(level: keyof Logger | ((i: T) => keyof Logger), message: string | ((i: T) => string), ...rest: unknown[]) => MonoTypeOperatorFunction<T>;
 
 export function toLog(logger: Logger, prefix = 'uploader:'): Log {
-  return (level, message, ...rest) =>
-    tap(i => logger[typeof level === 'function' ? level(i) : level](prefix, typeof message === 'function' ? message(i) : message, ...rest, i));
+  return (level, message, ...rest) => tap(i => logger[evalIfFn(level, i)](prefix, evalIfFn(message, i), ...rest, i));
 }

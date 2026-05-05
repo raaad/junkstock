@@ -1,13 +1,12 @@
 /** Get files from DataTransfer object on drop or paste including files in subfolders */
-export async function getFiles(list: DataTransferItemList | undefined) {
+export async function* getFiles(list: DataTransferItemList | null | undefined) {
   const items = Array.from(list ?? [])
     .map(i => i.webkitGetAsEntry?.() ?? i.getAsFile())
     .filter(i => !!i);
 
-  const files = items.filter(i => i instanceof File);
-  const entries = items.filter((i): i is FileSystemEntry => !(i instanceof File));
+  yield* items.filter(i => i instanceof File);
 
-  return [...files, ...(await Array.fromAsync(scanEntries(...entries)))];
+  yield* scanEntries(...items.filter((i): i is FileSystemEntry => !(i instanceof File)));
 
   async function* scanEntries(...entries: FileSystemEntry[]): AsyncGenerator<File, void, void> {
     for (const entry of entries) {
