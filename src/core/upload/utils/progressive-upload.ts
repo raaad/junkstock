@@ -1,4 +1,4 @@
-import { Observable, ObservableInput, Subject, catchError, defer, filter, map, mergeAll, mergeMap, of, share, takeUntil, takeWhile, throwError } from 'rxjs';
+import { Observable, ObservableInput, Subject, catchError, defer, filter, map, mergeMap, of, share, takeUntil, takeWhile, throwError } from 'rxjs';
 import { QueueUpload, UploadId } from '../upload.types';
 
 type Upload = QueueUpload & { abort$: Observable<unknown> };
@@ -22,14 +22,15 @@ export function progressiveUpload(
   // an upload queue with a concurrent upload rate limit,
   // where no more than the amount specified by the limit can be uploaded at the same time
   const uploads$ = inputs$.pipe(
-    map(({ id, file, abort$ }) =>
-      defer(() => uploadFile(id, file, abort$)).pipe(
-        takeUntil(abort$),
-        map(i => ({ id, ...i })),
-        catchError((error: Error) => of({ id, error }))
-      )
+    mergeMap(
+      ({ id, file, abort$ }) =>
+        defer(() => uploadFile(id, file, abort$)).pipe(
+          takeUntil(abort$),
+          map(i => ({ id, ...i })),
+          catchError((error: Error) => of({ id, error }))
+        ),
+      Math.max(rateLimit, 0) || Number.MAX_SAFE_INTEGER
     ),
-    mergeAll(Math.max(rateLimit, 0) || Number.MAX_SAFE_INTEGER),
     share()
   );
 

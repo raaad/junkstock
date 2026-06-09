@@ -1,4 +1,20 @@
-import { ObservableInput, Subject, buffer, bufferCount, catchError, debounceTime, defer, filter, merge, mergeMap, of, share, take, throwError } from 'rxjs';
+import {
+  ObservableInput,
+  Subject,
+  buffer,
+  bufferCount,
+  catchError,
+  debounceTime,
+  defer,
+  filter,
+  merge,
+  mergeMap,
+  of,
+  race,
+  share,
+  take,
+  throwError
+} from 'rxjs';
 
 /** Accumulate several item requests to get them all at once, reject the whole batch if there is an error */
 export function batched<K extends string, R>(action: (keys: K[]) => ObservableInput<Record<K, R>>, debounce = 300, limit = 100) {
@@ -7,7 +23,7 @@ export function batched<K extends string, R>(action: (keys: K[]) => ObservableIn
   const shared$ = queue$.pipe(share());
 
   const items$ = shared$.pipe(
-    buffer(merge(shared$.pipe(debounceTime(debounce)), shared$.pipe(bufferCount(limit)))),
+    buffer(race(shared$.pipe(debounceTime(debounce)), shared$.pipe(bufferCount(limit)))),
     filter(batch => !!batch.length),
     mergeMap(batch =>
       defer(() => action(batch)).pipe(
