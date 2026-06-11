@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { afterNextRender, ChangeDetectionStrategy, Component, input, Type, ViewEncapsulation } from '@angular/core';
+import { afterNextRender, Component, input, Type, ViewEncapsulation } from '@angular/core';
 import { RenderOptions, SvgRendererContainerComponent } from './svg-renderer.types';
 
 /**
@@ -29,7 +29,6 @@ import { RenderOptions, SvgRendererContainerComponent } from './svg-renderer.typ
       </div>
     </foreignObject>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     '[attr.width]': 'width',

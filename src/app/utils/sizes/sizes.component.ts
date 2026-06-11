@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { BoundingBoxComponent } from './bounding-box.component';
 import { FitToSizeComponent } from './fit-to-size.component';
 
@@ -19,7 +19,6 @@ import { FitToSizeComponent } from './fit-to-size.component';
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'flex-col md:flex-row'
   }

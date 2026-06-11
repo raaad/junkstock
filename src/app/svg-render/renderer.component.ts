@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { InterpolatePipe } from '@core/angular';
 import { RENDERER_COMPONENT_SELECTOR, RenderOptions, SvgRendererComponent } from '@core/svg-renderer';
 import { ResolveUrlPipe } from './image-url.resolvers';
@@ -73,8 +73,7 @@ import { RENDER_DATA } from './mock.data';
         <img [src]="item.contentId | resolveUrl: item.kind" [style.filter]="item.svgFilterId && ('url(#\${svgFilterId})' | interpolate: item)" alt="" />
       </div>
     }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class RenderComponent implements SvgRendererComponent<typeof RENDER_DATA> {
   data = input.required<typeof RENDER_DATA>();

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { AniIndexDirective } from '@core/angular';
 import { compareBy } from '@core/utils';
 
@@ -45,8 +45,7 @@ import { compareBy } from '@core/utils';
         will-change: translate;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class AniIndexComponent {
   protected readonly items = signal(new Array(10).fill(0).map(this.create));

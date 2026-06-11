@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal } from '@angular/core';
 import { controlsLookAt, fitToObject, fromGltf, rotateAround, updateSize } from '@core/3d';
 import { LOGGER } from '@core/angular';
 import { injectNonI18nBaseHref } from '@core/angular/i18n';
@@ -6,7 +6,6 @@ import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMateria
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
 @Component({
-  selector: 'app-3d',
   template: `
     <div class="absolute top-0 flex w-full flex-wrap gap-5 p-5">
       <div class="flex items-center gap-2">
@@ -37,7 +36,6 @@ import { OrbitControls } from 'three/examples/jsm/Addons.js';
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:keydown.arrowLeft)': 'rotate("left")',
     '(document:keydown.arrowRight)': 'rotate("right")',

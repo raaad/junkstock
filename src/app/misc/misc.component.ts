@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { AniIndexComponent } from './ani-index.component';
 import { ConfirmComponent } from './confirm.component';
 import { InViewComponent } from './in-view.component';
 
 @Component({
-  selector: 'app-misc',
   imports: [ConfirmComponent, InViewComponent, AniIndexComponent],
   template: `
     <app-confirm />
@@ -22,7 +21,6 @@ import { InViewComponent } from './in-view.component';
         @apply separator;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class MiscComponent {}

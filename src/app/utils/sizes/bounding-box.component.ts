@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { getBoundingBox } from '@core/utils';
 
 @Component({
@@ -43,8 +43,7 @@ import { getBoundingBox } from '@core/utils';
         outline: 1px dashed var(--color-blue-400);
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class BoundingBoxComponent {
   protected rect = this.getRect();

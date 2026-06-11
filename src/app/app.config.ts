@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideConfirmActionEventPlugin, provideConsoleLogger, provideLogger, provideResizedEventPlugin } from '@core/angular';
 import { provideI18n } from '@core/angular/i18n';
@@ -12,8 +12,6 @@ import { routes } from './app.routes';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZonelessChangeDetection(),
-
     provideRouter(routes, withViewTransitions({ onViewTransitionCreated: t => (withReversed(t), skipSubsets(t)) })),
     provideTitleStrategy(),
 

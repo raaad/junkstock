@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { InterpolatePipe } from '@core/angular';
 import { I18N_LOCALE, I18nDirective, I18nPipe, injectI18n, injectNonI18nBaseHref } from '@core/angular/i18n';
@@ -7,7 +7,6 @@ import { I18N_LOCALE, I18nDirective, I18nPipe, injectI18n, injectNonI18nBaseHref
 import type COMMON from './common.i18n';
 
 @Component({
-  selector: 'app-i18n',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, I18nPipe, I18nDirective, InterpolatePipe],
   template: `
     <div class="flex p-4">
@@ -22,8 +21,7 @@ import type COMMON from './common.i18n';
       <router-outlet hidden />
       <button routerLink="./" routerLinkActive #link="routerLinkActive" [class.hidden]="!link.isActive" class="btn">Reset</button>
     </div>
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class I18nComponent {
   private router = inject(Router);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { form, FormField, required } from '@angular/forms/signals';
 import { LOGGER } from '@core/angular';
 import { decrypt, encrypt } from '@core/utils';
@@ -21,8 +21,7 @@ import { decrypt, encrypt } from '@core/utils';
       <span class="note flex-1">{{ decrypted() }}</span>
     </div>
   `,
-  styles: [``],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styles: [``]
 })
 export class CryptoComponent {
   private readonly logger = inject(LOGGER);

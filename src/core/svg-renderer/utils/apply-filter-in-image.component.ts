@@ -1,4 +1,4 @@
-import { afterNextRender, ChangeDetectionStrategy, Component, computed, inject, input, ViewEncapsulation } from '@angular/core';
+import { afterNextRender, Component, computed, inject, input, ViewEncapsulation } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SvgRendererContainerComponent } from '../svg-renderer.types';
 import { RotationAngle } from './apply-filter-in-image.utils';
@@ -20,7 +20,6 @@ import { RotationAngle } from './apply-filter-in-image.utils';
       crossorigin="anonymous"
       decoding="sync" />
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
     '[attr.width]': 'svgWidth()',

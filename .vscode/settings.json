@@ -17,7 +17,8 @@
   "editor.linkedEditing": true,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "*.ts": "${capture}.*"
+    "*.ts": "${capture}.*",
+    "*.js": "${capture}.*"
   },
   "terminal.integrated.defaultProfile.windows": "Command Prompt",
   "git.autofetch": true,

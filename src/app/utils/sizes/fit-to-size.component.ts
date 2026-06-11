@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, ElementRef, signal, viewChild } from '@angular/core';
+import { Component, effect, ElementRef, signal, viewChild } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { fitToSize } from '@core/utils';
 
@@ -78,7 +78,6 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:pointermove)': 'resize($event)',
     '(document:pointerup)': 'stop()'

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { formatISODate } from '@core/utils';
 
 @Component({
@@ -14,8 +14,7 @@ import { formatISODate } from '@core/utils';
         <span class="note flex-2">{{ item.formatted() }}</span>
       </div>
     }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class DateComponent {
   private now = new Date();

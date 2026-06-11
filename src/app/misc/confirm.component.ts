@@ -1,4 +1,4 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, inject, InjectionToken, input, model, Signal, signal } from '@angular/core';
+import { booleanAttribute, Component, inject, InjectionToken, input, model, Signal, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { form, FormField, FormValueControl } from '@angular/forms/signals';
 import { CONFIRM_ACTION, ConfirmAction, CustomConfirmDirective } from '@core/angular';
@@ -13,8 +13,7 @@ import { DialogComponent, DialogOptions } from './dialog.component';
     '(click)': 'toggle()',
     class: 'btn btn-icon',
     '[class.btn-focus]': 'value() === toggleValue()'
-  },
-  changeDetection: ChangeDetectionStrategy.OnPush
+  }
 })
 export class ToggleValueButton implements FormValueControl<string> {
   readonly value = model.required<string>();
@@ -150,8 +149,7 @@ export class ToggleValueButton implements FormValueControl<string> {
         interpolate-size: allow-keywords;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class ConfirmComponent {
   protected dialog = inject(DIALOG_REQUEST);

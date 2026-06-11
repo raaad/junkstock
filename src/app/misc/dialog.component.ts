@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, ElementRef, inject, input, output } from '@angular/core';
+import { Component, effect, ElementRef, inject, input, output } from '@angular/core';
 
 export interface DialogOptions {
   title?: string;
@@ -32,7 +32,6 @@ export interface DialogOptions {
       </ng-content>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.closedby]': 'dismissable() ? "any": "none"',
     '(close)': 'reject.emit()',

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { getFlatMenu } from './get-flat-menu';
 
@@ -35,8 +35,7 @@ import { getFlatMenu } from './get-flat-menu';
         padding: 2rem;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class HomeComponent {
   protected menu = getFlatMenu();

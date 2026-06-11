@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { LOGGER, Logger } from '@core/angular';
 import { RenderOptions, SvgRenderer } from '@core/svg-renderer';
 import { blobToDataUrl, blobToObjectUrl, drawToBlob, fitToSize, svgToDataUrl } from '@core/utils';
@@ -7,7 +7,6 @@ import { RENDER_DATA } from './mock.data';
 import { provideRenderer } from './renderer.component';
 
 @Component({
-  selector: 'app-svg-render',
   template: `
     <div class="flex gap-3">
       <button (click)="render('jpeg')" class="btn">Render as JPEG</button>
@@ -32,7 +31,6 @@ import { provideRenderer } from './renderer.component';
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [SvgRenderer, ...provideRenderer(), ...provideImageUrlResolvers()]
 })
 export class SvgRenderComponent {

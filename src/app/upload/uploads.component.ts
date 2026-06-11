@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LOGGER } from '@core/angular';
 import { getFiles, Upload, Uploader, UploadState, withNewly } from '@core/upload';
@@ -9,7 +9,6 @@ import { mock } from './mock.data';
 import { provideUploadPipeline } from './provide-upload-pipeline';
 
 @Component({
-  selector: 'app-uploads',
   imports: [FilesizePipe, NgClass],
   template: `
     <!--selector-->
@@ -162,8 +161,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
       }
     `
   ],
-  providers: [provideUploadPipeline(), Uploader],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  providers: [provideUploadPipeline(), Uploader]
 })
 export class UploadsComponent {
   // eslint-disable-next-line @typescript-eslint/naming-convention

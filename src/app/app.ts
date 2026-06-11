@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { getFlatMenu } from './common/get-flat-menu';
-import { ViewLoadingDirective } from './common/view-loading.direcitve';
+import { ViewLoadingDirective } from './common/view-loading.directive';
 
 @Component({
   selector: 'app-root',
@@ -53,9 +53,8 @@ import { ViewLoadingDirective } from './common/view-loading.direcitve';
       }
     `
   ],
-  hostDirectives: [ViewLoadingDirective],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  hostDirectives: [ViewLoadingDirective]
 })
-export class AppComponent {
+export class App {
   protected menu = getFlatMenu();
 }
