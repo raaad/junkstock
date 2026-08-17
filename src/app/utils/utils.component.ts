@@ -6,9 +6,9 @@ import { SizesComponent } from './sizes/sizes.component';
 @Component({
   imports: [SizesComponent, DateComponent, CryptoComponent],
   template: `
-    <app-sizes />
     <app-date />
     <app-crypto />
+    <app-sizes />
   `,
   styles: [
     `

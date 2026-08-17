@@ -5,11 +5,11 @@ import { InViewHostDirective, InViewTargetDirective } from '@core/angular';
   selector: 'app-in-view',
   imports: [InViewHostDirective, InViewTargetDirective],
   template: `
-    <div class="p-4">in view: {{ inView().join(', ') }}</div>
-    <ul (inView)="update($event)" class="flex flex-col gap-4 overflow-auto px-4">
+    <div class="bg-gray-100 p-4">in view: {{ inView().join(', ') }}</div>
+    <ul (useInView)="update($event)" class="flex flex-col gap-4 overflow-auto px-4">
       @for (item of items; track item) {
         @let disabled = !(item % 5);
-        <li [appInViewTarget]="item" [appInViewTargetDisabled]="disabled">
+        <li [useInViewTarget]="item" [inViewDisabled]="disabled">
           Item {{ item }}
           @if (disabled) {
             <small class="pl-1 text-neutral-400">(disabled)</small>

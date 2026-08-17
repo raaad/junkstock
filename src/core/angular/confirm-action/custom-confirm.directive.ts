@@ -19,12 +19,12 @@ export class CustomConfirmRegistry {
 }
 
 /** Allows to use a custom confirm action for a specific element */
-@Directive({ selector: '[appCustomConfirm]' })
+@Directive({ selector: '[useCustomConfirm]' })
 export class CustomConfirmDirective {
   private readonly element = inject<ElementRef<Element>>(ElementRef).nativeElement;
   private readonly registry = inject(CustomConfirmRegistry);
 
-  readonly confirm = input.required<ConfirmAction>({ alias: 'appCustomConfirm' });
+  readonly confirm = input.required<ConfirmAction>({ alias: 'useCustomConfirm' });
 
   constructor() {
     effect(() => {

@@ -15,7 +15,7 @@ import type COMMON from './common.i18n';
     </div>
     <div class="flex items-center gap-4 p-4">
       <span class="note">{{ 'SOME_KEY' | i18n: { price: 666 } }}</span>
-      <span class="note" x18n>Static string</span>
+      <span class="note" useI18n>Static string</span>
       <span class="note">{{ codeOnly }}</span>
       <button routerLink="lazy" routerLinkActive #link="routerLinkActive" [class.hidden]="link.isActive" class="btn">Load lazy</button>
       <router-outlet hidden />

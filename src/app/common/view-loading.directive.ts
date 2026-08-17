@@ -6,7 +6,6 @@ import { filter, map } from 'rxjs';
 // TODO: ignore some routes
 
 @Directive({
-  selector: '[appViewLoading]',
   host: {
     '[class.view-loading]': 'loading()'
   }

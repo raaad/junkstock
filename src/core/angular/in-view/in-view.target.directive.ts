@@ -2,14 +2,16 @@ import { DestroyRef, Directive, ElementRef, effect, inject, input } from '@angul
 import { InViewHostDirective } from './in-view.host.directive';
 
 @Directive({
-  selector: '[appInViewTarget]'
+  selector: '[useInViewTarget]'
 })
 export class InViewTargetDirective {
   private readonly host = inject(InViewHostDirective, { optional: true });
   private readonly element = inject<ElementRef<Element>>(ElementRef).nativeElement;
 
-  readonly data = input<unknown>(undefined, { alias: 'appInViewTarget' });
-  readonly disabled = input(false, { alias: 'appInViewTargetDisabled' });
+  readonly data = input<unknown>(undefined, { alias: 'useInViewTarget' });
+
+  // eslint-disable-next-line @angular-eslint/no-input-rename
+  readonly disabled = input(false, { alias: 'inViewDisabled' });
 
   constructor() {
     const host = this.host;

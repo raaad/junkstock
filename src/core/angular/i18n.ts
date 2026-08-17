@@ -69,12 +69,10 @@ export class I18nPipe implements PipeTransform {
 }
 
 /**
- * Translate static content, executed only once on init.
- * x - to not interfere with built-in i18n
+ * Translate static content, executed only once on init
  */
 @Directive({
-  // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: '[x18n]'
+  selector: '[useI18n]'
 })
 export class I18nDirective implements OnInit {
   private readonly i18n = injectI18n();

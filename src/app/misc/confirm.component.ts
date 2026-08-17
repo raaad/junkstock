@@ -126,7 +126,7 @@ export class ToggleValueButton implements FormValueControl<string> {
       <button (click.confirmed)="confirmed($event)" confirm-message="Custom message?" confirm-accept="Do it" confirm-reject="Don't do it" class="btn">
         Custom message
       </button>
-      <button (click.confirmed)="confirmed($event)" [appCustomConfirm]="custom" class="btn">Custom confirm</button>
+      <button (click.confirmed)="confirmed($event)" [useCustomConfirm]="custom" class="btn">Custom confirm</button>
       <button (click.confirmed)="confirmed($event)" (click.rejected)="rejected($event)" class="btn">With rejected</button>
 
       <label class="flex items-center gap-1">

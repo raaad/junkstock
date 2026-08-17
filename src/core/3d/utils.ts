@@ -30,15 +30,15 @@ export function fitToObject(camera: PerspectiveCamera, object: Object3D, target?
 }
 
 /** Rotate the camera around the target's orbit
- * @param hAngle - The number of degrees to increase the horizontal rotation angle
- * @param vAngle - The number of degrees to increase the vertical rotation angle
+ * @param dh - The number of degrees to increase the horizontal rotation angle
+ * @param dv - The number of degrees to increase the vertical rotation angle
  */
-export function rotateAround(camera: PerspectiveCamera, target: Vector3, { hAngle, vAngle }: { hAngle?: number; vAngle?: number }) {
+export function rotateAround(camera: PerspectiveCamera, target: Vector3, { dh, dv }: { dh?: number; dv?: number }) {
   let position = camera.position.clone().sub(target);
   const spherical = new Spherical().setFromVector3(position);
 
-  spherical.theta += degToRad(hAngle ?? 0);
-  spherical.phi += degToRad(vAngle ?? 0);
+  spherical.theta += degToRad(dh ?? 0);
+  spherical.phi += degToRad(dv ?? 0);
 
   position = new Vector3().setFromSpherical(spherical).add(target);
 

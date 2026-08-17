@@ -3,7 +3,7 @@ import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 /** Animates the transitions of children to the new positions when the index changes
  * @usageNotes
  * ```html
- * <ul appAniIndex><li>...</li><li>...</li></ul>
+ * <ul useAniIndex><li>...</li><li>...</li></ul>
  * ```
  * ...
  * ```css
@@ -14,7 +14,7 @@ import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
  * ```
  */
 @Directive({
-  selector: '[appAniIndex]',
+  selector: '[useAniIndex]',
   exportAs: 'aniIndex',
   host: {
     '(resized.no-initial.debounced.300)': 'update(true)'

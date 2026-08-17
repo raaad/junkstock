@@ -9,48 +9,71 @@
 
 {
   // user
-
   "workbench.colorTheme": "Light Modern",
   "workbench.sideBar.location": "right",
-  "debug.toolBarLocation": "docked",
-  "editor.minimap.enabled": false,
-  "editor.linkedEditing": true,
+
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "*.ts": "${capture}.*",
-    "*.js": "${capture}.*"
+    "*.js": "${capture}.*",
+    "package.json": "package-lock.json, .prettier*, prettier*, .editorconfig, .postcssrc.*",
+    "main.ts": "index.html, styles.css",
+    "AGENTS.md": "skills-lock.json"
   },
-  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+
+  "telemetry.telemetryLevel": "off",
+  "telemetry.editStats.enabled": false,
+  "telemetry.feedback.enabled": false,
+  "dotnetAcquisitionExtension.enableTelemetry": false,
+
+  "editor.minimap.enabled": false,
+  "editor.linkedEditing": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always",
+    "source.fixAll.eslint": "always"
+  },
+  "editor.largeFileOptimizations": false,
+  "editor.accessibilitySupport": "off",
+
+  "debug.toolBarLocation": "docked",
+  "debug.hideSlowPreLaunchWarning": true,
+  "debug.onTaskErrors": "debugAnyway",
+
+  "diffEditor.ignoreTrimWhitespace": false,
   "git.autofetch": true,
   "git.confirmSync": false,
+  "gitlens.launchpad.indicator.enabled": false,
+  "gitlens.telemetry.enabled": false,
+
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "github.copilot.enable": {
+    "*": false
+  },
+
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+
   "files.associations": {
     "*.xml": "html",
     "*.svg": "html",
     "*.css": "tailwindcss"
   },
 
-  // workspace
-
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
-    "source.fixAll.eslint": "explicit"
+  "[csharp]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp"
   },
-  "editor.formatOnSave": true,
+
+  // workspace
   "editor.formatOnPaste": true,
   "editor.formatOnType": true,
-  // git
-  "gitlens.telemetry.enabled": false,
+
   "js/ts.tsdk.path": "./node_modules/typescript/lib",
-  // other
-  // override prettier
-  "[csharp]": {
-    //"editor.defaultFormatter": "ms-dotnettools.csharp"
-  },
+
   // for 'PostCSS Language Support' extension
   "emmet.includeLanguages": {
     "postcss": "css"
-  },
-  // Copilot
-  "chat.disableAIFeatures": true
+  }
 }

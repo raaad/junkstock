@@ -1,4 +1,6 @@
 export function lazy<T>(getter: () => T) {
   let v: T;
-  return () => (v ??= getter());
+  const lazy = () => (v ??= getter());
+  lazy.reset = () => (v = undefined as T);
+  return lazy;
 }

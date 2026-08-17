@@ -53,74 +53,28 @@ export class ThreeComponent implements OnInit {
   private readonly decoderPath = injectNonI18nBaseHref();
 
   private readonly renderer = createRenderer(this.container);
-  private readonly camera = new PerspectiveCamera().add(...createLights());
+  private readonly camera = createCamera();
+  private readonly scene = createScene(this.camera);
   private readonly controls = createControls(this.camera, this.renderer.domElement, () => this.render());
-  private readonly scene = new Scene().add(this.camera, createAxes());
 
   private object?: Object3D;
 
   protected readonly loading = signal(true);
 
-  async ngOnInit() {
-    this.object = await fromGltf(this.modelPath, this.decoderPath, v => this.logger.debug(`3D: loaded ${(v * 100).toFixed()}%`));
-
-    this.scene.add(this.object);
-
-    this.fit();
-
-    this.loading.set(false);
+  ngOnInit() {
+    this.load();
   }
 
-  protected rotate(to: 'left' | 'right' | 'up' | 'down') {
-    const step = 10;
-    let hAngle = 0;
-    let vAngle = 0;
+  protected rotate(to: 'left' | 'right' | 'up' | 'down', step = 10) {
+    const values = {
+      left: { dh: step, dv: 0 },
+      right: { dh: -step, dv: 0 },
+      up: { dh: 0, dv: step },
+      down: { dh: 0, dv: -step }
+    }[to];
 
-    switch (to) {
-      case 'left':
-        hAngle += step;
-        break;
-      case 'right':
-        hAngle -= step;
-        break;
-      case 'up':
-        vAngle += step;
-        break;
-      case 'down':
-        vAngle -= step;
-        break;
-    }
-
-    this.animate({ hAngle, vAngle }, ({ hAngle, vAngle }) => {
-      rotateAround(this.camera, this.controls.target, {
-        hAngle,
-        vAngle
-      });
-
-      this.render();
-    });
+    this.animate(values, deltas => (rotateAround(this.camera, this.controls.target, deltas), this.render()));
   }
-
-  private animate({ hAngle, vAngle }: { hAngle: number; vAngle: number }, callback: (v: { hAngle: number; vAngle: number }) => void) {
-    cancelAnimationFrame(this.frameHandle);
-
-    const h = increment(hAngle);
-    const v = increment(vAngle);
-
-    hAngle -= h;
-    vAngle -= v;
-
-    callback({ hAngle: h, vAngle: v });
-
-    this.frameHandle = Math.abs(hAngle + vAngle) && requestAnimationFrame(() => this.animate({ hAngle, vAngle }, callback));
-
-    function increment(v: number) {
-      return v / Math.abs(v || 1);
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  private frameHandle = 0;
 
   protected resize() {
     updateSize(this.container, this.camera, this.renderer);
@@ -134,10 +88,7 @@ export class ThreeComponent implements OnInit {
 
       controlsLookAt(this.controls, target, { min: 0.5, max: 2 });
 
-      rotateAround(this.camera, this.controls.target, {
-        hAngle: 30,
-        vAngle: -30
-      });
+      rotateAround(this.camera, this.controls.target, { dh: 30, dv: -30 });
     }
 
     this.render();
@@ -146,6 +97,23 @@ export class ThreeComponent implements OnInit {
   protected render() {
     this.renderer.render(this.scene, this.camera);
   }
+
+  private async load() {
+    try {
+      this.object = await fromGltf(this.modelPath, this.decoderPath, v => this.logger.debug(`3D: loaded ${(v * 100).toFixed()}%`));
+
+      this.scene.add(this.object);
+
+      this.fit();
+    } catch (e) {
+      this.logger.warn('Failed to load them model', e);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private animate = useAnimate();
 }
 
 // #region utils
@@ -160,13 +128,12 @@ function createRenderer(container: HTMLElement) {
   return renderer;
 }
 
-function createAxes() {
-  const axes = new AxesHelper(2);
-  return axes;
+function createCamera() {
+  return new PerspectiveCamera().add(...createLights());
 }
 
-function createLights() {
-  return [new AmbientLight(0xffffff, 1), new PointLight(0xffffff, 0.5, 0, -1)];
+function createScene(camera: Camera) {
+  return new Scene().add(camera, createAxes());
 }
 
 function createControls(camera: Camera, container: HTMLElement, callback: () => void) {
@@ -175,6 +142,15 @@ function createControls(camera: Camera, container: HTMLElement, callback: () => 
   controls.zoomSpeed = 10;
   controls.addEventListener('change', callback);
   return controls;
+}
+
+function createLights() {
+  return [new AmbientLight(0xffffff, 1), new PointLight(0xffffff, 0.5, 0, -1)];
+}
+
+function createAxes() {
+  const axes = new AxesHelper(2);
+  return axes;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -186,6 +162,28 @@ function createCube() {
 
   const material = new MeshLambertMaterial({ color: 0x7ffa96, opacity: 0.8, transparent: true });
   return new Mesh(geometry, material);
+}
+
+function useAnimate() {
+  let handle = 0;
+
+  return animate;
+
+  function animate<T extends Record<string, number>>(values: T, callback: (values: T) => void) {
+    cancelAnimationFrame(handle);
+
+    const deltas = Object.entries(values).map(([k, v]) => [k, increment(v)] as [string, number]);
+
+    callback(Object.fromEntries(deltas) as T);
+
+    const next = deltas.map(([k, v]) => [k, values[k] - v] as [string, number]);
+
+    handle = Math.abs(next.reduce((r, [, v]) => r + v, 0)) && requestAnimationFrame(() => animate(Object.fromEntries(next) as T, callback));
+  }
+
+  function increment(v: number) {
+    return v / Math.abs(v || 1);
+  }
 }
 
 // #endregion

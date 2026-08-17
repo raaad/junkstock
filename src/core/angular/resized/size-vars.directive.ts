@@ -1,7 +1,7 @@
 import { Directive, signal } from '@angular/core';
 
 @Directive({
-  selector: '[appSizeVars]',
+  selector: '[useSizeVars]',
   host: {
     '(resized)': 'update($any($event))',
     '[style.--width.px]': 'size().width',
