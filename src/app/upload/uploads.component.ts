@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LOGGER } from '@core/angular';
@@ -9,7 +8,7 @@ import { mock } from './mock.data';
 import { provideUploadPipeline } from './provide-upload-pipeline';
 
 @Component({
-  imports: [FilesizePipe, NgClass],
+  imports: [FilesizePipe],
   template: `
     <!--selector-->
     <div
@@ -45,7 +44,7 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
           [class.active]="item.state < UploadState.Uploaded"
           [class.pre-upload]="item.state < UploadState.Uploading || (item.state === UploadState.Uploading && !item.uploaded)"
           [class.post-upload]="item.state === UploadState.Uploading && item.uploaded === item.size"
-          [ngClass]="UploadState[item.state].toLocaleLowerCase()"
+          [class]="UploadState[item.state].toLocaleLowerCase()"
           class="progress flex items-center gap-2">
           <div class="size-8 bg-neutral-100">
             @if (item.thumb?.url; as url) {

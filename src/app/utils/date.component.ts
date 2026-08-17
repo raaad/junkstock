@@ -8,8 +8,8 @@ import { formatISODate } from '@core/utils';
     @for (item of items; track item) {
       <div class="m-4 flex items-center gap-4">
         <span class="flex-1 capitalize">{{ item.kind }}:</span>
-        <span class="note flex-2" [class.!text-neutral-200]="item.now()">{{ item.input() }}</span>
-        <button (click)="item.now.set(!item.now())" class="btn">Now</button>
+        <span class="note flex-2" [class.text-neutral-200!]="item.now()">{{ item.value }}</span>
+        <button (click)="item.now.set(!item.now())" [class.btn-focus]="item.now()" class="btn">Now</button>
         <span class="note flex-2">{{ item.date() }}</span>
         <span class="note flex-2">{{ item.formatted() }}</span>
       </div>
@@ -26,10 +26,10 @@ export class DateComponent {
     local: '2025-06-01T12:00:00.000'
   }).map(([k, value]) => {
     const kind = k as 'UTC' | 'offset' | 'local';
-    const input = signal(value);
     const now = signal(false);
-    const date = computed(() => (now() ? this.now : new Date(input())));
+    const date = computed(() => (now() ? this.now : new Date(value)));
     const formatted = computed(() => formatISODate(date(), kind));
-    return { input, now, date, formatted, kind };
+
+    return { value, now, date, formatted, kind };
   });
 }

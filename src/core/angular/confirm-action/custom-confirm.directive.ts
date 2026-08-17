@@ -27,10 +27,7 @@ export class CustomConfirmDirective {
   readonly confirm = input.required<ConfirmAction>({ alias: 'useCustomConfirm' });
 
   constructor() {
-    effect(() => {
-      const action = this.confirm();
-      action ? this.registry.register(this.element, action) : this.registry.unregister(this.element);
-    });
+    effect(() => (this.confirm() ? this.registry.register(this.element, this.confirm()) : this.registry.unregister(this.element)));
 
     inject(DestroyRef).onDestroy(() => this.registry.unregister(this.element));
   }

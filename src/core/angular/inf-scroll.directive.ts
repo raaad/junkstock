@@ -10,6 +10,7 @@ import {
   InjectionToken,
   Injector,
   input,
+  linkedSignal,
   signal,
   Signal,
   untracked
@@ -54,16 +55,16 @@ export class InfScrollDirective {
 export class InfScrollHostDirective {}
 
 export function useInfiniteScroll(
-  target: Signal<HTMLElement | undefined>,
+  trigger: Signal<HTMLElement | undefined>,
   host: HTMLElement | null,
   enabled: Signal<boolean>,
   loader: Signal<(abort: AbortSignal) => Promise<void>>,
   { threshold = 0.1, ...options }: IntersectionObserverInit = {}
 ) {
   const loading = signal(false);
-  const failed = signal(false);
+  const failed = linkedSignal({ source: enabled, computation: (on, p) => !on && !!p?.value });
   const isIntersecting = useObserver(
-    target,
+    trigger,
     computed(() => enabled() && !loading() && !failed()),
     { threshold, ...options }
   );
@@ -72,7 +73,7 @@ export function useInfiniteScroll(
 
   effect(() => isIntersecting() && untracked(() => keepScroll(exec)));
 
-  effect(() => !enabled() && (failed.set(false), abort.emit()));
+  effect(() => !enabled() && abort.emit());
 
   return {
     active: computed(() => loading() || failed()),
@@ -96,35 +97,35 @@ export function useInfiniteScroll(
   }
 
   async function keepScroll(action: typeof exec) {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const _host = host ?? target()?.parentElement;
-    const offset = target()?.offsetTop;
-    const height = _host?.scrollHeight ?? 0;
+    const target = host ?? trigger()?.parentElement;
+    const offset = trigger()?.offsetTop;
+    const height = target?.scrollHeight ?? 0;
 
     await action();
 
     await waitNextRender();
 
     // restore scroll position only if new elements were added before trigger's position
-    (offset ?? 0) >= (target()?.offsetTop ?? 0) && _host && (_host.scrollTop += _host.scrollHeight - height);
+    (offset ?? 0) >= (trigger()?.offsetTop ?? 0) && target && (target.scrollTop += target.scrollHeight - height);
   }
 }
 
 function useObserver(target: Signal<HTMLElement | undefined>, enabled: Signal<boolean>, options?: IntersectionObserverInit) {
   const observer = new IntersectionObserver(([{ isIntersecting: value }]) => isIntersecting.set(value), options);
 
-  const isIntersecting = signal(false);
+  const isIntersecting = linkedSignal({
+    source: () => enabled() && !!target(),
+    computation: (on, prev) => on && !!prev?.value
+  });
 
   let current: HTMLElement | null = null;
 
-  inject(DestroyRef).onDestroy(() => observer.disconnect());
-
   effect(() => {
     current && observer.unobserve(current);
-
     if ((current = (enabled() && target()) || null)) observer.observe(current);
-    else isIntersecting.set(false);
   });
+
+  inject(DestroyRef).onDestroy(() => observer.disconnect());
 
   return isIntersecting;
 }

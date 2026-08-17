@@ -1,5 +1,5 @@
-import { Component, computed, signal } from '@angular/core';
-import { InfScrollDirective, InfScrollHostDirective } from '@core/angular';
+import { Component, computed, inject, signal } from '@angular/core';
+import { INF_SCROLL_HOST, InfScrollDirective, InfScrollHostDirective } from '@core/angular';
 
 @Component({
   selector: 'app-inf-scroll',
@@ -9,6 +9,7 @@ import { InfScrollDirective, InfScrollHostDirective } from '@core/angular';
     <div class="text-s sticky top-0 z-1 flex items-center bg-gray-100 p-4">
       infinite scroll: enabled <span [class.on]="enabled()" class="dot"></span> active <span [class.on]="scroll.active()" class="dot"></span> failed
       <span [class.on]="scroll.failed()" class="dot"></span>
+      <button (click)="host.scroll({ top: 0, behavior: 'smooth' })" class="btn btn-icon ml-auto rounded-[50%]! border-none!" title="scroll up">↑</button>
     </div>
     <div
       [useInfScroll]="loader"
@@ -22,7 +23,7 @@ import { InfScrollDirective, InfScrollHostDirective } from '@core/angular';
         @if (!scroll.failed()) {
           loading...
         } @else {
-          failed <button (click)="scroll.retry()" class="btn btn-icon -my-3 !min-w-0 !rounded-[50%] !border-none" title="retry">↻</button>
+          failed <button (click)="scroll.retry()" class="btn btn-icon -my-3 rounded-[50%]! border-none!" title="retry">↻</button>
         }
       </span>
     </div>
@@ -117,6 +118,8 @@ import { InfScrollDirective, InfScrollHostDirective } from '@core/angular';
   ]
 })
 export class InfScrollComponent {
+  protected host = inject(INF_SCROLL_HOST);
+
   protected items = signal(new Array<{ id: number; name: string }>());
 
   private next = signal<number | undefined | null>(undefined);
