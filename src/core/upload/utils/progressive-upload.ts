@@ -1,4 +1,18 @@
-import { Observable, ObservableInput, Subject, catchError, defer, filter, map, mergeMap, of, share, takeUntil, takeWhile, throwError } from 'rxjs';
+import {
+  Observable,
+  ObservableInput,
+  Subject,
+  catchError,
+  defer,
+  filter,
+  map,
+  mergeMap,
+  of,
+  share,
+  takeUntil,
+  takeWhile,
+  throwError
+} from 'rxjs';
 import { QueueUpload, UploadId } from '../upload.types';
 
 type Upload = QueueUpload & { abort$: Observable<unknown> };

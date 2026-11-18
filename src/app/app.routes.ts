@@ -7,24 +7,13 @@ import { UploadsComponent } from './upload/uploads.component';
 import { UtilsComponent } from './utils/utils.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    component: HomeComponent
-  },
-  {
-    path: 'uploads',
-    title: 'Uploads',
-    component: UploadsComponent
-  },
+  { path: '', component: HomeComponent },
+  { path: 'uploads', title: 'Uploads', component: UploadsComponent },
   {
     path: '',
     title: '2D / 3D',
     children: [
-      {
-        path: '3d',
-        title: '3D',
-        loadComponent: async () => (await import('./3d/3d.component')).ThreeComponent
-      },
+      { path: '3d', title: '3D', loadComponent: async () => (await import('./3d/3d.component')).ThreeComponent },
       {
         path: 'svg-render',
         title: 'SVG render',
@@ -32,16 +21,8 @@ export const routes: Routes = [
       }
     ]
   },
-  {
-    path: 'utils',
-    title: 'Utils',
-    component: UtilsComponent
-  },
-  {
-    path: 'misc',
-    title: 'Misc',
-    component: MiscComponent
-  },
+  { path: 'utils', title: 'Utils', component: UtilsComponent },
+  { path: 'misc', title: 'Misc', component: MiscComponent },
   {
     path: 'i18n',
     title: 'I18n',
@@ -56,8 +37,5 @@ export const routes: Routes = [
       }
     ]
   },
-  {
-    path: '**',
-    redirectTo: '/'
-  }
+  { path: '**', redirectTo: '/' }
 ];

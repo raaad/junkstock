@@ -12,8 +12,5 @@ class CustomTitleStrategy extends DefaultTitleStrategy {
 }
 
 export function provideTitleStrategy(): ClassProvider {
-  return {
-    provide: TitleStrategy,
-    useClass: CustomTitleStrategy
-  };
+  return { provide: TitleStrategy, useClass: CustomTitleStrategy };
 }

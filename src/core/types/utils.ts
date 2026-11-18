@@ -1,5 +1,4 @@
 /** Get all object properties of the specified type
- * @usageNotes
  * ```typescript
  * class Some {
  *   prop1: number;

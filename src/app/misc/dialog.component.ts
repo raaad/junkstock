@@ -62,7 +62,10 @@ export class DialogComponent {
 
 /** hey, safari */
 function closedbyFix(dismissable: boolean, e: Event | MouseEvent) {
-  dismissable && !('closedBy' in HTMLDialogElement.prototype) && (!(e instanceof MouseEvent) || isBackdrop(e)) && e.target?.dispatchEvent(new Event('close'));
+  dismissable &&
+    !('closedBy' in HTMLDialogElement.prototype) &&
+    (!(e instanceof MouseEvent) || isBackdrop(e)) &&
+    e.target?.dispatchEvent(new Event('close'));
 
   function isBackdrop({ target, currentTarget: host, clientX: x, clientY: y }: MouseEvent) {
     return target === host && host instanceof HTMLElement && !inside(host);

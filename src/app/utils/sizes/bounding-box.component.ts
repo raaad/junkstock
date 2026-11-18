@@ -14,7 +14,13 @@ import { getBoundingBox } from '@core/utils';
         [style.width.px]="rect.width"
         [style.height.px]="rect.height"
         [style.rotate.deg]="angle()"></div>
-      <div class="box" [style.top.px]="box.y" [style.left.px]="box.x" [style.width.px]="box.width" [style.height.px]="box.height" role="presentation"></div>
+      <div
+        class="box"
+        [style.top.px]="box.y"
+        [style.left.px]="box.x"
+        [style.width.px]="box.width"
+        [style.height.px]="box.height"
+        role="presentation"></div>
     </div>
     <div class="px-4! text-xs">
       Click to Pause/Resume, <b>{{ angle() }} °</b>

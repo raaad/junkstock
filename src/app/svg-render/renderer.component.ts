@@ -70,7 +70,10 @@ import { RENDER_DATA } from './mock.data';
     @for (item of data(); track $index) {
       <div class="item">
         <span>{{ item.title }}</span>
-        <img [src]="item.contentId | resolveUrl: item.kind" [style.filter]="item.svgFilterId && ('url(#\${svgFilterId})' | interpolate: item)" alt="" />
+        <img
+          [src]="item.contentId | resolveUrl: item.kind"
+          [style.filter]="item.svgFilterId && ('url(#\${svgFilterId})' | interpolate: item)"
+          alt="" />
       </div>
     }
   `

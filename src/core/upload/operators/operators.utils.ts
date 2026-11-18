@@ -16,7 +16,10 @@ export function toFailed(item: Upload, error?: string): Upload {
   return { ...toUpload(item, UploadState.Failed), error: item.error ?? error };
 }
 
-export function toUpload({ file, state: currentState, ...rest }: FileUpload | (Upload & Partial<Pick<FileUpload, 'file'>>), state?: UploadState): Upload {
+export function toUpload(
+  { file, state: currentState, ...rest }: FileUpload | (Upload & Partial<Pick<FileUpload, 'file'>>),
+  state?: UploadState
+): Upload {
   return { ...rest, state: state ?? currentState };
 }
 
@@ -32,7 +35,11 @@ export function takeUntilAbort<T>(abort$: Observable<UploadId>, id: UploadId) {
     );
 }
 
-export type Log = <T>(level: keyof Logger | ((i: T) => keyof Logger), message: string | ((i: T) => string), ...rest: unknown[]) => MonoTypeOperatorFunction<T>;
+export type Log = <T>(
+  level: keyof Logger | ((i: T) => keyof Logger),
+  message: string | ((i: T) => string),
+  ...rest: unknown[]
+) => MonoTypeOperatorFunction<T>;
 
 export function toLog(logger: Logger, prefix = 'uploader:'): Log {
   return (level, message, ...rest) => tap(i => logger[evalIfFn(level, i)](prefix, evalIfFn(message, i), ...rest, i));

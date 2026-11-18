@@ -43,11 +43,7 @@ export class SvgRenderer {
   async render<T, O extends RenderOptions & ExportOptions>(type: RenderType, data: T, { embedImages, context, ...options }: O) {
     const component = this.selector(data);
 
-    const svg = await this.renderSvg(RendererContainerComponent<T, typeof options>, {
-      component,
-      data,
-      options
-    });
+    const svg = await this.renderSvg(RendererContainerComponent<T, typeof options>, { component, data, options });
 
     const result =
       (
@@ -97,10 +93,7 @@ export class SvgRenderer {
         return await drawToBlob(svgToDataUrl(str), {
           type: `image/${type}`,
           // Safari fix: https://github.com/bubkoo/html-to-image/issues/361#issuecomment-1413526381
-          multiDraw: !(await this.supportsSvgFilter()) && {
-            count: Math.max(Math.min(embeddedTotal, 100), 2),
-            delay: 50
-          }
+          multiDraw: !(await this.supportsSvgFilter()) && { count: Math.max(Math.min(embeddedTotal, 100), 2), delay: 50 }
         });
 
       default:
@@ -157,7 +150,9 @@ export class SvgRenderer {
   private async embedImages(images: Map<HTMLImageElement, string>) {
     this.logger.debug(() => [`SVG: embedding images`, Array.from(images.values()).map(i => (isDataUrl(i) ? 'data:...' : i))]);
 
-    const fetched = new Map(await Promise.all(Array.from(new Set(images.values())).map(async url => [url, await this.fetchImage(url)] as [string, string])));
+    const fetched = new Map(
+      await Promise.all(Array.from(new Set(images.values())).map(async url => [url, await this.fetchImage(url)] as [string, string]))
+    );
 
     Array.from(images.entries()).forEach(([img, url]) => images.set(img, fetched.get(url) ?? url));
   }
@@ -188,13 +183,7 @@ export class SvgRenderer {
 
       const { dataUrl, width, height, rotation } = await extractImageData(url);
 
-      const svg = await this.renderSvg(ApplyFilterOnImageComponent, {
-        dataUrl,
-        filters,
-        width,
-        height,
-        rotation
-      });
+      const svg = await this.renderSvg(ApplyFilterOnImageComponent, { dataUrl, filters, width, height, rotation });
 
       return await blobToDataUrl(await this.export('png', svg, {}));
     } else {
@@ -211,7 +200,10 @@ export class SvgRenderer {
     const deferredResolvers = new Map<ImageUrlResolverKind, ImageUrlResolver>(
       Array.from(this.imageUrlResolvers.keys()).map(kind => [
         kind,
-        (data: unknown, args?: unknown[]) => (this.logger.trace(`SVG: preserving resolve '${kind}'`, data, args), toCustomDataUrl(kind, data, args))
+        (data: unknown, args?: unknown[]) => (
+          this.logger.trace(`SVG: preserving resolve '${kind}'`, data, args),
+          toCustomDataUrl(kind, data, args)
+        )
       ])
     );
 

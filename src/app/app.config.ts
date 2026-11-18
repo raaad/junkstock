@@ -15,11 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions({ onViewTransitionCreated: t => (withReversed(t), skipSubsets(t)) })),
     provideTitleStrategy(),
 
-    provideLogger({
-      suppress: [
-        /* 'uploader:' */
-      ]
-    }),
+    provideLogger({ suppress: [/* 'uploader:' */] }),
     provideConsoleLogger(),
 
     provideConfirmActionEventPlugin(),
@@ -27,6 +23,9 @@ export const appConfig: ApplicationConfig = {
 
     provideResizedEventPlugin(),
 
-    provideI18n(lc => (lc === 'en' ? import('./i18n/common.i18n') : import(`./i18n/common.i18n.${lc}.ts`)), ensureLocale(['en', 'us'] as const, 'en'))
+    provideI18n(
+      lc => (lc === 'en' ? import('./i18n/common.i18n') : import(`./i18n/common.i18n.${lc}.ts`)),
+      ensureLocale(['en', 'us'] as const, 'en')
+    )
   ]
 };

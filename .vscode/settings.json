@@ -62,6 +62,9 @@
     "*.css": "tailwindcss"
   },
 
+  "prettier.trailingComma": "none",
+  "prettier.printWidth": 120,
+
   "[csharp]": {
     "editor.defaultFormatter": "ms-dotnettools.csharp"
   },

@@ -90,15 +90,10 @@ export function downloadFile(data: Blob | string, download = '') {
   const href =
     typeof data === 'string' ?
       isDataUrl(data) ? data
-      : throwIt<string>(`Invalid Data URL provided: ${data}`)
+      : throwIt(`Invalid Data URL provided: ${data}`)
     : blobToObjectUrl(data);
 
-  const a = Object.assign(document.createElement('a'), {
-    href,
-    download,
-    target: '_blank',
-    rel: 'noopener'
-  });
+  const a = Object.assign(document.createElement('a'), { href, download, target: '_blank', rel: 'noopener' });
 
   a.dispatchEvent(new MouseEvent('click'));
   typeof data !== 'string' && setTimeout(() => URL.revokeObjectURL(href));

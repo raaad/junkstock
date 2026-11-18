@@ -18,24 +18,12 @@ import { RenderOptions, SvgRendererContainerComponent } from './svg-renderer.typ
     <!-- Safari fix: attributes required -->
     <foreignObject x="0" y="0" width="100%" height="100%">
       <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%;">
-        <ng-container
-          *ngComponentOutlet="
-            component();
-            inputs: {
-              data: data(),
-              options: options()
-            }
-          " />
+        <ng-container *ngComponentOutlet="component(); inputs: { data: data(), options: options() }" />
       </div>
     </foreignObject>
   `,
   encapsulation: ViewEncapsulation.None,
-  host: {
-    '[attr.width]': 'width',
-    '[attr.height]': 'height',
-    '[attr.viewBox]': 'viewBox',
-    '[attr.xmlns]': '"http://www.w3.org/2000/svg"'
-  }
+  host: { '[attr.width]': 'width', '[attr.height]': 'height', '[attr.viewBox]': 'viewBox', '[attr.xmlns]': '"http://www.w3.org/2000/svg"' }
 })
 export class RendererContainerComponent<T, O extends RenderOptions> implements SvgRendererContainerComponent {
   protected readonly component = input.required<Type<unknown>>();

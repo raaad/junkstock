@@ -1,7 +1,6 @@
 import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 
 /** Animates the transitions of children to the new positions when the index changes
- * @usageNotes
  * ```html
  * <ul useAniIndex><li>...</li><li>...</li></ul>
  * ```
@@ -13,13 +12,7 @@ import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
  * }
  * ```
  */
-@Directive({
-  selector: '[useAniIndex]',
-  exportAs: 'aniIndex',
-  host: {
-    '(resized.no-initial.debounced.300)': 'update(true)'
-  }
-})
+@Directive({ selector: '[useAniIndex]', exportAs: 'aniIndex', host: { '(resized.no-initial.debounced.300)': 'update(true)' } })
 export class AniIndexDirective {
   private readonly host = inject<ElementRef<Element>>(ElementRef).nativeElement;
 
@@ -61,6 +54,8 @@ export class AniIndexDirective {
   }
 
   update(force = false) {
-    this.prevPoints = new Map(Array.from(this.prevIndexes.keys()).map(i => [i, (!force && this.prevPoints.get(i)) || i.getBoundingClientRect()]));
+    this.prevPoints = new Map(
+      Array.from(this.prevIndexes.keys()).map(i => [i, (!force && this.prevPoints.get(i)) || i.getBoundingClientRect()])
+    );
   }
 }

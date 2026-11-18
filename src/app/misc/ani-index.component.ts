@@ -48,7 +48,7 @@ import { compareBy } from '@core/utils';
   ]
 })
 export class AniIndexComponent {
-  protected readonly items = signal(new Array(10).fill(0).map(this.create));
+  protected readonly items = signal(Array.from({ length: 10 }, this.create));
 
   protected prepend() {
     this.items.set([this.create(), ...this.items()]);

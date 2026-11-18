@@ -25,9 +25,7 @@ import { ViewLoadingDirective } from './common/view-loading.directive';
     </nav>
     <router-outlet />
   `,
-  host: {
-    class: 'flex-col md:flex-row'
-  },
+  host: { class: 'flex-col md:flex-row' },
   styles: [
     `
       @reference "#main";

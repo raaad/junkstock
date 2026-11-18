@@ -37,16 +37,15 @@ export class ResizedEventPlugin extends EventManagerPlugin {
     this.registry.set(element, (this.registry.get(element) ?? new Set()).add(handler));
     this.observer.observe(element);
 
-    return () => {
-      this.registry.get(element)?.delete(handler) && !this.registry.get(element)?.size && this.observer.unobserve(element);
-    };
+    return () =>
+      void (this.registry.get(element)?.delete(handler) && !this.registry.get(element)?.size && this.observer.unobserve(element));
   }
 }
 
 function debounced<A extends unknown[]>(action: (...a: A) => void, debounce = 100, handle = 0) {
-  return (...a: A) => (clearTimeout(handle), (handle = setTimeout(() => action(...a), debounce)));
+  return (...a: A) => void (clearTimeout(handle), (handle = setTimeout(() => action(...a), debounce)));
 }
 
 function noInitial<A extends unknown[]>(action: (...a: A) => void, skip = true) {
-  return (...a: A) => (skip ? (skip = !skip) : action(...a));
+  return (...a: A) => void (skip ? (skip = !skip) : action(...a));
 }

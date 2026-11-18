@@ -2,7 +2,6 @@ import { inject, Pipe, PipeTransform, SecurityContext } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 /** Interpolating a string as a template literal
- * @usageNotes
  * ```html
  * {{ 'Hello, ${user.name}' | interpolate: data }} <!-- >> Hello, Bob -->
  * {{ 'Hello, ${this}' | interpolate: 'Bob' }} <!-- >> Hello, Bob -->
@@ -24,7 +23,6 @@ export function interpolate<T = unknown>(template: string, context?: T): string 
 }
 
 /** Interpolating a string as a template literal
- * @usageNotes
  * ```html
  * {{ 'Hello, ${user.name}' | interpolate: data }} <!-- >> Hello, Bob -->
  * {{ 'Hello, ${this}' | interpolate: 'Bob' }} <!-- >> Hello, Bob -->
@@ -34,10 +32,7 @@ export function interpolate<T = unknown>(template: string, context?: T): string 
  * data = { user: { name: 'Bob' } }
  * ```
  */
-@Pipe({
-  name: 'interpolate',
-  pure: true
-})
+@Pipe({ name: 'interpolate', pure: true })
 export class InterpolatePipe implements PipeTransform {
   private readonly sanitizer = inject(DomSanitizer);
 

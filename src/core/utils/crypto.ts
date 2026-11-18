@@ -13,16 +13,7 @@ export async function encrypt(message: string, password: string, crypto = defaul
 
   const data = new TextEncoder().encode(message);
 
-  const encrypted = new Uint8Array(
-    await crypto.subtle.encrypt(
-      {
-        iv,
-        name: 'AES-GCM'
-      },
-      key,
-      data
-    )
-  );
+  const encrypted = new Uint8Array(await crypto.subtle.encrypt({ iv, name: 'AES-GCM' }, key, data));
 
   return await wrap(salt, iv, encrypted);
 }
@@ -33,16 +24,7 @@ export async function decrypt(message: string, password: string, crypto = defaul
 
   const key = await getKey(password, salt, crypto);
 
-  const decrypted = new Uint8Array(
-    await crypto.decrypt(
-      {
-        iv,
-        name: 'AES-GCM'
-      },
-      key,
-      data
-    )
-  );
+  const decrypted = new Uint8Array(await crypto.decrypt({ iv, name: 'AES-GCM' }, key, data));
 
   return new TextDecoder().decode(decrypted);
 }
@@ -54,17 +36,9 @@ async function getKey(key: string, salt: BufferSource, crypto: SubtleCrypto) {
   const baseKey = await crypto.importKey('raw', new TextEncoder().encode(key), 'PBKDF2', false, ['deriveKey']);
 
   return await crypto.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt,
-      iterations: 10000,
-      hash: 'SHA-256'
-    },
+    { name: 'PBKDF2', salt, iterations: 10000, hash: 'SHA-256' },
     baseKey,
-    {
-      name: 'AES-GCM',
-      length: 256
-    },
+    { name: 'AES-GCM', length: 256 },
     false,
     ['encrypt', 'decrypt']
   );

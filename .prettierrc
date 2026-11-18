@@ -1,6 +1,7 @@
 {
+  "objectWrap": "collapse",
   "experimentalTernaries": true,
-  "printWidth": 160,
+  "printWidth": 140,
   "singleQuote": true,
   "trailingComma": "none",
   "bracketSameLine": true,

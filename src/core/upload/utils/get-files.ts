@@ -32,11 +32,7 @@ export async function* getFiles(list: DataTransferItemList | null | undefined) {
   }
 
   function preservePath(file: File, entry: FileSystemEntry) {
-    Object.defineProperties(file, {
-      webkitRelativePath: {
-        writable: true
-      }
-    });
+    Object.defineProperties(file, { webkitRelativePath: { writable: true } });
 
     (file as { webkitRelativePath: string }).webkitRelativePath ||= entry.fullPath.replace(/^\//, '');
 

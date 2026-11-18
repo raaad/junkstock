@@ -10,7 +10,12 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
   template: `
     <div class="title">fitToSize</div>
     <div class="canvas" (resized.no-initial)="reset()" [style.touch-action]="resizing ? 'none' : ''">
-      <div class="rect" [style.top.px]="rect.y" [style.left.px]="rect.x" [style.width.px]="rect.width" [style.height.px]="rect.height"></div>
+      <div
+        class="rect"
+        [style.top.px]="rect.y"
+        [style.left.px]="rect.x"
+        [style.width.px]="rect.width"
+        [style.height.px]="rect.height"></div>
       <div
         #boxEl
         class="box"
@@ -78,10 +83,7 @@ const INITIAL = { x: 10, y: 10, width: 200, height: 100 };
       }
     `
   ],
-  host: {
-    '(document:pointermove)': 'resize($event)',
-    '(document:pointerup)': 'stop()'
-  }
+  host: { '(document:pointermove)': 'resize($event)', '(document:pointerup)': 'stop()' }
 })
 export class FitToSizeComponent {
   private readonly boxEl = viewChild<ElementRef<HTMLDivElement>>('boxEl');
@@ -105,7 +107,11 @@ export class FitToSizeComponent {
 
     const { left, top } = boxEl?.getBoundingClientRect() ?? { left: 0, top: 0 };
 
-    const box = { ...this.box(), width: Math.max(Math.min(x, bounds.right - 10) - left, 10), height: Math.max(Math.min(y, bounds.bottom - 10) - top, 10) };
+    const box = {
+      ...this.box(),
+      width: Math.max(Math.min(x, bounds.right - 10) - left, 10),
+      height: Math.max(Math.min(y, bounds.bottom - 10) - top, 10)
+    };
 
     const rect = { ...this.rect, ...fitToSize(this.rect, box, this.mode().value()) };
 

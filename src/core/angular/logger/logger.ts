@@ -13,10 +13,7 @@ const LEVEL_MAP = new Map<LogLevel, keyof Logger>([
 ]);
 
 export function provideLogger({ suppress = [] }: { suppress?: string[] } = {}): FactoryProvider {
-  return {
-    provide: LOGGER,
-    useFactory: () => createLogger(inject(LOGGER_IMPL), suppress)
-  };
+  return { provide: LOGGER, useFactory: () => createLogger(inject(LOGGER_IMPL), suppress) };
 }
 
 function createLogger(loggers: LoggerImpl[], suppress: string[]) {

@@ -61,14 +61,7 @@ async function getClientThumb(file: File, dimension = 100, useDataUrl = false) {
 
   const url = useDataUrl ? await blobToDataUrl(blob) : blobToObjectUrl(blob);
 
-  return { url, ...size, dispose: () => !useDataUrl && URL.revokeObjectURL(url) };
+  return { url, ...size, dispose: () => void (!useDataUrl && URL.revokeObjectURL(url)) };
 }
 
-export const mock = {
-  newIds: newIds(),
-  validationRules,
-  getUploadUrls,
-  uploadFile,
-  getClientThumb,
-  waitForServerConfirmation
-};
+export const mock = { newIds: newIds(), validationRules, getUploadUrls, uploadFile, getClientThumb, waitForServerConfirmation };

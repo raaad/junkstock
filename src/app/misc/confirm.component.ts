@@ -9,11 +9,7 @@ import { DialogComponent, DialogOptions } from './dialog.component';
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'button[toggleValue]',
   template: `<ng-content />`,
-  host: {
-    '(click)': 'toggle()',
-    class: 'btn btn-icon',
-    '[class.btn-focus]': 'value() === toggleValue()'
-  }
+  host: { '(click)': 'toggle()', class: 'btn btn-icon', '[class.btn-focus]': 'value() === toggleValue()' }
 })
 export class ToggleValueButton implements FormValueControl<string> {
   readonly value = model.required<string>();
@@ -123,7 +119,12 @@ export class ToggleValueButton implements FormValueControl<string> {
     <div (mousedown)="reset()" class="m-4 flex flex-wrap gap-4">
       <button (click.confirmed)="confirmed($event)" class="btn">Action</button>
       <button (dblclick.confirmed)="confirmed($event)" class="btn">Double click</button>
-      <button (click.confirmed)="confirmed($event)" confirm-message="Custom message?" confirm-accept="Do it" confirm-reject="Don't do it" class="btn">
+      <button
+        (click.confirmed)="confirmed($event)"
+        confirm-message="Custom message?"
+        confirm-accept="Do it"
+        confirm-reject="Don't do it"
+        class="btn">
         Custom message
       </button>
       <button (click.confirmed)="confirmed($event)" [useCustomConfirm]="custom" class="btn">Custom confirm</button>
@@ -159,15 +160,7 @@ export class ConfirmComponent {
 
   protected style = form(signal('edge top'));
 
-  protected options = form(
-    signal({
-      dismissable: true,
-      showLayouts: true,
-      showBody: true,
-      largeBody: false,
-      footerExtra: false
-    })
-  );
+  protected options = form(signal({ dismissable: true, showLayouts: true, showBody: true, largeBody: false, footerExtra: false }));
 
   confirmed(result?: unknown) {
     this.result.set(result ?? 'confirmed');

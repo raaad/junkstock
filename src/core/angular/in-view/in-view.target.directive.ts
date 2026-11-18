@@ -1,9 +1,7 @@
 import { DestroyRef, Directive, ElementRef, effect, inject, input } from '@angular/core';
 import { InViewHostDirective } from './in-view.host.directive';
 
-@Directive({
-  selector: '[useInViewTarget]'
-})
+@Directive({ selector: '[useInViewTarget]' })
 export class InViewTargetDirective {
   private readonly host = inject(InViewHostDirective, { optional: true });
   private readonly element = inject<ElementRef<Element>>(ElementRef).nativeElement;

@@ -27,7 +27,9 @@ export function batched<K extends string, R>(action: (keys: K[]) => ObservableIn
     filter(batch => !!batch.length),
     mergeMap(batch =>
       defer(() => action(batch)).pipe(
-        mergeMap(items => merge(...batch.map(key => (items[key] ? of({ key, item: items[key] }) : of({ key, error: new Error(`Item not found: ${key}`) }))))),
+        mergeMap(items =>
+          merge(...batch.map(key => (items[key] ? of({ key, item: items[key] }) : of({ key, error: new Error(`Item not found: ${key}`) }))))
+        ),
         catchError((error: Error) => merge(...batch.map(key => of({ key, error }))))
       )
     ),

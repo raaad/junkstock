@@ -24,11 +24,7 @@ export function getBoundingBox({ x, y, width, height }: { x: number; y: number; 
   const factor = angle < 90 ? 1 : -1;
   const r = Math.sqrt((width / 2) ** 2 + (height / 2) ** 2);
 
-  return {
-    x: getX2(x, r, width, radians, factor),
-    y: getY2(y, r, height, radians, factor),
-    ...getSize(radians, width, height)
-  };
+  return { x: getX2(x, r, width, radians, factor), y: getY2(y, r, height, radians, factor), ...getSize(radians, width, height) };
 
   function getX2(x1: number, r: number, width: number, radians: number, factor: number) {
     const x0 = x1 + width / 2;

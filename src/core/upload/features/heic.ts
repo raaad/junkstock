@@ -8,10 +8,7 @@ export function isHeic(file: File) {
 export async function convert(file: File, logger: Pick<Console, 'warn'> = console) {
   const { heicTo, getMetadata, insertMetadata } = await import('./heic.utils');
 
-  const blobOrArray = await heicTo({
-    blob: file,
-    type: 'image/jpeg'
-  });
+  const blobOrArray = await heicTo({ blob: file, type: 'image/jpeg' });
   let blob = Array.isArray(blobOrArray) ? blobOrArray[0] : blobOrArray;
 
   try {
@@ -21,10 +18,7 @@ export async function convert(file: File, logger: Pick<Console, 'warn'> = consol
     logger.warn(e);
   }
 
-  const result = new File([blob], `${file.name}.jpg`, {
-    type: 'image/jpeg',
-    lastModified: file.lastModified
-  });
+  const result = new File([blob], `${file.name}.jpg`, { type: 'image/jpeg', lastModified: file.lastModified });
 
   return result;
 }

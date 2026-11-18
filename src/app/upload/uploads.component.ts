@@ -34,7 +34,9 @@ import { provideUploadPipeline } from './provide-upload-pipeline';
         <div class="text-xs">{{ uploader.active().length }} / {{ uploader.uploads().length }}</div>
         <div class="text-xs">{{ uploader.progress().uploaded | filesize }} / {{ uploader.progress().total | filesize }}</div>
       </div>
-      <div class="flex flex-wrap items-center gap-5 text-xs"><span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span></div>
+      <div class="flex flex-wrap items-center gap-5 text-xs">
+        <span>Drop/Paste from clipboard</span><span>files/folders/screenshot here</span>
+      </div>
     </div>
     <!--list-->
     <ul class="flex flex-col gap-1 text-xs">

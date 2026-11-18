@@ -4,8 +4,7 @@ import { lazy } from './lazy';
 type Comparable = string | number | Date | boolean | undefined | null;
 
 type Options = { desc?: boolean } & (
-  | { collator: Intl.Collator }
-  | { locales?: Intl.UnicodeBCP47LocaleIdentifier | Intl.UnicodeBCP47LocaleIdentifier[]; ignoreCase?: boolean }
+  { collator: Intl.Collator } | { locales?: Intl.UnicodeBCP47LocaleIdentifier | Intl.UnicodeBCP47LocaleIdentifier[]; ignoreCase?: boolean }
 );
 
 /** Creates a compare function for use in array sorting

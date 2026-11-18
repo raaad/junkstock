@@ -80,7 +80,12 @@ export function validate(
   }
 }
 
-export function preProcessing(process: (file: File) => ObservableInput<File>, log: Log, abort$: Observable<UploadId>, errorText = 'preprocessing failed') {
+export function preProcessing(
+  process: (file: File) => ObservableInput<File>,
+  log: Log,
+  abort$: Observable<UploadId>,
+  errorText = 'preprocessing failed'
+) {
   return ifFileUpload(({ file, ...rest }) => [
     of((rest = toUpload(rest, UploadState.Processing))).pipe(log('trace', 'preprocessing')),
     defer(() => process(file)).pipe(
@@ -144,7 +149,9 @@ export function upload(
       takeUntilAbort(abort$, rest.id),
       timeout({ first: timeoutIn }),
       map(({ uploaded }) =>
-        typeof uploaded === 'number' ? toUpload({ ...rest, uploaded }, UploadState.Uploading) : toUpload({ ...rest, uploaded: file.size }, UploadState.Uploaded)
+        typeof uploaded === 'number' ?
+          toUpload({ ...rest, uploaded }, UploadState.Uploading)
+        : toUpload({ ...rest, uploaded: file.size }, UploadState.Uploaded)
       ),
       log(
         ({ state }) => (state === UploadState.Uploading ? 'trace' : 'debug'),

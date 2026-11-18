@@ -71,9 +71,7 @@ export class I18nPipe implements PipeTransform {
 /**
  * Translate static content, executed only once on init
  */
-@Directive({
-  selector: '[useI18n]'
-})
+@Directive({ selector: '[useI18n]' })
 export class I18nDirective implements OnInit {
   private readonly i18n = injectI18n();
   private readonly sanitizer = inject(DomSanitizer);

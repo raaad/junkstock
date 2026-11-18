@@ -2,7 +2,19 @@ import { Component, ElementRef, inject, OnInit, signal } from '@angular/core';
 import { controlsLookAt, fitToObject, fromGltf, rotateAround, updateSize } from '@core/3d';
 import { LOGGER } from '@core/angular';
 import { injectNonI18nBaseHref } from '@core/angular/i18n';
-import { AmbientLight, AxesHelper, BoxGeometry, Camera, Mesh, MeshLambertMaterial, Object3D, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
+import {
+  AmbientLight,
+  AxesHelper,
+  BoxGeometry,
+  Camera,
+  Mesh,
+  MeshLambertMaterial,
+  Object3D,
+  PerspectiveCamera,
+  PointLight,
+  Scene,
+  WebGLRenderer
+} from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
 @Component({
@@ -15,8 +27,12 @@ import { OrbitControls } from 'three/examples/jsm/Addons.js';
       <div class="ml-auto flex gap-2">
         <button (pointerdown)="rotate('left')" title="rotate left" class="btn btn-icon">❮</button>
         <button (pointerdown)="rotate('right')" title="rotate right" class="btn btn-icon">❯</button>
-        <button (pointerdown)="rotate('up')" title="rotate up" class="btn btn-icon"><span class="inline-block rotate-90">❮</span></button>
-        <button (pointerdown)="rotate('down')" title="rotate down" class="btn btn-icon"><span class="inline-block -rotate-90">❮</span></button>
+        <button (pointerdown)="rotate('up')" title="rotate up" class="btn btn-icon">
+          <span class="inline-block rotate-90">❮</span>
+        </button>
+        <button (pointerdown)="rotate('down')" title="rotate down" class="btn btn-icon">
+          <span class="inline-block -rotate-90">❮</span>
+        </button>
       </div>
     </div>
   `,
@@ -66,12 +82,7 @@ export class ThreeComponent implements OnInit {
   }
 
   protected rotate(to: 'left' | 'right' | 'up' | 'down', step = 10) {
-    const values = {
-      left: { dh: step, dv: 0 },
-      right: { dh: -step, dv: 0 },
-      up: { dh: 0, dv: step },
-      down: { dh: 0, dv: -step }
-    }[to];
+    const values = { left: { dh: step, dv: 0 }, right: { dh: -step, dv: 0 }, up: { dh: 0, dv: step }, down: { dh: 0, dv: -step } }[to];
 
     this.animate(values, deltas => (rotateAround(this.camera, this.controls.target, deltas), this.render()));
   }
@@ -119,11 +130,7 @@ export class ThreeComponent implements OnInit {
 // #region utils
 
 function createRenderer(container: HTMLElement) {
-  const renderer = new WebGLRenderer({
-    antialias: true,
-    powerPreference: 'high-performance',
-    alpha: true
-  });
+  const renderer = new WebGLRenderer({ antialias: true, powerPreference: 'high-performance', alpha: true });
   container.appendChild(renderer.domElement);
   return renderer;
 }

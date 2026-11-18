@@ -8,11 +8,9 @@ export const INVIEW_OPTIONS = new InjectionToken<{
 
 const DOCUMENT_POSITION_PRECEDING = 2; // Node.DOCUMENT_POSITION_PRECEDING
 
-@Directive({
-  selector: '[useInView]'
-})
+@Directive({ selector: '[useInView]' })
 export class InViewHostDirective {
-  private readonly options = inject(INVIEW_OPTIONS, { optional: true }) ?? { threshold: 0.8, scrollDebounce: 200 };
+  private readonly options = inject(INVIEW_OPTIONS, { optional: true }) ?? { threshold: 0.8, scrollDebounce: 100 };
 
   private readonly observer = new IntersectionObserver(v => this.callback(v), {
     root: inject<ElementRef<Element>>(ElementRef).nativeElement,
@@ -53,7 +51,10 @@ export class InViewHostDirective {
     const remove = entries.filter(({ isIntersecting }) => !isIntersecting).map(({ target }) => target);
 
     const targets = Array.from(
-      new Set([...this.targets().filter(i => !remove.includes(i)), ...entries.filter(({ isIntersecting }) => isIntersecting).map(({ target }) => target)])
+      new Set([
+        ...this.targets().filter(i => !remove.includes(i)),
+        ...entries.filter(({ isIntersecting }) => isIntersecting).map(({ target }) => target)
+      ])
     ).sort((a, b) => (a.compareDocumentPosition(b) & DOCUMENT_POSITION_PRECEDING) - 1);
 
     this.targets.set(targets);

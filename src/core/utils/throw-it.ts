@@ -1,6 +1,5 @@
 /**
  * Allow throwing an error in expressions
- * @usageNotes
  * ```typescript
  * function getUser(): User | null;
  *
@@ -8,6 +7,6 @@
  * console.log(user.name); // No more: is possibly 'null'
  * ```
  */
-export function throwIt<T>(error: unknown): NonNullable<T> {
+export function throwIt<E extends string | Error>(error: E): never {
   throw typeof error === 'string' ? new Error(error) : error;
 }

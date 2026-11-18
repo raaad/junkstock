@@ -5,11 +5,7 @@ import { filter, map } from 'rxjs';
 
 // TODO: ignore some routes
 
-@Directive({
-  host: {
-    '[class.view-loading]': 'loading()'
-  }
-})
+@Directive({ host: { '[class.view-loading]': 'loading()' } })
 export class ViewLoadingDirective {
   protected readonly loading = toSignal(
     inject(Router).events.pipe(

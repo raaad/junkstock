@@ -19,8 +19,6 @@ import { FitToSizeComponent } from './fit-to-size.component';
       }
     `
   ],
-  host: {
-    class: 'flex-col md:flex-row'
-  }
+  host: { class: 'flex-col md:flex-row' }
 })
 export class SizesComponent {}

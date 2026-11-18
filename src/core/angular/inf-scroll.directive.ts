@@ -15,25 +15,29 @@ import {
   Signal,
   untracked
 } from '@angular/core';
+import { LOGGER } from './logger';
 
 export const INF_SCROLL_HOST = new InjectionToken<HTMLElement>('INF_SCROLL_HOST');
 
-@Directive({
-  selector: '[useInfScroll]',
-  exportAs: 'infScroll'
-})
+@Directive({ selector: '[useInfScroll]', exportAs: 'infScroll' })
 export class InfScrollDirective {
   readonly loader = input.required<(abort: AbortSignal) => Promise<void>>({ alias: 'useInfScroll' });
 
   // eslint-disable-next-line @angular-eslint/no-input-rename
   readonly enabled = input(false, { alias: 'infScrollEnabled' });
 
+  private trigger = signal<Element>(inject(ElementRef).nativeElement);
+
   private host = inject(INF_SCROLL_HOST, { optional: true });
 
-  private scroll = useInfiniteScroll(signal(inject(ElementRef).nativeElement), this.host, this.enabled, this.loader, {
-    scrollMargin: inject(new HostAttributeToken('data-scroll-margin'), { optional: true }) || '100px',
-    threshold: 0.1
-  });
+  private scroll = useInfiniteScroll(
+    this.trigger,
+    computed(() => this.host ?? this.trigger()?.parentElement),
+    this.loader,
+    this.enabled,
+    inject(new HostAttributeToken('data-scroll-reverse'), { optional: true }) !== null ? 'reverse' : undefined,
+    { scrollMargin: inject(new HostAttributeToken('data-scroll-margin'), { optional: true }) || '100px 0px' }
+  );
 
   get active() {
     return this.scroll.active;
@@ -55,77 +59,91 @@ export class InfScrollDirective {
 export class InfScrollHostDirective {}
 
 export function useInfiniteScroll(
-  trigger: Signal<HTMLElement | undefined>,
-  host: HTMLElement | null,
-  enabled: Signal<boolean>,
+  trigger: Signal<Element | null>,
+  host: Signal<Element | null>,
   loader: Signal<(abort: AbortSignal) => Promise<void>>,
-  { threshold = 0.1, ...options }: IntersectionObserverInit = {}
+  enabled: Signal<boolean>,
+  mode: 'default' | 'reverse' = 'default',
+  options?: Omit<IntersectionObserverInit, 'root'>
 ) {
-  const loading = signal(false);
-  const failed = linkedSignal({ source: enabled, computation: (on, p) => !on && !!p?.value });
+  const logger = inject(LOGGER);
+
   const isIntersecting = useObserver(
     trigger,
     computed(() => enabled() && !loading() && !failed()),
-    { threshold, ...options }
+    host,
+    options
   );
+
   const abort = useAbort();
   const waitNextRender = useNextRender();
 
-  effect(() => isIntersecting() && untracked(() => keepScroll(exec)));
+  const loading = signal(false);
+  const failed = linkedSignal({ source: enabled, computation: (on, p) => !on && !!p?.value });
+
+  effect(async () => isIntersecting() && (await untracked(fetch)) && untracked(keepScroll));
 
   effect(() => !enabled() && abort.emit());
 
-  return {
-    active: computed(() => loading() || failed()),
-    failed,
-    retry: () => failed.set(false)
-  };
+  inject(DestroyRef).onDestroy(abort.emit);
 
-  async function exec() {
+  return { active: computed(() => loading() || failed()), failed: failed.asReadonly(), retry: () => failed.set(false) };
+
+  async function fetch() {
     loading.set(true);
+    const { signal, promise } = abort.create();
 
     try {
-      const { signal, promise } = abort.create();
-      await Promise.race([loader()?.(signal), promise]);
-    } catch {
-      failed.set(true);
+      await Promise.race([promise, loader()(signal)]);
+    } catch (e) {
+      if (!isAbortError(e)) {
+        logger.warn(e);
+        failed.set(true);
+      }
+
+      return false;
     } finally {
       abort.emit();
+      loading.set(false);
     }
 
-    loading.set(false);
+    return true;
   }
 
-  async function keepScroll(action: typeof exec) {
-    const target = host ?? trigger()?.parentElement;
-    const offset = trigger()?.offsetTop;
-    const height = target?.scrollHeight ?? 0;
-
-    await action();
-
-    await waitNextRender();
-
-    // restore scroll position only if new elements were added before trigger's position
-    (offset ?? 0) >= (trigger()?.offsetTop ?? 0) && target && (target.scrollTop += target.scrollHeight - height);
+  async function keepScroll() {
+    const root = host();
+    if (root && mode === 'reverse') {
+      const height = root.scrollHeight;
+      await waitNextRender();
+      root.scrollTop += root.scrollHeight - height;
+    }
   }
 }
 
-function useObserver(target: Signal<HTMLElement | undefined>, enabled: Signal<boolean>, options?: IntersectionObserverInit) {
-  const observer = new IntersectionObserver(([{ isIntersecting: value }]) => isIntersecting.set(value), options);
-
-  const isIntersecting = linkedSignal({
-    source: () => enabled() && !!target(),
-    computation: (on, prev) => on && !!prev?.value
+function useObserver(
+  target: Signal<Element | null>,
+  enabled: Signal<boolean>,
+  root?: Signal<Element | null>,
+  options?: Omit<IntersectionObserverInit, 'root'>
+) {
+  const observer = linkedSignal({
+    source: () => root?.(),
+    computation: (root, p): IntersectionObserver => (
+      p?.value.disconnect(),
+      new IntersectionObserver(([{ isIntersecting: value }]) => isIntersecting.set(value), { root, ...options })
+    )
   });
 
-  let current: HTMLElement | null = null;
+  const isIntersecting = linkedSignal({ source: () => enabled() && !!target(), computation: (on, p) => on && !!p?.value });
+
+  let current: Element | null = null;
 
   effect(() => {
-    current && observer.unobserve(current);
-    if ((current = (enabled() && target()) || null)) observer.observe(current);
+    current && observer().unobserve(current);
+    (current = (enabled() && target()) || null) && observer().observe(current);
   });
 
-  inject(DestroyRef).onDestroy(() => observer.disconnect());
+  inject(DestroyRef).onDestroy(() => observer().disconnect());
 
   return isIntersecting;
 }
@@ -139,7 +157,9 @@ function useAbort() {
 
       return {
         signal: ctrl.signal,
-        promise: new Promise<void>(r => ctrl?.signal.addEventListener('abort', () => r(), { once: true }))
+        promise: new Promise<void>((_, rj) =>
+          ctrl?.signal.addEventListener('abort', ({ target: t }) => rj((t as AbortSignal).reason), { once: true })
+        )
       };
     },
     emit() {
@@ -152,4 +172,8 @@ function useNextRender() {
   const injector = inject(Injector);
 
   return () => new Promise<void>(r => afterNextRender(r, { injector }));
+}
+
+function isAbortError(e: unknown) {
+  return e instanceof DOMException && e.name === 'AbortError';
 }

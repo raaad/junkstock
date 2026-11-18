@@ -13,7 +13,9 @@ export class Uploader {
 
   private readonly abortAll$ = new Subject<void>();
   private readonly abortOf$ = new Subject<UploadId>();
-  private readonly abort$ = merge(this.abortAll$.pipe(mergeMap(() => this.active().map(({ id }) => id))), this.abortOf$).pipe(takeUntilDestroyed());
+  private readonly abort$ = merge(this.abortAll$.pipe(mergeMap(() => this.active().map(({ id }) => id))), this.abortOf$).pipe(
+    takeUntilDestroyed()
+  );
 
   private readonly flush$ = new Subject<void>();
 
@@ -35,10 +37,7 @@ export class Uploader {
   readonly progress = computed(() =>
     this.uploads()
       .filter(({ state }) => state <= UploadState.Uploaded)
-      .reduce(({ uploaded: u, total: t }, { uploaded: c, size: s }) => ({ uploaded: u + c, total: t + s }), {
-        uploaded: 0,
-        total: 0
-      })
+      .reduce(({ uploaded: u, total: t }, { uploaded: c, size: s }) => ({ uploaded: u + c, total: t + s }), { uploaded: 0, total: 0 })
   );
 
   // #endregion
@@ -54,7 +53,9 @@ export class Uploader {
 
     input$.subscribe(([id, file]) => this.queue$.next({ id, file }));
 
-    return combineLatest([this.uploads$, input$.pipe(map(id => id))]).pipe(map(([items, ids]) => items.filter(({ id }) => ids.includes(id))));
+    return combineLatest([this.uploads$, input$.pipe(map(id => id))]).pipe(
+      map(([items, ids]) => items.filter(({ id }) => ids.includes(id)))
+    );
   }
 
   abort(...ids: UploadId[]) {

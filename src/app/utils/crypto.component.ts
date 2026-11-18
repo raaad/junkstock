@@ -17,7 +17,9 @@ import { decrypt, encrypt } from '@core/utils';
       <span class="note flex-1">{{ encrypted() }}</span>
     </div>
     <div class="m-4 flex gap-4">
-      <button (click)="decrypt(encrypted(), form.password().value())" [disabled]="form.password().invalid() || !encrypted()" class="btn">decrypt</button>
+      <button (click)="decrypt(encrypted(), form.password().value())" [disabled]="form.password().invalid() || !encrypted()" class="btn">
+        decrypt
+      </button>
       <span class="note flex-1">{{ decrypted() }}</span>
     </div>
   `,

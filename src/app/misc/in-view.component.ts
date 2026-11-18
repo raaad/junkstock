@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { InViewHostDirective, InViewTargetDirective } from '@core/angular';
 
 @Component({
@@ -29,11 +29,11 @@ import { InViewHostDirective, InViewTargetDirective } from '@core/angular';
   ]
 })
 export class InViewComponent {
-  protected readonly items = new Array(100).fill(0).map((_, i) => i + 1);
+  protected readonly items = Array.from({ length: 100 }, (_, i) => i + 1);
 
-  private itemsInView = signal(new Array<{ data: unknown }>());
+  protected inView = signal(new Array<number>());
 
-  protected inView = computed(() => this.itemsInView().map(({ data }) => data as number));
-
-  protected update = this.itemsInView.set;
+  protected update(items: { data: unknown }[]) {
+    this.inView.set(items.map(({ data }) => data as number));
+  }
 }
